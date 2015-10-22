@@ -1,0 +1,8 @@
+*.pyc
+*~
+build/
+.coverage
+dist/
+*.egg-info/
+MANIFEST
+.ipynb_checkpoints/

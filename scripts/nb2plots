@@ -1,0 +1,33 @@
+#!python
+""" Convert notebook to ReST format with plot directives
+
+Example:
+
+    nb2plots example.ipynb
+
+"""
+# vim: ft=python
+from __future__ import division, print_function, absolute_import
+
+import sys
+import os
+from os.path import join as exists, expanduser, realpath
+from optparse import OptionParser, Option
+
+from nb2plots import __version__
+from nb2plots.from_notebook import convert_nb
+
+
+def main():
+    parser = OptionParser(
+        usage="%s NOTEBOOK_FNAME\n\n" % sys.argv[0] + __doc__,
+        version="%prog " + __version__)
+    (opts, notebooks) = parser.parse_args()
+    if len(notebooks) != 1:
+        parser.print_help()
+        sys.exit(1)
+    print(convert_nb(notebooks[0]))
+
+
+if __name__ == '__main__':
+    main()
