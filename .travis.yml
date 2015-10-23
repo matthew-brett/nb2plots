@@ -33,7 +33,7 @@ matrix:
     # Absolute minimum dependencies
     - python: 2.7
       env:
-        - DEPENDS="ipython[notebook]==3.2.0"
+        - DEPENDS="ipython[notebook]==3.0.0"
     - python: 2.7
       env:
         - INSTALL_TYPE=sdist
