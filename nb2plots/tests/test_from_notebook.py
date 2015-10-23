@@ -4,7 +4,7 @@
 from os.path import dirname, join as pjoin
 
 from ..ipython_shim import nbformat
-from ..from_notebook import convert_nb, convert_nb_fname
+from ..from_notebook import convert_nb, convert_nb_fname, to_doctests
 
 from nose.tools import (assert_true, assert_false, assert_raises,
                         assert_equal, assert_not_equal)
@@ -44,6 +44,42 @@ def test_simple_cells():
     exp_mixed_magic = PLT_NO_FIGS + "    >>> b = 2\n"
     nb['cells'] = [mixed_magic_code_cell]
     assert_equal(convert_nb(nb), exp_mixed_magic)
+
+
+def test_to_doctests():
+    # Test to_doctests filter
+    assert_equal(to_doctests(''), '>>>')
+    assert_equal(to_doctests('a = 1'), '>>> a = 1')
+    assert_equal(to_doctests('a = 1\nb = 2'), '>>> a = 1\n>>> b = 2')
+    assert_equal(to_doctests(
+"""
+a = 1
+for i in (1, 2):
+    a += i
+
+    for j in (2, 3):
+        a += j
+
+print(a)
+for i in (1, 2):
+
+    a += i
+print(a)
+"""),
+""">>>
+>>> a = 1
+>>> for i in (1, 2):
+...     a += i
+...
+...     for j in (2, 3):
+...         a += j
+...
+>>> print(a)
+>>> for i in (1, 2):
+...
+...     a += i
+>>> print(a)
+>>>""")
 
 
 def test_small():

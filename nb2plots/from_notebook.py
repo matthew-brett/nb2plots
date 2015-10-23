@@ -54,9 +54,15 @@ def to_doctests(code, first='>>> ', cont='... '):
     new_code = []
     code_list = code.split('\n')
     prefix = first
-    for line in code_list:
+    last_line_no = len(code_list) - 1
+    for i, line in enumerate(code_list):
         if line.strip() == '':
-            pass  # Empty line, use last prefix
+            # Blank line - which prefix should we use?
+            if i < last_line_no and code_list[i + 1].startswith(' '):
+                # Use continuation for line following
+                prefix = cont.rstrip()
+            else:  # Use prefix for previous line
+                prefix = prefix.rstrip()
         elif line.startswith(' '):
             prefix = cont
         else:
