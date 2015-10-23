@@ -2,6 +2,16 @@
 nb2plots - converting between notebooks and sphinx
 ##################################################
 
+************
+Dependencies
+************
+
+You will need pandoc_ installed and available as the ``pandoc`` command.
+
+For OSX, we recommend homebrew_ for installing pandoc::
+
+    brew install pandoc
+
 ****
 Code
 ****
@@ -22,6 +32,8 @@ Support
 
 Please put up issues on the `nb2plots issue tracker`_.
 
+.. _pandoc: http://pandoc.org
+.. _homebrew: brew.sh
 .. _sphinx: http://sphinx-doc.org
 .. _rest: http://docutils.sourceforge.net/rst.html
 .. _nb2plots issue tracker: https://github.com/matthew-brett/nb2plots/issues
