@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-''' Installation script for texext package '''
+''' Installation script for nb2plots package '''
 import sys
 
 # For some commands, use setuptools.
