@@ -16,7 +16,7 @@ dl = DictLoader({'rst_plots': """\
 {% block input %}
 {%- if cell.source.strip() | strip_ipy -%}
 ##CODE_START##
-{{ cell.source | strip_ipy | add_angles | indent}}
+{{ cell.source | strip_ipy | to_doctests | indent}}
 ##CODE_END##
 {% endif -%}
 {% endblock input %}
@@ -49,7 +49,7 @@ def strip_ipy(code):
                       if not line.strip().startswith('%')])
 
 
-def add_angles(code, first='>>> ', cont='... '):
+def to_doctests(code, first='>>> ', cont='... '):
     """Add docstring prompts to code snippets"""
     new_code = []
     code_list = code.split('\n')
@@ -77,7 +77,7 @@ def ellipse_mpl(text):
 class PlotsExporter(nbconvert.RSTExporter):
     template_file = 'rst_plots'
     filters = traitlets.Dict(dict(
-        add_angles=add_angles,
+        to_doctests=to_doctests,
         strip_ipy=strip_ipy,
         ellipse_mpl=ellipse_mpl,
     ), config=True)
