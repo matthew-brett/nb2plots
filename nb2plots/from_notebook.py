@@ -105,7 +105,7 @@ CODE_WITH_OPTIONAL_PLOT = re.compile(
     '([\S\\n]*^##PLOT##)?', re.S | re.M)
 
 PLOT_DIRECTIVE_FMT = """\
-.. plot:
+.. plot::
     :context:{0}
 
 """
@@ -117,9 +117,13 @@ def repl_code_plot(match):
     return PLOT_DIRECTIVE_FMT.format('') + groups[0]
 
 
-def convert_nb(nb_fname):
+def convert_nb_fname(nb_fname):
     with open(nb_fname, 'rt') as nb_fobj:
         notebook = nbformat.read(nb_fobj, as_version=4)
+    return convert_nb(notebook)
+
+
+def convert_nb(notebook):
     # Turn off output preprocessor (we don't want the figures)
     c =  Config({
                 'ExtractOutputPreprocessor':{'enabled': False}

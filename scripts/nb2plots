@@ -5,6 +5,7 @@ Example:
 
     nb2plots example.ipynb
 
+Prints to stdou
 """
 # vim: ft=python
 from __future__ import division, print_function, absolute_import
@@ -15,7 +16,7 @@ from os.path import join as exists, expanduser, realpath
 from optparse import OptionParser, Option
 
 from nb2plots import __version__
-from nb2plots.from_notebook import convert_nb
+from nb2plots.from_notebook import convert_nb_fname
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
     if len(notebooks) != 1:
         parser.print_help()
         sys.exit(1)
-    print(convert_nb(notebooks[0]))
+    print(convert_nb_fname(notebooks[0]))
 
 
 if __name__ == '__main__':
