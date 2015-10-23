@@ -28,16 +28,10 @@ setup(name='nb2plots',
       url='http://github.com/matthew-brett/nb2plots',
       packages=['nb2plots',
                 'nb2plots.tests'],
-      package_data = {'texext': [
-          'tests/tinypages/*.rst',
-          'tests/tinypages/*.py',
-          'tests/tinypages/_static/*',
-          'tests/plotdirective/*.rst',
-          'tests/plotdirective/*.py',
-          'tests/plotdirective/_static/*',
-          'tests/custom_plotdirective/*.rst',
-          'tests/custom_plotdirective/*.py',
-          'tests/custom_plotdirective/_static/*']},
+      package_data = {'nb2plots': [
+          'tests/data/*.ipynb'
+          'tests/data/*.rst',
+      ]},
       license='BSD license',
       classifiers = [
             'Development Status :: 4 - Beta',
