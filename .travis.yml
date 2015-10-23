@@ -1,0 +1,61 @@
+language: python
+
+# Run jobs on container-based infrastructure, can be overridden per job
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+env:
+    global:
+        - DEPENDS="ipython[notebook]"
+        - PKG_NAME=nb2plots
+
+python:
+    - 2.6
+    - 3.2
+    - 3.3
+    - 3.4
+    - 3.5
+
+matrix:
+  include:
+    - python: 2.7
+      env:
+        - COVERAGE=1
+        - DOCTESTS=1
+    # Absolute minimum dependencies
+    - python: 2.7
+      env:
+        - DEPENDS="ipython[notebook]==3.2.0"
+
+before_install:
+    - source tools/travis_tools.sh
+    - virtualenv venv
+    - source venv/bin/activate
+    - retry pip install nose # always
+    - wheelhouse_pip_install $DEPENDS
+    - if [ "${COVERAGE}" == "1" ]; then
+      pip install coverage;
+      pip install coveralls;
+      fi
+
+install:
+    - python setup.py install
+
+script:
+    # Change into an innocuous directory and find tests from installation
+    - mkdir for_testing
+    - cd for_testing
+    - if [ "${COVERAGE}" == "1" ]; then
+      cp ../.coveragerc .;
+      COVER_ARGS="--with-coverage --cover-package $PKG_NAME";
+      fi
+    - if [ "${DOCTESTS}" == "1" ]; then
+      DOCTEST_ARGS="--with-doctest";
+      fi
+    - nosetests $COVER_ARGS $DOCTEST_ARGS $PKG_NAME
+
+after_success:
+    - if [ "${COVERAGE}" == "1" ]; then coveralls; fi
