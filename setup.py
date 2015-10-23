@@ -29,7 +29,7 @@ setup(name='nb2plots',
       packages=['nb2plots',
                 'nb2plots.tests'],
       package_data = {'nb2plots': [
-          'tests/data/*.ipynb'
+          'tests/data/*.ipynb',
           'tests/data/*.rst',
       ]},
       license='BSD license',
