@@ -3,9 +3,8 @@
 
 from os.path import dirname, join as pjoin
 
+from ..ipython_shim import nbformat
 from ..from_notebook import convert_nb, convert_nb_fname
-
-from IPython.nbformat import v4
 
 from nose.tools import (assert_true, assert_false, assert_raises,
                         assert_equal, assert_not_equal)
@@ -19,6 +18,7 @@ PLT_FIGS = PLT_HDR + "\n"
 
 
 def test_simple_cells():
+    v4 = nbformat.v4
     nb = v4.new_notebook()
     # Markdown -> default conversion
     md_cell = v4.new_markdown_cell('# Some text')

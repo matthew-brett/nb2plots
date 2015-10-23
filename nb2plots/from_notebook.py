@@ -2,17 +2,12 @@
 """ Convert from notebook to rst page with plot directives
 """
 
-import sys
 import re
 
-from IPython.utils.traitlets import Dict
-from IPython import nbformat
-from IPython.config import Config
-from IPython.nbconvert import RSTExporter
-
-rst_exporter = RSTExporter()
-
 from jinja2 import DictLoader
+
+from .ipython_shim import nbformat, nbconvert, traitlets, config
+
 
 # Template to label code and output and plot blocks
 dl = DictLoader({'rst_plots': """\
@@ -79,9 +74,9 @@ def ellipse_mpl(text):
     return MPL_OBJ_OUT.sub('...', text)
 
 
-class PlotsExporter(RSTExporter):
+class PlotsExporter(nbconvert.RSTExporter):
     template_file = 'rst_plots'
-    filters = Dict(dict(
+    filters = traitlets.Dict(dict(
         add_angles=add_angles,
         strip_ipy=strip_ipy,
         ellipse_mpl=ellipse_mpl,
@@ -125,9 +120,9 @@ def convert_nb_fname(nb_fname):
 
 def convert_nb(notebook):
     # Turn off output preprocessor (we don't want the figures)
-    c =  Config({
-                'ExtractOutputPreprocessor':{'enabled': False}
-                })
+    c =  config.Config({
+        'ExtractOutputPreprocessor':{'enabled': False}
+    })
     plots_exporter = PlotsExporter(extra_loaders=[dl], config=c)
     output, resources = plots_exporter.from_notebook_node(notebook)
 
