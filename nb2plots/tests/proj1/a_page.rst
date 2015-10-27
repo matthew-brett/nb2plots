@@ -2,6 +2,10 @@
 A section
 #########
 
-Some text
+Some text.
 
-:clearnotebook:`some text`
+:clearnotebook:`notebook here`
+
+More text.
+
+:fullnotebook:`full <another.ipynb>`
