@@ -2,27 +2,40 @@
 Design of a notebook writer
 ###########################
 
-Pages that will be converted to notebooks have, somewhere in them, of one of
-these forms::
+Pages that will be converted to notebooks have, somewhere in them, one of two
+intepreted text roles, like this::
 
-    :clearnotebook:``
-    :fullnotebook:``
+    :clearnotebook:`Download as notebook without outputs`
+    :fullnotebook:`Download as notebook with outputs`
 
-These generate page content equivalent to ``:download:`<pagename>.ipynb```,
-where ``<pagename>.rst`` is the name of the ReST page containing the notebook
-role.  ``:clearnotebook:`` creates a notebook without outputs, and
-``:fullnotebook:`` creates the notebook and executes it, writing the notebook
-with generated outputs.
+These generate page content equivalent to ``:download:`Download as notebook
+<pagename>.ipynb```, where ``<pagename>.rst`` is the name of the ReST page
+containing the notebook role.  ``:clearnotebook:`` creates a notebook without
+outputs, and ``:fullnotebook:`` creates the notebook and executes it, writing
+the notebook with generated outputs.
 
-For both directives, you can replace the default link text by adding link
-text::
+The text within the backticks is the link text that will appear in the build
+html, unless the text is ``.`` (a period).  This special case causes the link
+text to be ``Download as IPython notebook``.
 
-    :clearnotebook:`to get this page as an ipynb file`
+It appears that docutils insists that there must be some text between the
+backticks.
 
-You can specify the written filename of the notebook with the ``text
-<target>`` form of the role::
+For both directives, you can specify the written filename of the notebook with
+the ``text <target>`` form of the role::
 
     :clearnotebook:`to get this page as an ipynb file <my_nb.ipynb>`
+
+If you want to specify the filename, you must specify link text as well.  For
+example ``:clearnotebook:`<my_nb.ipynb>``` will result in the default
+filename, and a link text of ``<my_nb.ipynb>``.
+
+You can have multiple notebook roles pointing to the same file (default or
+otherwise), as long as they are all of the same type (clear or full).  For
+example, you can have multiple ``:clearnotebook:`.``` roles in one ReST page,
+(all pointing to ``<pagename>.ipynb``, but you cannot have a
+``:fullnotebook:`.``` role in that page, because that would mean that the
+clear and full notebook roles were trying to point to the same file.
 
 *********
 Mechanics
