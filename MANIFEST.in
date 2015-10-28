@@ -3,3 +3,4 @@ include nb2plots/_version.py
 include README.rst
 include LICENSE
 recursive-include nb2plots/tests/proj1
+recursive-include nb2plots/tests/data
