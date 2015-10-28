@@ -4,6 +4,7 @@
 import os
 from os.path import join as pjoin, split as psplit, splitext
 import sys
+import re
 
 # For some commands, use setuptools.
 if len(set(('develop', 'bdist_egg', 'bdist_rpm', 'bdist', 'bdist_dumb',
@@ -15,9 +16,17 @@ from distutils.core import setup
 
 import versioneer
 
-extra_setup_kwargs = ({} if 'setuptools' not in sys.modules else
-                      dict(install_requires=['six', 'sphinx>=1.1.3']))
+# Get setuptools requirements from requirements.txt file
+with open('requirements.txt', 'rt') as fobj:
+    INSTALL_REQUIRES = [line.strip() for line in fobj if line.strip()]
 
+# Requires for distutils (only used in pypi interface?)
+BREAK_VER = re.compile(r'(\S+?)(\[\S+\])?([=<>!]+\S+)')
+REQUIRES = [BREAK_VER.sub(r'\1 (\3)', req) for req in INSTALL_REQUIRES]
+
+# Specific to setuptools execution
+EXTRA_SETUP_KWARGS = ({} if 'setuptools' not in sys.modules
+                      else {'install_requires': INSTALL_REQUIRES})
 
 # See: https://github.com/matthew-brett/myscripter
 from distutils.command.install_scripts import install_scripts
@@ -100,5 +109,5 @@ setup(name='nb2plots',
         ],
       scripts = ['scripts/nb2plots'],
       long_description = open('README.rst', 'rt').read(),
-      **extra_setup_kwargs
+      **EXTRA_SETUP_KWARGS
       )

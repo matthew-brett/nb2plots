@@ -1,1 +1,2 @@
-ipython[notebook]
+ipython[notebook]>=3.0
+sphinx>=1.1.3
