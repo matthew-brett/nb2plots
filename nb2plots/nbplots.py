@@ -263,7 +263,7 @@ def setup(app):
                'encoding': directives.encoding
                }
 
-    app.add_directive('plot', plot_directive, True, (0, 2, False), **options)
+    app.add_directive('nbplot', plot_directive, True, (0, 2, False), **options)
     app.add_config_value('plot_pre_code', None, True)
     app.add_config_value('plot_include_source', False, True)
     app.add_config_value('plot_html_show_source_link', True, True)
