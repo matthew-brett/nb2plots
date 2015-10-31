@@ -41,15 +41,19 @@ class PageBuilder(object):
             cls.html_dir = pjoin(cls.build_path, 'html')
             cls.doctree_dir = pjoin(cls.build_path, 'doctrees')
             # Build the pages with warnings turned into errors
-            cmd = ['sphinx-build', '-W', '-b', 'html',
-                   '-d', cls.doctree_dir,
-                   cls.page_source,
-                   cls.html_dir]
+            cls.build_cmd = ['sphinx-build', '-W', '-b', 'html',
+                             '-d', cls.doctree_dir,
+                             cls.page_source,
+                             cls.html_dir]
         except Exception as e:  # Exceptions during test setup
             shutil.rmtree(cls.build_path)
             raise e
+        cls.build_source()
+
+    @classmethod
+    def build_source(cls):
         try:  # Catch exceptions during sphinx build
-            proc = Popen(cmd, stdout=PIPE, stderr=PIPE)
+            proc = Popen(cls.build_cmd, stdout=PIPE, stderr=PIPE)
             cls.stdout, cls.stderr = proc.communicate()
             if proc.returncode != 0:
                 cls.build_error = "Unknown error"
@@ -100,6 +104,9 @@ class ModifiedPageBuilder(PageBuilder):
     functions rather than having multiple sphinx project subdirectories in the
     test tree.
     """
+    # Default page.  Should specify a path-less page name that can be replaced
+    # in modified builds.
+    default_page = None
 
     @classmethod
     def set_page_source(cls):
@@ -111,3 +118,35 @@ class ModifiedPageBuilder(PageBuilder):
     @classmethod
     def modify_source(cls):
         """ Subclass this class method to modify the build sources """
+
+    @classmethod
+    def append_conf(cls, string):
+        """ Append stuff to the conf.py file """
+        with open(pjoin(cls.page_source, 'conf.py'), 'a') as fobj:
+            fobj.write(string)
+
+    @classmethod
+    def replace_page(cls, file_like):
+        """ Replace default page with contents of `file_like`
+        """
+        out_fname = pjoin(cls.page_source, cls.default_page)
+        if hasattr(file_like, 'read'):
+            contents = file_like.read()
+            with open(out_fname, 'wt') as fobj:
+                fobj.write(contents)
+            return
+        shutil.copyfile(file_like, out_fname)
+
+    @classmethod
+    def add_page(cls, file_like, out_name):
+        """ Add another page from `file_like` with name `out_name`
+        """
+        out_fname = pjoin(cls.page_source, out_name + '.rst')
+        if hasattr(file_like, 'read'):
+            contents = file_like.read()
+            with open(out_fname, 'wt') as fobj:
+                fobj.write(contents)
+        else:
+            shutil.copyfile(file_like, out_fname)
+        with open(pjoin(cls.page_source, 'index.rst'), 'a') as fobj:
+            fobj.write("\n\n.. toctree::\n\n    {0}\n\n".format(out_name))

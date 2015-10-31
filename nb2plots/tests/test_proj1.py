@@ -15,10 +15,11 @@ A title
 
 """
 
-
-class TestProj1(PageBuilder):
-    # Test build and output of tinypages project
+class Proj1Builder(PageBuilder):
     page_source_template = PAGES
+
+
+class TestProj1(Proj1Builder):
 
     def test_basic_build(self):
         assert_true(isdir(self.html_dir))
@@ -40,8 +41,12 @@ class TestProj1(PageBuilder):
         assert_true(exists(pjoin(self.build_path, 'html', 'a_page.ipynb')))
 
 
-class TestNotSameName(ModifiedPageBuilder):
+class ModifiedProj1Builder(ModifiedPageBuilder):
     page_source_template = PAGES
+    default_page = 'a_page.rst'
+
+
+class TestNotSameName(ModifiedProj1Builder):
 
     @classmethod
     def modify_source(cls):
