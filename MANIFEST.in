@@ -5,3 +5,4 @@ include LICENSE
 include requirements.txt
 recursive-include nb2plots/tests/proj1 *
 recursive-include nb2plots/tests/data *
+recursive-include nb2plots/tests/otherpages *

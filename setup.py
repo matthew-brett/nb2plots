@@ -94,6 +94,7 @@ setup(name='nb2plots',
           'tests/proj1/*.rst',
           'tests/proj1/*.py',
           'tests/proj1/_static/*',
+          'tests/otherpages/*',
       ]},
       license='BSD license',
       classifiers = [
