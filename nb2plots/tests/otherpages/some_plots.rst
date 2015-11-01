@@ -22,7 +22,7 @@ Plot 3 has length 4:
     plt.plot(range(4))
 
 Plot 4 shows that a new block with context does not see the variable defined
-in the no-context block:
+in the no-context block (if the assert statement fails, the build will error):
 
 .. nbplot::
     :context:
