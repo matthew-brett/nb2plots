@@ -105,12 +105,13 @@ the directive:
 .. nbplot::
     :context: close-figs
 
+    # Very unusual comment
     plt.figure()
     plt.plot(range(4))
 
 Plot 14 uses ``include-source``:
 
 .. nbplot::
-    :include-source:
+    :include-source: true
 
     # Only a comment

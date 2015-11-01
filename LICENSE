@@ -56,6 +56,7 @@ The changes are the following:
 * fix of plot doctest.
 * rename of 'plot' directive to 'nbplot';
 * rename of 'plot_*' configuration options to 'nbplot_*' equivalent;
+* include-source is True by default;
 
 The following license covers the plot directive code:
 
