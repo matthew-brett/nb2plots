@@ -266,7 +266,7 @@ def setup(app):
     app.add_directive('nbplot', plot_directive, True, (0, 2, False), **options)
     app.add_config_value('nbplot_pre_code', None, True)
     app.add_config_value('nbplot_include_source', True, True)
-    app.add_config_value('nbplot_html_show_source_link', True, True)
+    app.add_config_value('nbplot_html_show_source_link', False, True)
     app.add_config_value('nbplot_formats', ['png', 'hires.png', 'pdf'], True)
     app.add_config_value('nbplot_basedir', None, True)
     app.add_config_value('nbplot_html_show_formats', True, True)

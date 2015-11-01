@@ -24,7 +24,8 @@ class TestNbplots(ModifiedProj1Builder):
     @classmethod
     def modify_source(cls):
         cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
-                        'nbplot_include_source = False')
+                        'nbplot_include_source = False\n'
+                        'nbplot_html_show_source_link = True')
         cls.replace_page(pjoin(OTHER_PAGES, 'some_plots.rst'))
 
     def test_some_plots(self):
@@ -54,9 +55,14 @@ class TestNbplots(ModifiedProj1Builder):
             html_contents = fobj.read()
         assert_true('# Only a comment' in html_contents)
 
+    def test_html_links_to_source(self):
+        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+            html = fobj.read()
+        assert_true('href=".//a_page-1.py">Source code</a>' in html)
+
 
 class TestDefaultSource(ModifiedProj1Builder):
-    """ Check that default is to include source """
+    """ Check that default is to include source, not source links """
 
     @classmethod
     def modify_source(cls):
@@ -76,6 +82,12 @@ A title
         with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
             html_contents = fobj.read()
         assert_true('# Only a comment' in html_contents)
+
+    def test_no_source_link(self):
+        # Plot 1 has included source
+        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+            html = fobj.read()
+        assert_false('href=".//a_page-1.py">Source code</a>' in html)
 
 
 class TestAnnoyingParens(ModifiedProj1Builder):
