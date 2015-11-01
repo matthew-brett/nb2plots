@@ -76,3 +76,31 @@ A title
         with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
             html_contents = fobj.read()
         assert_true('# Only a comment' in html_contents)
+
+
+class TestAnnoyingParens(ModifiedProj1Builder):
+    """ Test we've fixed the empty parens bug
+
+    The matplotlib plotter puts an annoying empty open/close parens in the
+    output when html source link is off, and there are no figures.
+    """
+
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
+                        'nbplot_html_show_source_link = False')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+A title
+-------
+
+.. nbplot::
+
+    # Only a comment
+""")
+
+    def test_annoying_parens(self):
+        # Plot 1 has included source
+        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+            html_contents = fobj.read()
+        assert_false('<p>()</p>' in html_contents)
