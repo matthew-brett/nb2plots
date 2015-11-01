@@ -51,7 +51,7 @@ The ``plot`` directive supports the following options:
 
     include-source : bool
         Whether to display the source code. The default can be changed
-        using the `plot_include_source` variable in conf.py
+        using the `nbplot_include_source` variable in conf.py
 
     encoding : str
         If this source file is in a non-UTF8 or non-ASCII encoding,
@@ -82,23 +82,23 @@ target).  These include `alt`, `height`, `width`, `scale`, `align` and
 Configuration options
 ---------------------
 
-The plot directive has the following configuration options:
+The nbplot directive has the following configuration options:
 
-    plot_include_source
+    nbplot_include_source
         Default value for the include-source option
 
-    plot_html_show_source_link
+    nbplot_html_show_source_link
         Whether to show a link to the source in HTML.
 
-    plot_pre_code
+    nbplot_pre_code
         Code that should be executed before each plot.
 
-    plot_basedir
+    nbplot_basedir
         Base directory, to which ``plot::`` file names are relative
         to.  (If None or empty, file names are relative to the
         directory where the file containing the directive is.)
 
-    plot_formats
+    nbplot_formats
         File formats to generate. List of tuples or strings::
 
             [(suffix, dpi), suffix, ...]
@@ -108,19 +108,19 @@ The plot directive has the following configuration options:
         the command line through sphinx_build the list should be passed as
         suffix:dpi,suffix:dpi, ....
 
-    plot_html_show_formats
+    nbplot_html_show_formats
         Whether to show links to the files in HTML.
 
-    plot_rcparams
+    nbplot_rcparams
         A dictionary containing any non-standard rcParams that should
         be applied before each plot.
 
-    plot_apply_rcparams
+    nbplot_apply_rcparams
         By default, rcParams are applied when `context` option is not used in
         a plot directive.  This configuration option overrides this behavior
         and applies rcParams before each plot.
 
-    plot_working_directory
+    nbplot_working_directory
         By default, the working directory will be changed to the directory of
         the example, so the code can get at its data files, if any.  Also its
         path will be added to `sys.path` so it can import any helper modules
@@ -128,7 +128,7 @@ The plot directive has the following configuration options:
         a central directory (also added to `sys.path`) where data files and
         helper modules for all code are located.
 
-    plot_template
+    nbplot_template
         Provide a customized template for preparing restructured text.
 """
 from __future__ import (absolute_import, division, print_function,
@@ -264,16 +264,16 @@ def setup(app):
                }
 
     app.add_directive('nbplot', plot_directive, True, (0, 2, False), **options)
-    app.add_config_value('plot_pre_code', None, True)
-    app.add_config_value('plot_include_source', False, True)
-    app.add_config_value('plot_html_show_source_link', True, True)
-    app.add_config_value('plot_formats', ['png', 'hires.png', 'pdf'], True)
-    app.add_config_value('plot_basedir', None, True)
-    app.add_config_value('plot_html_show_formats', True, True)
-    app.add_config_value('plot_rcparams', {}, True)
-    app.add_config_value('plot_apply_rcparams', False, True)
-    app.add_config_value('plot_working_directory', None, True)
-    app.add_config_value('plot_template', None, True)
+    app.add_config_value('nbplot_pre_code', None, True)
+    app.add_config_value('nbplot_include_source', False, True)
+    app.add_config_value('nbplot_html_show_source_link', True, True)
+    app.add_config_value('nbplot_formats', ['png', 'hires.png', 'pdf'], True)
+    app.add_config_value('nbplot_basedir', None, True)
+    app.add_config_value('nbplot_html_show_formats', True, True)
+    app.add_config_value('nbplot_rcparams', {}, True)
+    app.add_config_value('nbplot_apply_rcparams', False, True)
+    app.add_config_value('nbplot_working_directory', None, True)
+    app.add_config_value('nbplot_template', None, True)
 
     app.connect(str('doctree-read'), mark_plot_labels)
 
@@ -462,18 +462,18 @@ def run_code(code, code_path, ns=None, function_name=None):
     else:
         pwd = os.getcwd()
     old_sys_path = list(sys.path)
-    if setup.config.plot_working_directory is not None:
+    if setup.config.nbplot_working_directory is not None:
         try:
-            os.chdir(setup.config.plot_working_directory)
+            os.chdir(setup.config.nbplot_working_directory)
         except OSError as err:
-            raise OSError(str(err) + '\n`plot_working_directory` option in'
+            raise OSError(str(err) + '\n`nbplot_working_directory` option in'
                           'Sphinx configuration file must be a valid '
                           'directory path')
         except TypeError as err:
-            raise TypeError(str(err) + '\n`plot_working_directory` option in '
+            raise TypeError(str(err) + '\n`nbplot_working_directory` option in '
                             'Sphinx configuration file must be a string or '
                             'None')
-        sys.path.insert(0, setup.config.plot_working_directory)
+        sys.path.insert(0, setup.config.nbplot_working_directory)
     elif code_path is not None:
         dirname = os.path.abspath(os.path.dirname(code_path))
         os.chdir(dirname)
@@ -502,11 +502,11 @@ def run_code(code, code_path, ns=None, function_name=None):
             if ns is None:
                 ns = {}
             if not ns:
-                if setup.config.plot_pre_code is None:
+                if setup.config.nbplot_pre_code is None:
                     six.exec_(six.text_type("import numpy as np\n" +
                     "from matplotlib import pyplot as plt\n"), ns)
                 else:
-                    six.exec_(six.text_type(setup.config.plot_pre_code), ns)
+                    six.exec_(six.text_type(setup.config.nbplot_pre_code), ns)
             ns['print'] = _dummy_print
             if "__main__" in code:
                 six.exec_("__name__ = '__main__'", ns)
@@ -544,7 +544,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
     # -- Parse format list
     default_dpi = {'png': 80, 'hires.png': 200, 'pdf': 200}
     formats = []
-    plot_formats = config.plot_formats
+    plot_formats = config.nbplot_formats
     if isinstance(plot_formats, six.string_types):
         # String Sphinx < 1.3, Split on , to mimic
         # Sphinx 1.3 and later. Sphinx 1.3 always
@@ -560,7 +560,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
         elif type(fmt) in (tuple, list) and len(fmt)==2:
             formats.append((str(fmt[0]), int(fmt[1])))
         else:
-            raise PlotError('invalid image format "%r" in plot_formats' % fmt)
+            raise PlotError('invalid image format "%r" in nbplot_formats' % fmt)
 
     # -- Try to determine if all images already exist
 
@@ -615,15 +615,15 @@ def render_figures(code, code_path, output_dir, output_base, context,
         ns = {}
 
     if context_reset:
-        clear_state(config.plot_rcparams)
+        clear_state(config.nbplot_rcparams)
         plot_context.clear()
 
     close_figs = not context or close_figs
 
     for i, code_piece in enumerate(code_pieces):
 
-        if not context or config.plot_apply_rcparams:
-            clear_state(config.plot_rcparams, close_figs)
+        if not context or config.nbplot_apply_rcparams:
+            clear_state(config.nbplot_rcparams, close_figs)
         elif close_figs:
             plt.close('all')
 
@@ -649,8 +649,8 @@ def render_figures(code, code_path, output_dir, output_base, context,
 
         results.append((code_piece, images))
 
-    if not context or config.plot_apply_rcparams:
-        clear_state(config.plot_rcparams, close=not context)
+    if not context or config.nbplot_apply_rcparams:
+        clear_state(config.nbplot_rcparams, close=not context)
 
     return results
 
@@ -664,7 +664,7 @@ def run(arguments, content, options, state_machine, state, lineno):
     config = document.settings.env.config
     nofigs = 'nofigs' in options
 
-    options.setdefault('include-source', config.plot_include_source)
+    options.setdefault('include-source', config.nbplot_include_source)
     keep_context = 'context' in options
     context_opt = None if not keep_context else options['context']
 
@@ -672,11 +672,11 @@ def run(arguments, content, options, state_machine, state, lineno):
     rst_dir = os.path.dirname(rst_file)
 
     if len(arguments):
-        if not config.plot_basedir:
+        if not config.nbplot_basedir:
             source_file_name = os.path.join(setup.app.builder.srcdir,
                                             directives.uri(arguments[0]))
         else:
-            source_file_name = os.path.join(setup.confdir, config.plot_basedir,
+            source_file_name = os.path.join(setup.confdir, config.nbplot_basedir,
                                             directives.uri(arguments[0]))
 
         # If there is content, it will be passed as a caption.
@@ -726,7 +726,7 @@ def run(arguments, content, options, state_machine, state, lineno):
 
     # build_dir: where to place output files (temporarily)
     build_dir = os.path.join(os.path.dirname(setup.app.doctreedir),
-                             'plot_directive',
+                             'nbplot_directive',
                              source_rel_dir)
     # get rid of .. in paths, also changes pathsep
     # see note in Python docs for warning about symbolic links on Windows.
@@ -800,13 +800,13 @@ def run(arguments, content, options, state_machine, state, lineno):
 
         # Not-None src_link signals the need for a source link in the generated
         # html
-        if j == 0 and config.plot_html_show_source_link:
+        if j == 0 and config.nbplot_html_show_source_link:
             src_link = source_link
         else:
             src_link = None
 
         result = format_template(
-            config.plot_template or TEMPLATE,
+            config.nbplot_template or TEMPLATE,
             dest_dir=dest_dir_link,
             build_dir=build_dir_link,
             source_link=src_link,
@@ -817,7 +817,7 @@ def run(arguments, content, options, state_machine, state, lineno):
             options=opts,
             images=images,
             source_code=source_code,
-            html_show_formats=config.plot_html_show_formats and not nofigs,
+            html_show_formats=config.nbplot_html_show_formats and not nofigs,
             caption=caption)
 
         total_lines.extend(result.split("\n"))

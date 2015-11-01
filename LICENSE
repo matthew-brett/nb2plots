@@ -54,6 +54,8 @@ The changes are the following:
 * Use of external `six` module;
 * empty ``setup_module`` to avoid breakage of nose doctests;
 * fix of plot doctest.
+* rename of 'plot' directive to 'nbplot';
+* rename of 'plot_*' configuration options to 'nbplot_*' equivalent;
 
 The following license covers the plot directive code:
 
