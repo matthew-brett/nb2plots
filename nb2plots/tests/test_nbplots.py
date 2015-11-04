@@ -183,3 +183,72 @@ Some text.
         with open(pjoin(self.page_source, 'a_page.rst'), 'a') as fobj:
             fobj.write('\nSomething added\n')
         self.__class__.build_source()
+
+
+class TestRcparams(ModifiedProj1Builder):
+    """ Test that rcparams get applied and kept across plots in documents
+    """
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
+                        'nbplot_rcparams = {"text.color": "red"}\n')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+The start
+---------
+
+Plot 1
+
+.. nbplot::
+
+    plt.text(0, 0, "I'm Mr Brightside", color='red')
+
+Plot 2 - shows the default is the same:
+
+.. nbplot::
+
+    plt.text(0, 0, "I'm Mr Brightside")
+
+Plot 3 - changes the default:
+
+.. nbplot::
+
+    plt.rcParams['text.color'] = 'blue'
+    plt.text(0, 0, 'Open up my eager eyes')
+
+Plot 4 - new default is blue:
+
+.. nbplot::
+
+    plt.text(0, 0, 'Open up my eager eyes', color='blue')
+
+""")
+        cls.add_page(StringIO(u"""
+Another title
+-------------
+
+Plot color resumes at red:
+
+.. nbplot::
+
+    plt.text(0, 0, "I'm Mr Brightside")
+
+.. nbplot::
+
+    plt.rcParams['text.color'] = 'blue'
+    plt.text(0, 0, "Open up my eager eyes")
+
+"""), 'b_page')
+
+    def test_rcparams(self):
+        # Test plot rcparams applied at beginning of page
+
+        def gpf(name, num):
+            # Get plot file
+            return pjoin(self.html_dir, '{0}-{1}.png'.format(name, num))
+
+        red_bright = gpf('a_page', 2)
+        blue_eager = gpf('a_page', 4)
+        assert_true(file_same(gpf('a_page', 1), red_bright))
+        assert_true(file_same(gpf('a_page', 3), blue_eager))
+        assert_true(file_same(gpf('b_page', 1), red_bright))

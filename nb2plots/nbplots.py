@@ -113,12 +113,7 @@ The nbplot directive has the following configuration options:
 
     nbplot_rcparams
         A dictionary containing any non-standard rcParams that should
-        be applied before each plot.
-
-    nbplot_apply_rcparams
-        By default, rcParams are applied when `context` option is not used in
-        a plot directive.  This configuration option overrides this behavior
-        and applies rcParams before each plot.
+        be applied at the beginning of each document.
 
     nbplot_working_directory
         By default, the working directory will be changed to the directory of
@@ -273,7 +268,6 @@ def setup(app):
     app.add_config_value('nbplot_basedir', None, True)
     app.add_config_value('nbplot_html_show_formats', True, True)
     app.add_config_value('nbplot_rcparams', {}, True)
-    app.add_config_value('nbplot_apply_rcparams', False, True)
     app.add_config_value('nbplot_working_directory', None, True)
     app.add_config_value('nbplot_template', None, True)
 
@@ -624,9 +618,7 @@ def render_figures(code, code_path, output_dir, output_base, context,
 
     for i, code_piece in enumerate(code_pieces):
 
-        if not context or config.nbplot_apply_rcparams:
-            clear_state(config.nbplot_rcparams, close_figs)
-        elif close_figs:
+        if close_figs:
             plt.close('all')
 
         run_code(code_piece, code_path, ns, function_name)
@@ -650,9 +642,6 @@ def render_figures(code, code_path, output_dir, output_base, context,
                 img.formats.append(format)
 
         results.append((code_piece, images))
-
-    if not context or config.nbplot_apply_rcparams:
-        clear_state(config.nbplot_rcparams, close=not context)
 
     return results
 
