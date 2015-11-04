@@ -763,8 +763,11 @@ def run(arguments, content, options, state_machine, state, lineno):
     except PlotError as err:
         reporter = state.memo.reporter
         sm = reporter.system_message(
-            2, "Exception occurred in plotting %s\n from %s:\n%s" % (output_base,
-                                                source_file_name, err),
+            2,
+            'Exception plotting {output_base}\n'
+            'from: {source_file_name}\n'
+            'with code:\n\n{code}\n\n'
+            'Exception:\n{err}'.format(**locals()),
             line=lineno)
         results = [(code, [])]
         errors = [sm]
