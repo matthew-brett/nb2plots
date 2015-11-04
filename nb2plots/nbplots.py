@@ -430,16 +430,6 @@ class ImageFile(object):
         return [self.filename(fmt) for fmt in self.formats]
 
 
-def out_of_date(original, derived):
-    """
-    Returns True if derivative is out-of-date wrt original,
-    both of which are full file paths.
-    """
-    return (not os.path.exists(derived) or
-            (os.path.exists(original) and
-             os.stat(derived).st_mtime < os.stat(original).st_mtime))
-
-
 class PlotError(RuntimeError):
     pass
 
@@ -558,51 +548,8 @@ def render_figures(code, code_path, output_dir, output_base, context,
         else:
             raise PlotError('invalid image format "%r" in nbplot_formats' % fmt)
 
-    # -- Try to determine if all images already exist
-
+    # Build the output
     code_pieces = split_code_at_show(code)
-
-    # Look for single-figure output files first
-    all_exists = True
-    img = ImageFile(output_base, output_dir)
-    for format, dpi in formats:
-        if out_of_date(code_path, img.filename(format)):
-            all_exists = False
-            break
-        img.formats.append(format)
-
-    if all_exists:
-        return [(code, [img])]
-
-    # Then look for multi-figure output files
-    results = []
-    all_exists = True
-    for i, code_piece in enumerate(code_pieces):
-        images = []
-        for j in xrange(1000):
-            if len(code_pieces) > 1:
-                img = ImageFile('%s_%02d_%02d' % (output_base, i, j), output_dir)
-            else:
-                img = ImageFile('%s_%02d' % (output_base, j), output_dir)
-            for format, dpi in formats:
-                if out_of_date(code_path, img.filename(format)):
-                    all_exists = False
-                    break
-                img.formats.append(format)
-
-            # assume that if we have one, we have them all
-            if not all_exists:
-                all_exists = (j > 0)
-                break
-            images.append(img)
-        if not all_exists:
-            break
-        results.append((code_piece, images))
-
-    if all_exists:
-        return results
-
-    # We didn't find the files, so build them
 
     results = []
     if context:
