@@ -12,17 +12,13 @@ Some more test with mathematics :math:`a = b` and more:
 
 Yet more text
 
-.. plot::
-    :context:
-    :nofigs:
+.. nbplot::
 
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
 
 
-.. plot::
-    :context:
-    :nofigs:
+.. nbplot::
 
     >>> a = 2
     >>> b = a
@@ -32,19 +28,14 @@ Yet more text
     >>> c
     4
 
-
-
-
-.. plot::
-    :context:
+.. nbplot::
 
     >>> plt.plot(range(10))
     [...]
 
 
 
-.. plot::
-    :context:
+.. nbplot::
 
     >>> plt.plot(range(10))
     [...]

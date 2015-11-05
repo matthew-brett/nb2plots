@@ -12,9 +12,7 @@ from nose.tools import (assert_true, assert_false, assert_raises,
 
 DATA_PATH = pjoin(dirname(__file__), 'data')
 
-PLT_HDR = "\n.. plot::\n    :context:\n"
-PLT_NO_FIGS = PLT_HDR + "    :nofigs:\n\n"
-PLT_FIGS = PLT_HDR + "\n"
+PLT_HDR = "\n.. nbplot::\n\n"
 
 
 def test_simple_cells():
@@ -28,7 +26,7 @@ def test_simple_cells():
     # Code -> replaced with plot directive / doctest markers
     code_cell = v4.new_code_cell('a = 10')
     nb['cells'] = [code_cell]
-    exp_code = PLT_NO_FIGS + "    >>> a = 10\n"
+    exp_code = PLT_HDR + "    >>> a = 10\n"
     assert_equal(convert_nb(nb), exp_code)
     # Empty code -> no output
     empty_code_cell = v4.new_code_cell('')
@@ -41,7 +39,7 @@ def test_simple_cells():
     assert_equal(convert_nb(nb), exp_empty_code)
     # Magic lines stripped from within other code lines
     mixed_magic_code_cell = v4.new_code_cell('%timeit a = 1\nb = 2')
-    exp_mixed_magic = PLT_NO_FIGS + "    >>> b = 2\n"
+    exp_mixed_magic = PLT_HDR + "    >>> b = 2\n"
     nb['cells'] = [mixed_magic_code_cell]
     assert_equal(convert_nb(nb), exp_mixed_magic)
 

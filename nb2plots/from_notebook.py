@@ -21,25 +21,28 @@ dl = DictLoader({'rst_plots': """\
 {% endif -%}
 {% endblock input %}
 
-{% block data_svg %}
-##PLOT##
-{% endblock data_svg %}
+{%- block execute_result -%}
+{%- block data_priority scoped -%}
+{{ super() }}
+{%- endblock -%}
+{%- endblock execute_result -%}
 
-{% block data_png %}
-##PLOT##
-{% endblock data_png %}
+{%- block data_svg -%}
+{%- endblock data_svg -%}
+{%- block data_png -%}
+{%- endblock data_png -%}
 
-{% block stream %}
+{%- block stream -%}
 ##OUTPUT_START##
 {{ output.text | ellipse_mpl | indent }}
 ##OUTPUT_END##
-{% endblock stream %}
+{%- endblock stream -%}
 
-{% block data_text scoped %}
+{%- block data_text scoped -%}
 ##OUTPUT_START##
 {{ output.data['text/plain'] | ellipse_mpl | indent }}
 ##OUTPUT_END##
-{% endblock data_text %}
+{%- endblock data_text -%}
 """})
 
 
@@ -96,18 +99,16 @@ CODE_WITH_OUTPUT = re.compile(
     '[\S\\n]*?'
     '^##OUTPUT_START##\n'
     '(.*?)'
-    '^##OUTPUT_END##$', re.S | re.M)
+    '^##OUTPUT_END##(\n|$)', re.S | re.M)
 
-# put nofigs into blocks not apparently returning figures
-CODE_WITH_OPTIONAL_PLOT = re.compile(
+# Get code block
+CODE_BLOCK = re.compile(
     '^##CODE_START##\n'
     '(.*?)'
-    '^##CODE_END##\n'
-    '([\S\\n]*^##PLOT##)?', re.S | re.M)
+    '^##CODE_END##(\n|$)', re.S | re.M)
 
 PLOT_DIRECTIVE_FMT = """\
-.. plot::
-    :context:{0}
+.. nbplot::
 
 """
 
@@ -133,5 +134,5 @@ def convert_nb(notebook):
     output, resources = plots_exporter.from_notebook_node(notebook)
 
     out1 = CODE_WITH_OUTPUT.sub(r'\2\1', output)
-    out2 = CODE_WITH_OPTIONAL_PLOT.sub(repl_code_plot, out1)
+    out2 = CODE_BLOCK.sub(PLOT_DIRECTIVE_FMT + r'\1', out1)
     return out2
