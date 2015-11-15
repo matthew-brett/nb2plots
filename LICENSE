@@ -57,6 +57,9 @@ The changes are the following:
 * rename of 'plot' directive to 'nbplot';
 * rename of 'plot_*' configuration options to 'nbplot_*' equivalent;
 * include-source is True by default;
+* do not use cached output when rebuilding page to avoid errors from stale
+  output;
+* fix bug including empty parens when ``nofigs`` not specified.
 
 The following license covers the plot directive code:
 
