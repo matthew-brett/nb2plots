@@ -4,7 +4,9 @@
 from os.path import dirname, join as pjoin
 
 from ..ipython_shim import nbformat
-from ..from_notebook import convert_nb, convert_nb_fname, to_doctests
+from ..from_notebook import (convert_nb, convert_nb_fname, to_doctests,
+                             CODE_WITH_OUTPUT)
+
 
 from nose.tools import (assert_true, assert_false, assert_raises,
                         assert_equal, assert_not_equal)
@@ -87,3 +89,59 @@ def test_small():
     out = convert_nb_fname(nb_fname)
     with open(rst_fname, 'rt') as fobj:
         assert_equal(out + '\n', fobj.read())
+
+
+code = \
+"""##CODE_START##
+a = 1
+b = 2
+##CODE_END##"""
+
+code_value = 'a = 1\nb = 2\n'
+
+stdout = \
+"""##STDOUT_START##
+one
+two
+##STDOUT_END##"""
+
+stdout_value = 'one\ntwo\n'
+
+end_out = \
+"""##END_OUT_START##
+three
+4
+##END_OUT_END##"""
+
+end_out_value = 'three\n4\n'
+
+
+def test_code_regex():
+    # Test regular expression matching for code, output parts
+
+    def get_dict(s):
+        match = CODE_WITH_OUTPUT.search(s)
+        if match is None:
+            return None
+        return match.groupdict()
+
+    # Check that the code part must match
+    assert_equal(get_dict(stdout), None)
+    assert_equal(get_dict(end_out), None)
+    # Check different joins still allows detection of parts
+    for combination, output in zip(
+        ((code,),
+         (code, stdout),
+         (code, end_out),
+         (code, stdout, end_out)),
+        (dict(code=code_value, stdout=None, end_out=None),
+         dict(code=code_value, stdout=stdout_value, end_out=None),
+         dict(code=code_value, stdout=None, end_out=end_out_value),
+         dict(code=code_value, stdout=stdout_value, end_out=end_out_value)
+        )):
+        for joiner in ('\n', '\n  \n\n'):
+            in_str = joiner.join(combination)
+            assert_equal(get_dict(in_str), output)
+            # Check adding extra carriage returns etc is OK
+            in_str += '\n\n'
+            assert_equal(get_dict(in_str), output)

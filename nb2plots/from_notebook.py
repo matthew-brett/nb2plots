@@ -33,15 +33,15 @@ dl = DictLoader({'rst_plots': """\
 {%- endblock data_png -%}
 
 {%- block stream -%}
-##OUTPUT_START##
+##STDOUT_START##
 {{ output.text | ellipse_mpl | indent }}
-##OUTPUT_END##
+##STDOUT_END##
 {%- endblock stream -%}
 
 {%- block data_text scoped -%}
-##OUTPUT_START##
+##END_OUT_START##
 {{ output.data['text/plain'] | ellipse_mpl | indent }}
-##OUTPUT_END##
+##END_OUT_END##
 {%- endblock data_text -%}
 """})
 
@@ -92,31 +92,34 @@ class PlotsExporter(nbconvert.RSTExporter):
     ), config=True)
 
 
-
-# Put code output into code block
+# Code, with option stdout and optional end-of-block output
 CODE_WITH_OUTPUT = re.compile(
-    '(^##CODE_END##\n)'
-    '[\S\\n]*?'
-    '^##OUTPUT_START##\n'
-    '(.*?)'
-    '^##OUTPUT_END##(\n|$)', re.S | re.M)
-
-# Get code block
-CODE_BLOCK = re.compile(
     '^##CODE_START##\n'
-    '(.*?)'
-    '^##CODE_END##(\n|$)', re.S | re.M)
+    '(?P<code>.*?)'
+    '^##CODE_END##(\n|$)'
+    '([\s\\n]*?'
+    '^##STDOUT_START##\n'
+    '(?P<stdout>.*?)'
+    '^##STDOUT_END##(\n|$))?'
+    '([\s\\n]*?'
+    '^##END_OUT_START##\n'
+    '(?P<end_out>.*?)'
+    '^##END_OUT_END##(\n|$))?', re.S | re.M)
 
-PLOT_DIRECTIVE_FMT = """\
+
+PLOT_DIRECTIVE_PREFIX = """\
 .. nbplot::
 
 """
 
 def repl_code_plot(match):
-    groups = match.groups()
-    if groups[1] is None:
-        return PLOT_DIRECTIVE_FMT.format('\n    :nofigs:') + groups[0]
-    return PLOT_DIRECTIVE_FMT.format('') + groups[0]
+    groups = match.groupdict(default='')
+    out = ''.join((PLOT_DIRECTIVE_PREFIX,
+                    groups['code'],
+                    groups['end_out']))
+    if groups['stdout']:
+        out += '\n' + groups['stdout']
+    return out
 
 
 def convert_nb_fname(nb_fname):
@@ -132,7 +135,4 @@ def convert_nb(notebook):
     })
     plots_exporter = PlotsExporter(extra_loaders=[dl], config=c)
     output, resources = plots_exporter.from_notebook_node(notebook)
-
-    out1 = CODE_WITH_OUTPUT.sub(r'\2\1', output)
-    out2 = CODE_BLOCK.sub(PLOT_DIRECTIVE_FMT + r'\1', out1)
-    return out2
+    return CODE_WITH_OUTPUT.sub(repl_code_plot, output)

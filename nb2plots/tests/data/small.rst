@@ -42,4 +42,23 @@ Yet more text
 
 
 
+.. nbplot::
+
+    >>> # Code that prints stuff with end result
+    >>> print('one')
+    >>> print('two')
+    >>> 3
+    3
+
+    one
+    two
+
+
+.. nbplot::
+
+    >>> # Code that prints stuff without end result
+    >>> print('hello, again')
+
+    hello, again
+
 
