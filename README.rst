@@ -13,8 +13,9 @@ Use with::
     nb2plots notebook.ipynb > with_plots.rst
 
 This converts the IPython notebook to Restructured text using the normal
-nbconvert machinery, with the additional feature that code cells get converted
-to Matplotlib plot directives (see: `matplotlib plot directive`_).
+nbconvert_ machinery, with the additional feature that code cells get
+converted to a custom ``nbplot`` plot directives based on the `matplotlib plot
+directive`_.
 
 Specifically, a notebook code cell like this::
 
@@ -22,33 +23,24 @@ Specifically, a notebook code cell like this::
 
 becomes (in the ReST document)::
 
-    .. plot::
-        :context:
-        :nofigs:
+    .. nbplot::
 
         >>> a = 1
 
 This allows you to make the output ReST file testable using the Sphinx doctest
 builder, and the plots can be generated at Sphinx page build time.
 
-You might consider adding these lines to your Sphinx ``conf.py`` file::
+In order to make this ``nbplot`` directive work for your sphinx builds, you
+should add the following to your ``conf.py`` file::
 
-    # Config of plot_directive
-    plot_include_source = True
-    plot_html_show_source_link = False
+    extensions = ["nb2plots.nbplots"]
 
-This makes the code for the plot directive show up in the built document by
-default. It also suppressed the default link to download the source code as a
-``.py`` file.  You might prefer that when including the source in the
-document, as the standalone ``.py`` file isn't very interesting when you can
-already see the code, and the code is relatively short.
-
-Note the ``:nofigs:`` option to the plot directive above.  nb2plots tries to
-guess whether your code cell will generate a plot by looking for a generated
-plot in the output cell following the code.   If nb2plots does not see a
-plot in the notebook, it adds ``:nofigs:`` option, as here.  Of course, this
-can go wrong when - for example - you haven't executed the notebook cell, so
-you may need to go back and do some hand edits.
+The ``nbplot`` directive is very similar to the ``plot`` directive of
+matplotlib, and started life as a fork of that code.  It differs mainly in
+that its default is to keep the namespace from one ``nbplot`` directive to the
+next in a given page, and has output defaults adapted to directive contents
+with source code rather than pointing to a standalone script.  See the
+docstring of ``nb2plots/nbplots.py`` for details.
 
 ************
 Dependencies
@@ -86,3 +78,4 @@ Please put up issues on the `nb2plots issue tracker`_.
 .. _rest: http://docutils.sourceforge.net/rst.html
 .. _nb2plots issue tracker: https://github.com/matthew-brett/nb2plots/issues
 .. _matplotlib plot directive: http://matplotlib.org/sampledoc/extensions.html
+.. _nbconvert: http://nbconvert.readthedocs.org/en/latest/
