@@ -1,3 +1,7 @@
 html/
 proj1/
 nbplot_directive/
+*.rst
+*.tpl
+*.ipynb
+*_files/
