@@ -1,31 +1,17 @@
 """
 A directive for including a matplotlib plot in a Sphinx document.
 
-By default, in HTML output, `plot` will include a .png file with a
+This directive is based on the ``plot`` directive of matplotlib, with thanks.
+
+By default, in HTML output, `nbplot` will include a .png file with a
 link to a high-res .png and .pdf.  In LaTeX output, it will include a
 .pdf.
 
-The source code for the plot may be included in one of three ways:
+The source code for the plot may be included in one of two ways:
 
-  1. **A path to a source file** as the argument to the directive::
+  1. Included as **inline content** to the directive::
 
-       .. plot:: path/to/plot.py
-
-     When a path to a source file is given, the content of the
-     directive may optionally contain a caption for the plot::
-
-       .. plot:: path/to/plot.py
-
-          This is the caption for the plot
-
-     Additionally, one may specify the name of a function to call (with
-     no arguments) immediately after importing the module::
-
-       .. plot:: path/to/plot.py plot_function1
-
-  2. Included as **inline content** to the directive::
-
-       .. plot::
+       .. nbplot::
 
           import matplotlib.pyplot as plt
           import matplotlib.image as mpimg
@@ -33,9 +19,9 @@ The source code for the plot may be included in one of three ways:
           img = mpimg.imread('_static/stinkbug.png')
           imgplot = plt.imshow(img)
 
-  3. Using **doctest** syntax::
+  2. Using **doctest** syntax::
 
-       .. plot::
+       .. nbplot::
           A plotting example:
           >>> import matplotlib.pyplot as plt
           >>> plt.plot([1,2,3], [4,5,6])  #doctest: +ELLIPSIS
@@ -44,7 +30,7 @@ The source code for the plot may be included in one of three ways:
 Options
 -------
 
-The ``plot`` directive supports the following options:
+The ``nbplot`` directive supports the following options:
 
     format : {'python', 'doctest'}
         Specify the format of the input
