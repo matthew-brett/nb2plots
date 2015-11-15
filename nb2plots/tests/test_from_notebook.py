@@ -48,7 +48,7 @@ def test_simple_cells():
 
 def test_to_doctests():
     # Test to_doctests filter
-    assert_equal(to_doctests(''), '>>>')
+    assert_equal(to_doctests(''), '')
     assert_equal(to_doctests('a = 1'), '>>> a = 1')
     assert_equal(to_doctests('a = 1\nb = 2'), '>>> a = 1\n>>> b = 2')
     assert_equal(to_doctests(
@@ -79,7 +79,26 @@ print(a)
 ...
 ...     a += i
 >>> print(a)
->>>""")
+""")
+    assert_equal(to_doctests(
+"""def xyz_trans_vol(vol, x_y_z_trans):
+    \"\"\" Make a new copy of `vol` translated by `x_y_z_trans` voxels
+
+    x_y_z_trans is a sequence or array length 3, containing the (x, y, z) translations in voxels.
+
+    Values in `x_y_z_trans` can be positive or negative, and can be floats.
+    \"\"\"
+    x_y_z_trans = np.array(x_y_z_trans)
+"""),
+""">>> def xyz_trans_vol(vol, x_y_z_trans):
+...     \"\"\" Make a new copy of `vol` translated by `x_y_z_trans` voxels
+...
+...     x_y_z_trans is a sequence or array length 3, containing the (x, y, z) translations in voxels.
+...
+...     Values in `x_y_z_trans` can be positive or negative, and can be floats.
+...     \"\"\"
+...     x_y_z_trans = np.array(x_y_z_trans)
+""")
 
 
 def test_small():

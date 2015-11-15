@@ -59,18 +59,20 @@ def to_doctests(code, first='>>> ', cont='... '):
     prefix = first
     last_line_no = len(code_list) - 1
     for i, line in enumerate(code_list):
-        if line.strip() == '':
-            # Blank line - which prefix should we use?
-            if i < last_line_no and code_list[i + 1].startswith(' '):
-                # Use continuation for line following
-                prefix = cont.rstrip()
-            else:  # Use prefix for previous line
-                prefix = prefix.rstrip()
-        elif line.startswith(' '):
-            prefix = cont
-        else:
-            prefix = first
-        new_code.append(prefix + line)
+        if line.strip() != '':
+            prefix = cont if line.startswith(' ') else first
+            new_code.append(prefix + line)
+            continue
+        # For blank lines, we always strip the whitespace, but we will need a
+        # prefix for anything but the last line
+        if i == last_line_no:
+            prefix = ''
+        elif code_list[i + 1].startswith(' '):
+            # Use continuation for line following
+            prefix = cont.rstrip()
+        else:  # Use prefix for previous line
+            prefix = prefix.rstrip()
+        new_code.append(prefix)
 
     return '\n'.join(new_code)
 

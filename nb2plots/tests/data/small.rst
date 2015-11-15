@@ -61,4 +61,14 @@ Yet more text
 
     hello, again
 
+.. nbplot::
+
+    >>> def xyz_trans_vol(vol, x_y_z_trans):
+    ...     """ Make a new copy of `vol` translated by `x_y_z_trans` voxels
+    ...
+    ...     x_y_z_trans is a sequence or array length 3, containing the (x, y, z) translations in voxels.
+    ...
+    ...     Values in `x_y_z_trans` can be positive or negative, and can be floats.
+    ...     """
+    ...     x_y_z_trans = np.array(x_y_z_trans)
 
