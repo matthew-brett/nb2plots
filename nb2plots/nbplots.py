@@ -285,17 +285,21 @@ class NBPlotDirective(Directive):
         # generate output restructuredtext
         total_lines = []
         for j, (code_piece, images) in enumerate(results):
-            if self.options['include-source']:
-                if is_doctest:
-                    lines = ['']
-                    lines += [row.rstrip() for row in code_piece.split('\n')]
-                else:
-                    lines = ['.. code-block:: python', '']
-                    lines += ['    %s' % row.rstrip()
-                            for row in code_piece.split('\n')]
-                source_code = "\n".join(lines)
+            if is_doctest:
+                lines = [''] + [row.rstrip() for row in code_piece.split('\n')]
             else:
-                source_code = ""
+                lines = ['.. code-block:: python', '']
+                lines += ['    %s' % row.rstrip()
+                        for row in code_piece.split('\n')]
+            if self.options['include-source']:
+                source_code = '\n'.join(lines)
+            else:  # Doctest blocks still go into page, but hidden
+                if is_doctest:
+                    source_code = ('.. doctest::\n'
+                                   '    :hide:\n'
+                                   '    ' + '\n    '.join(lines))
+                else:  # Non-doctest blocks get dropped from page output
+                    source_code = ""
 
             if nofigs:
                 images = []

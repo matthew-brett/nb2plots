@@ -295,3 +295,105 @@ A title
     foo.inf
     assert bar == 1
 """)
+
+
+class TestHiddenDoctests(ModifiedProj1Builder):
+    """ Check that doctest code gets hidden but still run
+
+    Build using text builder to get more simply testable output.
+    """
+
+    builder = 'text'
+
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots",'
+                        '"sphinx.ext.doctest"]')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+A title
+-------
+
+.. nbplot::
+    :include-source: false
+
+    >>> a = 1
+    >>> b = 2
+
+Text1
+
+.. nbplot::
+
+    >>> assert a == 1
+    >>> assert b == 2
+
+Text2
+
+.. nbplot::
+    :include-source: false
+
+    c = 3
+
+Text3
+
+.. nbplot::
+
+    >>> assert 'c' in globals()
+""")
+
+    def test_whats_in_the_page(self):
+        with open(pjoin(self.out_dir, 'a_page.txt'), 'rt') as fobj:
+            html_contents = fobj.read()
+        assert_false('a = 1' in html_contents)
+        assert_false('b = 2' in html_contents)
+        assert_true('a == 1' in html_contents)
+        assert_true('b == 2' in html_contents)
+        assert_false('c = 3' in html_contents)
+
+
+class TestMoreDoctests(ModifiedProj1Builder):
+    """ Check that doctest code gets hidden but still tested
+
+    Build using doctest builder
+    """
+
+    builder = 'doctest'
+
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots",'
+                        '"sphinx.ext.doctest"]')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+A title
+-------
+
+.. nbplot::
+    :include-source: false
+
+    >>> a = 1
+    >>> b = 2
+
+Text1
+
+.. nbplot::
+
+    >>> a
+    1
+    >>> b
+    2
+
+Text2
+
+.. nbplot::
+    :include-source: false
+
+    c = 3
+
+Text3
+
+.. nbplot::
+
+    >>> 'c' not in globals()
+    True
+""")
