@@ -252,3 +252,46 @@ Plot color resumes at red:
         assert_true(file_same(gpf('a_page', 1), red_bright))
         assert_true(file_same(gpf('a_page', 3), blue_eager))
         assert_true(file_same(gpf('b_page', 1), red_bright))
+
+
+class TestDefaultPre(ModifiedProj1Builder):
+    """ Check that default pre code is importing numpy as pyplot
+
+    Tested in plot directive body
+    """
+
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots"]\n')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+A title
+-------
+
+.. nbplot::
+
+    np.inf
+    plt.plot(range(10))
+""")
+
+
+class TestNonDefaultPre(ModifiedProj1Builder):
+    """ Check that pre code is run in fresh plot context
+
+    Tested in plot directive body
+    """
+
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
+                        'nbplot_pre_code = "import numpy as foo; bar = 1"\n')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+A title
+-------
+
+.. nbplot::
+
+    foo.inf
+    assert bar == 1
+""")

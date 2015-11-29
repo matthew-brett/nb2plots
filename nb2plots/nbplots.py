@@ -406,7 +406,8 @@ def setup(app):
     setup.confdir = app.confdir
 
     app.add_directive('nbplot', NBPlotDirective)
-    app.add_config_value('nbplot_pre_code', None, True)
+    pre_default = "import numpy as np\nfrom matplotlib import pyplot as plt\n"
+    app.add_config_value('nbplot_pre_code', pre_default, True)
     app.add_config_value('nbplot_include_source', True, True)
     app.add_config_value('nbplot_html_show_source_link', False, True)
     app.add_config_value('nbplot_formats', ['png', 'hires.png', 'pdf'], True)
@@ -580,12 +581,42 @@ class PlotError(RuntimeError):
     pass
 
 
+def _check_wd(dirname):
+    try:
+        os.chdir(dirname)
+    except OSError as err:
+        raise OSError(str(err) + '\n`nbplot_working_directory` option in'
+                        'Sphinx configuration file must be a valid '
+                        'directory path')
+    except TypeError as err:
+        raise TypeError(str(err) + '\n`nbplot_working_directory` option in '
+                        'Sphinx configuration file must be a string or '
+                        'None')
+    return dirname
+
+
 def run_code(code, code_path, ns=None, function_name=None):
     """
-    Import a Python module from a path, and run the function given by
-    name, if function_name is not None.
-    """
+    Run `code` from file at `code_path` in namespace `ns`
 
+    Parameters
+    ----------
+    code : str
+        code to run.
+    code_path : str
+        Filename containing the code.
+    ns : None or dict, optional
+        Python namespace in which to execute code.  If None, make fresh
+        namespace.
+    function_name : None or str, optional
+        If non-empty string, name of function to execute after executing
+        `code`.
+
+    Returns
+    -------
+    ns : dict
+        Namespace, filled from execution of `code`.
+    """
     # Change the working directory to the directory of the example, so
     # it can get at its data files, if any.  Add its path to sys.path
     # so it can import any helper modules sitting beside it.
@@ -595,21 +626,11 @@ def run_code(code, code_path, ns=None, function_name=None):
         pwd = os.getcwd()
     old_sys_path = list(sys.path)
     if setup.config.nbplot_working_directory is not None:
-        try:
-            os.chdir(setup.config.nbplot_working_directory)
-        except OSError as err:
-            raise OSError(str(err) + '\n`nbplot_working_directory` option in'
-                          'Sphinx configuration file must be a valid '
-                          'directory path')
-        except TypeError as err:
-            raise TypeError(str(err) + '\n`nbplot_working_directory` option in '
-                            'Sphinx configuration file must be a string or '
-                            'None')
-        sys.path.insert(0, setup.config.nbplot_working_directory)
+        dirname = _check_wd(setup.config.nbplot_working_directory)
     elif code_path is not None:
         dirname = os.path.abspath(os.path.dirname(code_path))
-        os.chdir(dirname)
-        sys.path.insert(0, dirname)
+    os.chdir(dirname)
+    sys.path.insert(0, dirname)
 
     # Reset sys.argv
     old_sys_argv = sys.argv
@@ -625,25 +646,20 @@ def run_code(code, code_path, ns=None, function_name=None):
     def _dummy_print(*arg, **kwarg):
         pass
 
+    ns = {} if ns is None else ns
     try:
         try:
             code = unescape_doctest(code)
-            if ns is None:
-                ns = {}
             if not ns:
-                if setup.config.nbplot_pre_code is None:
-                    six.exec_(six.text_type("import numpy as np\n" +
-                    "from matplotlib import pyplot as plt\n"), ns)
-                else:
-                    six.exec_(six.text_type(setup.config.nbplot_pre_code), ns)
+                six.exec_(six.text_type(setup.config.nbplot_pre_code), ns)
             ns['print'] = _dummy_print
             if "__main__" in code:
                 six.exec_("__name__ = '__main__'", ns)
             code = remove_coding(code)
             six.exec_(code, ns)
-            if function_name is not None:
+            if function_name:
                 six.exec_(function_name + "()", ns)
-        except (Exception, SystemExit) as err:
+        except (Exception, SystemExit):
             raise PlotError(traceback.format_exc())
     finally:
         os.chdir(pwd)
