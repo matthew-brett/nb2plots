@@ -642,7 +642,7 @@ def run_code(code, code_path, ns=None, function_name=None):
 
     # Redirect stdout
     stdout = sys.stdout
-    sys.stdout = io.StringIO()
+    sys.stdout = io.StringIO() if six.PY3 else io.BytesIO()
 
     # Assign a do-nothing print function to the namespace.  There
     # doesn't seem to be any other way to provide a way to (not) print
