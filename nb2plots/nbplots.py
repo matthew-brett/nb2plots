@@ -301,7 +301,7 @@ class NBPlotDirective(Directive):
                 images = []
 
             opts = [':%s: %s' % (key, val)
-                    for key, val in six.iteritems(self.options)
+                    for key, val in self.options.items()
                     if key in ('alt', 'height', 'width', 'scale', 'align',
                                'class')]
 
@@ -367,7 +367,7 @@ def mark_plot_labels(app, document):
     the "htmlonly" (or "latexonly") node to the actual figure node
     itself.
     """
-    for name, explicit in six.iteritems(document.nametypes):
+    for name, explicit in document.nametypes.items():
         if not explicit:
             continue
         labelid = document.nameids[name]
