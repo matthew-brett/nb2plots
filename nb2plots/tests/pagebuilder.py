@@ -32,19 +32,22 @@ class PageBuilder(object):
     # If True, assert that the build raised an error
     should_error = False
 
+    # Builder
+    builder = 'html'
+
     @classmethod
     def setup_class(cls):
         cls.build_error = None
         cls.build_path = tempfile.mkdtemp()
         try:  # Catch exceptions during test setup
             cls.set_page_source()  # Sets page_source, maybe modifies source
-            cls.html_dir = pjoin(cls.build_path, 'html')
+            cls.out_dir = pjoin(cls.build_path, cls.builder)
             cls.doctree_dir = pjoin(cls.build_path, 'doctrees')
             # Build the pages with warnings turned into errors
-            cls.build_cmd = ['sphinx-build', '-W', '-b', 'html',
+            cls.build_cmd = ['sphinx-build', '-W', '-b', cls.builder,
                              '-d', cls.doctree_dir,
                              cls.page_source,
-                             cls.html_dir]
+                             cls.out_dir]
         except Exception as e:  # Exceptions during test setup
             shutil.rmtree(cls.build_path)
             raise e

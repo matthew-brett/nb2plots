@@ -22,7 +22,7 @@ class Proj1Builder(PageBuilder):
 class TestProj1(Proj1Builder):
 
     def test_basic_build(self):
-        assert_true(isdir(self.html_dir))
+        assert_true(isdir(self.out_dir))
         assert_true(isdir(self.doctree_dir))
         doctree = self.get_doctree('a_page')
         assert_equal(len(doctree.document), 1)

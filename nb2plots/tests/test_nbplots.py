@@ -30,10 +30,10 @@ class TestNbplots(ModifiedProj1Builder):
         cls.replace_page(pjoin(OTHER_PAGES, 'some_plots.rst'))
 
     def test_some_plots(self):
-        assert_true(isdir(self.html_dir))
+        assert_true(isdir(self.out_dir))
 
         def plot_file(num):
-            return pjoin(self.html_dir, 'a_page-{0}.png'.format(num))
+            return pjoin(self.out_dir, 'a_page-{0}.png'.format(num))
 
         range_10, range_6, range_4 = [plot_file(i) for i in range(1, 4)]
         # Plot 5 is range(6) plot
@@ -46,16 +46,16 @@ class TestNbplots(ModifiedProj1Builder):
         # Plot 9 shows the default close-figures behavior in action
         assert_true(file_same(range_4, plot_file(9)))
         # Plot 9 does not include source
-        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
             html_contents = fobj.read()
         assert_false('# Very unusual comment' in html_contents)
         # Plot 10 has included source
-        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
             html_contents = fobj.read()
         assert_true('# Only a comment' in html_contents)
 
     def test_html_links_to_source(self):
-        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
             html = fobj.read()
         assert_true('href=".//a_page-1.py">Source code</a>' in html)
 
@@ -78,13 +78,13 @@ A title
 
     def test_include_source_default(self):
         # Plot 1 has included source
-        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
             html_contents = fobj.read()
         assert_true('# Only a comment' in html_contents)
 
     def test_no_source_link(self):
         # Plot 1 has included source
-        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
             html = fobj.read()
         assert_false('href=".//a_page-1.py">Source code</a>' in html)
 
@@ -112,7 +112,7 @@ A title
 
     def test_annoying_parens(self):
         # Plot 1 has included source
-        with open(pjoin(self.html_dir, 'a_page.html'), 'rt') as fobj:
+        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
             html_contents = fobj.read()
         assert_false('<p>()</p>' in html_contents)
 
@@ -245,7 +245,7 @@ Plot color resumes at red:
 
         def gpf(name, num):
             # Get plot file
-            return pjoin(self.html_dir, '{0}-{1}.png'.format(name, num))
+            return pjoin(self.out_dir, '{0}-{1}.png'.format(name, num))
 
         red_bright = gpf('a_page', 2)
         blue_eager = gpf('a_page', 4)
