@@ -653,13 +653,6 @@ def run_code(code, code_path, ns=None, function_name=None):
     return ns
 
 
-def clear_state(plot_rcparams, close=True):
-    if close:
-        plt.close('all')
-    matplotlib.rc_file_defaults()
-    matplotlib.rcParams.update(plot_rcparams)
-
-
 def render_figures(code, code_path, output_dir, output_base, context,
                    function_name, config, context_reset=False,
                    close_figs=False):
@@ -701,7 +694,9 @@ def render_figures(code, code_path, output_dir, output_base, context,
         ns = {}
 
     if context_reset:
-        clear_state(config.nbplot_rcparams)
+        plt.close('all')
+        matplotlib.rc_file_defaults()
+        matplotlib.rcParams.update(config.nbplot_rcparams)
         plot_context.clear()
 
     close_figs = not context or close_figs
@@ -734,5 +729,3 @@ def render_figures(code, code_path, output_dir, output_base, context,
         results.append((code_piece, images))
 
     return results
-
-
