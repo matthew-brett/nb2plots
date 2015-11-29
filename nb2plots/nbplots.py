@@ -264,9 +264,9 @@ class NBPlotDirective(Directive):
                                     source_file_name,
                                     build_dir,
                                     output_base,
+                                    config=config,
                                     context = True,  # keep plot context
                                     function_name = None,
-                                    config=config,
                                     context_reset=context_reset,
                                     close_figs=close_figs)
             errors = []
@@ -653,15 +653,36 @@ def run_code(code, code_path, ns=None, function_name=None):
     return ns
 
 
-def render_figures(code, code_path, output_dir, output_base, context,
-                   function_name, config, context_reset=False,
+def render_figures(code, code_path, output_dir, output_base, config,
+                   context=True, function_name=None, context_reset=False,
                    close_figs=False):
-    """
-    Run a pyplot script and save the low and high res PNGs and a PDF
-    in *output_dir*.
+    """ Run plot code and save the hi/low res PNGs, PDF in `output_dir`
 
-    Save the images under *output_dir* with file names derived from
-    *output_base*
+    Save the images under `output_dir` with file names derived from
+    `output_base`.
+
+    Parameters
+    ----------
+    code : str
+        String containing code to run.
+    code_path : str
+        Path of file containing code.  Usually path to ``.rst`` file.
+    output_dir : str
+        Path to which to write output images from plots.
+    output_base : str
+        Prefix for filename(s) for output image(s).
+    config : instance
+        Sphinx configuration instance.
+    context : {True, False}, optional
+        If True, use persistent context (workspace) for executing code.
+        Otherwise create new empty context for executing code.
+    function_name : None or str, optional
+        If not-empty str, name of function to execute after executing `code`.
+    context_reset : {False, True}, optional
+        If True, clear persistent context (workspace) for code.
+    close_figs : {False, True}, optional
+        If True, close all figures generated before our `code` runs.  False can
+        be useful when building up a plot with several `code` blocks.
     """
     # -- Parse format list
     default_dpi = {'png': 80, 'hires.png': 200, 'pdf': 200}
