@@ -128,24 +128,11 @@ import traceback
 from docutils.parsers.rst import directives
 from docutils.parsers.rst.directives.images import Image
 align = Image.align
-import sphinx
 from sphinx.util.compat import Directive
 
-sphinx_version = sphinx.__version__.split(".")
-# The split is necessary for sphinx beta versions where the string is
-# '6b1'
-sphinx_version = tuple([int(re.split('[^0-9]', x)[0])
-                        for x in sphinx_version[:2]])
-
-try:
-    # Sphinx depends on either Jinja or Jinja2
-    import jinja2
-    def format_template(template, **kw):
-        return jinja2.Template(template).render(**kw)
-except ImportError:
-    import jinja
-    def format_template(template, **kw):
-        return jinja.from_string(template, **kw)
+import jinja2
+def format_template(template, **kw):
+    return jinja2.Template(template).render(**kw)
 
 import matplotlib
 import matplotlib.cbook as cbook
