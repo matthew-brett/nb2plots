@@ -138,7 +138,7 @@ import matplotlib
 import matplotlib.cbook as cbook
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib import _pylab_helpers
+from matplotlib._pylab_helpers import Gcf
 
 __version__ = 2
 
@@ -730,7 +730,7 @@ def render_figures(code, code_path, output_dir, output_base, config,
         run_code(code_piece, code_path, ns, function_name)
 
         images = []
-        fig_managers = _pylab_helpers.Gcf.get_all_fig_managers()
+        fig_managers = Gcf.get_all_fig_managers()
         for j, figman in enumerate(fig_managers):
             if len(fig_managers) == 1 and len(code_pieces) == 1:
                 img = ImageFile(output_base, output_dir)
