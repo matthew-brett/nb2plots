@@ -11,9 +11,7 @@ Prints to stdou
 from __future__ import division, print_function, absolute_import
 
 import sys
-import os
-from os.path import join as exists, expanduser, realpath
-from optparse import OptionParser, Option
+from optparse import OptionParser
 
 from nb2plots import __version__
 from nb2plots.from_notebook import convert_nb_fname
@@ -27,7 +25,8 @@ def main():
     if len(notebooks) != 1:
         parser.print_help()
         sys.exit(1)
-    print(convert_nb_fname(notebooks[0]))
+    rst_text = convert_nb_fname(notebooks[0])
+    sys.stdout.write(rst_text.encode('utf8'))
 
 
 if __name__ == '__main__':
