@@ -71,4 +71,3 @@ Yet more text
     ...     Values in `x_y_z_trans` can be positive or negative, and can be floats.
     ...     """
     ...     x_y_z_trans = np.array(x_y_z_trans)
-
