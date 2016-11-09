@@ -21,6 +21,7 @@ be without doctest syntax::
 or with **doctest** syntax::
 
     .. nbplot::
+
         A plotting example:
         >>> import matplotlib.pyplot as plt
         >>> plt.plot([1,2,3], [4,5,6])  #doctest: +ELLIPSIS
@@ -55,6 +56,10 @@ The ``nbplot`` directive supports the following options:
         inserted.  This is sometimes necessary when your code generates a plot,
         but you do not want to include it.  If the code does not generate a
         plot, this option is not necessary.
+
+    raises : str
+        String giving error class.  The code runner will assert this error was
+        raised by the enclosed code, and suppress stderr.
 
 The namespace of the nbplot command is reset to empty for each document.  The
 code in each nbplot directive instance in a given document uses the namespace
@@ -184,7 +189,8 @@ class NBPlotDirective(Directive):
                    'format': _option_format,
                    'keepfigs': directives.flag,
                    'nofigs': directives.flag,
-                   'encoding': directives.encoding
+                   'encoding': directives.encoding,
+                   'raises': directives.unchanged,
                   }
 
     def run(self):
@@ -228,6 +234,10 @@ class NBPlotDirective(Directive):
         if 'format' in self.options:
             is_doctest = False if self.options['format'] == 'python' else True
 
+        # should the code raise an exception?
+        raises = (eval(self.options['raises']) if 'raises' in self.options
+                  else None)
+
         # determine output directory name fragment
         source_rel_name = relpath(source_file_name, setup.confdir)
         source_rel_dir = os.path.dirname(source_rel_name)
@@ -236,8 +246,8 @@ class NBPlotDirective(Directive):
 
         # build_dir: where to place output files (temporarily)
         build_dir = os.path.join(os.path.dirname(setup.app.doctreedir),
-                                'nbplot_directive',
-                                source_rel_dir)
+                                 'nbplot_directive',
+                                 source_rel_dir)
         # get rid of .. in paths, also changes pathsep
         # see note in Python docs for warning about symbolic links on Windows.
         # need to compare source and dest paths at end
@@ -254,21 +264,22 @@ class NBPlotDirective(Directive):
 
         # how to link to files from the RST file
         dest_dir_link = os.path.join(relpath(setup.confdir, rst_dir),
-                                    source_rel_dir).replace(os.path.sep, '/')
+                                     source_rel_dir).replace(os.path.sep, '/')
         build_dir_link = relpath(build_dir, rst_dir).replace(os.path.sep, '/')
         source_link = dest_dir_link + '/' + output_base + source_ext
 
         # make figures
         try:
             results = render_figures(code,
-                                    source_file_name,
-                                    build_dir,
-                                    output_base,
-                                    config=config,
-                                    context = True,  # keep plot context
-                                    function_name = None,
-                                    context_reset=context_reset,
-                                    close_figs=close_figs)
+                                     source_file_name,
+                                     build_dir,
+                                     output_base,
+                                     config=config,
+                                     context = True,  # keep plot context
+                                     function_name = None,
+                                     context_reset=context_reset,
+                                     close_figs=close_figs,
+                                     raises=raises)
             errors = []
         except PlotError as err:
             reporter = self.state.memo.reporter
@@ -599,7 +610,8 @@ def _check_wd(dirname):
     return dirname
 
 
-def run_code(code, code_path, ns=None, function_name=None):
+def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
+             pre_code=None, raises=None):
     """
     Run `code` from file at `code_path` in namespace `ns`
 
@@ -615,6 +627,13 @@ def run_code(code, code_path, ns=None, function_name=None):
     function_name : None or str, optional
         If non-empty string, name of function to execute after executing
         `code`.
+    workdir : None or str, optional
+        Working directory in which to run code.  Defaults to current working
+        directory.
+    pre_code : None or str, optional
+        Any code to run before `code`.
+    raises : None or Exception class
+        An exception that the run code should raise.
 
     Returns
     -------
@@ -629,12 +648,9 @@ def run_code(code, code_path, ns=None, function_name=None):
     else:
         pwd = os.getcwd()
     old_sys_path = list(sys.path)
-    if setup.config.nbplot_working_directory is not None:
-        dirname = _check_wd(setup.config.nbplot_working_directory)
-    elif code_path is not None:
-        dirname = os.path.abspath(os.path.dirname(code_path))
-    os.chdir(dirname)
-    sys.path.insert(0, dirname)
+    workdir = os.getcwd() if workdir is None else workdir
+    os.chdir(workdir)
+    sys.path.insert(0, workdir)
 
     # Reset sys.argv
     old_sys_argv = sys.argv
@@ -654,13 +670,19 @@ def run_code(code, code_path, ns=None, function_name=None):
     try:
         try:
             code = unescape_doctest(code)
-            if not ns:
-                six.exec_(six.text_type(setup.config.nbplot_pre_code), ns)
+            if pre_code and not ns:
+                six.exec_(six.text_type(pre_code), ns)
             ns['print'] = _dummy_print
             if "__main__" in code:
                 six.exec_("__name__ = '__main__'", ns)
             code = remove_coding(code)
-            six.exec_(code, ns)
+            if raises is None:
+                six.exec_(code, ns)
+            else:  # Code should raise exception
+                try:
+                    six.exec_(code, ns)
+                except raises:
+                    pass
             if function_name:
                 six.exec_(function_name + "()", ns)
         except (Exception, SystemExit):
@@ -675,7 +697,7 @@ def run_code(code, code_path, ns=None, function_name=None):
 
 def render_figures(code, code_path, output_dir, output_base, config,
                    context=True, function_name=None, context_reset=False,
-                   close_figs=False):
+                   close_figs=False, raises=None):
     """ Run plot code and save the hi/low res PNGs, PDF in `output_dir`
 
     Save the images under `output_dir` with file names derived from
@@ -703,6 +725,8 @@ def render_figures(code, code_path, output_dir, output_base, config,
     close_figs : {False, True}, optional
         If True, close all figures generated before our `code` runs.  False can
         be useful when building up a plot with several `code` blocks.
+    raises : None or Exception, optional
+        Exception class that code should raise, or None, for no exception.
     """
     # -- Parse format list
     default_dpi = {'png': 80, 'hires.png': 200, 'pdf': 200}
@@ -742,12 +766,21 @@ def render_figures(code, code_path, output_dir, output_base, config,
 
     close_figs = not context or close_figs
 
+    # Get working directory for code execution
+    if setup.config.nbplot_working_directory is not None:
+        workdir = _check_wd(setup.config.nbplot_working_directory)
+    elif code_path is not None:
+        workdir = os.path.abspath(os.path.dirname(code_path))
+    else:
+        workdir = None
+
     for i, code_piece in enumerate(code_pieces):
 
         if close_figs:
             plt.close('all')
 
-        run_code(code_piece, code_path, ns, function_name)
+        run_code(code_piece, code_path, ns, function_name, workdir=workdir,
+                 pre_code=setup.config.nbplot_pre_code, raises=raises)
 
         images = []
         fig_managers = Gcf.get_all_fig_managers()

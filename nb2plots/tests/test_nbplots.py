@@ -3,10 +3,11 @@
 from os.path import (join as pjoin, dirname, isdir)
 from io import StringIO
 
+from ..nbplots import run_code
 from .pagebuilder import setup_module
 from .test_proj1 import ModifiedProj1Builder
 
-from nose.tools import assert_true, assert_false
+from nose.tools import assert_true, assert_false, assert_equal, assert_raises
 
 HERE = dirname(__file__)
 OTHER_PAGES = pjoin(HERE, 'otherpages')
@@ -18,6 +19,23 @@ def file_same(file1, file2):
     with open(file2, 'rb') as fobj:
         contents2 = fobj.read()
     return contents1 == contents2
+
+
+def test_run_code():
+    # Test run_code function
+    ns1 = run_code('a = 10')
+    assert_equal(ns1['a'], 10)
+    assert_false('b' in ns1)
+    # New namespace by default
+    ns2 = run_code('b = 20')
+    assert_equal(ns2['b'], 20)
+    assert_false('a' in ns2)
+    # Adding to a namespace
+    ns3 = run_code('c = 30', ns=ns1)
+    assert_true(ns3 is ns1)
+    assert_equal(ns1['c'], 30)
+    # Checking raises
+    run_code('d', raises=NameError)
 
 
 class TestNbplots(ModifiedProj1Builder):
@@ -397,3 +415,29 @@ Text3
     >>> 'c' not in globals()
     True
 """)
+
+
+class TestRaisesOption(ModifiedProj1Builder):
+    """ Check raises option to nbplot directive
+    """
+
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots"]\n')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+A title
+-------
+
+.. nbplot::
+    :raises: ValueError
+
+    # Another comment
+    raise ValueError
+""")
+
+    def test_include_source_default(self):
+        # Check that source still included
+        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
+            html_contents = fobj.read()
+        assert_true('# Another comment' in html_contents)
