@@ -417,8 +417,28 @@ Text3
 """)
 
 
+class TestNoRaises(ModifiedProj1Builder):
+    """ Confirm that exception, without raises option, generates error
+    """
+    should_error = True
+
+    @classmethod
+    def modify_source(cls):
+        cls.append_conf('extensions = ["nb2plots.nbplots"]\n')
+        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
+            fobj.write("""\
+A title
+-------
+
+.. nbplot::
+
+    # Another comment
+    raise ValueError
+""")
+
+
 class TestRaisesOption(ModifiedProj1Builder):
-    """ Check raises option to nbplot directive
+    """ Check raises option to nbplot directive proceeds without error
     """
 
     @classmethod
