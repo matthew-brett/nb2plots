@@ -37,7 +37,7 @@ should add the following to your ``conf.py`` file::
 
 The ``nbplot`` directive is very similar to the ``plot`` directive of
 matplotlib, and started life as a fork of that code.  It differs mainly in
-that its default is to keep the namespace from one ``nbplot`` directive to the
+that its default is to keep the name-space from one ``nbplot`` directive to the
 next in a given page, and has output defaults adapted to directive contents
 with source code rather than pointing to a standalone script.  See the
 docstring of ``nb2plots/nbplots.py`` for details.
@@ -46,9 +46,9 @@ docstring of ``nb2plots/nbplots.py`` for details.
 Dependencies
 ************
 
-You will need pandoc_ installed and available as the ``pandoc`` command.
+You will need Pandoc_ installed and available as the ``pandoc`` command.
 
-For OSX, we recommend homebrew_ for installing pandoc::
+For OSX, we recommend homebrew_ for installing Pandoc::
 
     brew install pandoc
 

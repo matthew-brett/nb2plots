@@ -1,0 +1,18 @@
+##################
+nb2plots Changelog
+##################
+
+***
+0.4
+***
+
+New feature release.
+
+* ``nb2plots`` script now always outputs converted notebooks as UTF-8, rather
+  than doing a ``print()`` to stdout;
+* add ``raises`` option to ``nbplot`` directive, to test that nbplot blocks to
+  raise errors while building the HTML;
+* fix CI testing to actually run on Python 3.3-3.5.
+
+
+.. vim: ft=rst
