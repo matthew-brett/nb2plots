@@ -5,7 +5,7 @@ Example:
 
     nb2plots example.ipynb
 
-Prints to stdou
+Prints to stdout
 """
 # vim: ft=python
 from __future__ import division, print_function, absolute_import
@@ -25,8 +25,8 @@ def main():
     if len(notebooks) != 1:
         parser.print_help()
         sys.exit(1)
-    rst_text = convert_nb_fname(notebooks[0])
-    sys.stdout.write(rst_text.encode('utf8'))
+    rst_text = convert_nb_fname(notebooks[0]) + '\n'
+    sys.stdout.buffer.write(rst_text.encode('utf8'))
 
 
 if __name__ == '__main__':
