@@ -50,6 +50,7 @@ before_install:
     - source tools/travis_tools.sh
     - virtualenv --python=python venv
     - source venv/bin/activate
+    - python -m pip install --upgrade pip wheel
     - python --version  # just to check
     - retry pip install nose # always
     - retry pip install -f $TRAVIS_WHEELS $DEPENDS
