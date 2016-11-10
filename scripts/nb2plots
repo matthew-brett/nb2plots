@@ -16,6 +16,9 @@ from optparse import OptionParser
 from nb2plots import __version__
 from nb2plots.from_notebook import convert_nb_fname
 
+# Bytes stream for writing to stdout
+bin_stdout = sys.stdout.buffer if sys.version_info[0] > 2 else sys.stdout
+
 
 def main():
     parser = OptionParser(
@@ -26,7 +29,7 @@ def main():
         parser.print_help()
         sys.exit(1)
     rst_text = convert_nb_fname(notebooks[0]) + '\n'
-    sys.stdout.buffer.write(rst_text.encode('utf8'))
+    bin_stdout.write(rst_text.encode('utf8'))
 
 
 if __name__ == '__main__':
