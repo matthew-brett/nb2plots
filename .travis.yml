@@ -16,8 +16,8 @@ env:
         - DEPENDS="ipython[notebook] sphinx matplotlib six"
         - PKG_NAME=nb2plots
         - INSTALL_TYPE="setup"
-        # URL for travis wheel repo
-        - TRAVIS_WHEELS=https://8167b5c3a2af93a0a9fb-13c6eee0d707a05fa610c311eec04c66.ssl.cf2.rackcdn.com
+        # URL for extra wheel repo
+        - EXTRA_WHEELS=https://nipy.bic.berkeley.edu/manylinux
 
 python:
     - 3.3
@@ -53,7 +53,7 @@ before_install:
     - python -m pip install --upgrade pip wheel
     - python --version  # just to check
     - retry pip install nose # always
-    - retry pip install -f $TRAVIS_WHEELS $DEPENDS
+    - retry pip install -f $EXTRA_WHEELS $DEPENDS
     - if [ "${COVERAGE}" == "1" ]; then
       pip install coverage;
       pip install coveralls;
