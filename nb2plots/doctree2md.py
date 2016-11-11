@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Simple Markdown writer for reStructuredText.
 
-"""Simple Markdown writer for reStructuredText."""
+"""
+
+from __future__ import unicode_literals
 
 __docformat__ = 'reStructuredText'
 
@@ -52,6 +55,8 @@ class IndentLevel(object):
     list_element, we ``write`` the text with suitable prefixes to the next
     level down, which might be the base of the document (document body) or
     another indentation level, if this is - for example - a nested list.
+
+    In most respects, IndentLevel behaves like a list.
     """
     def __init__(self, base, prefix, first_prefix=None):
         self.base = base  # The list to which we eventually write
@@ -67,7 +72,7 @@ class IndentLevel(object):
     def __getitem__(self, index):
         return self.content[index]
 
-    def len(self):
+    def __len__(self):
         return len(self.content)
 
     def __bool__(self):

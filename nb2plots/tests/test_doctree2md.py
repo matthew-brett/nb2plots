@@ -4,7 +4,8 @@
 
 Test running writer over example files and chosen snippets
 """
-from __future__ import division, print_function, absolute_import
+from __future__ import (division, print_function, absolute_import,
+                        unicode_literals)
 
 from os.path import (dirname, join as pjoin, abspath)
 from glob import glob
@@ -13,7 +14,7 @@ import difflib
 from docutils.core import publish_string
 from docutils.writers.pseudoxml import Writer as PXMLWriter
 
-from ..doctree2md import Writer
+from ..doctree2md import Writer, IndentLevel
 
 from nose.tools import (assert_true, assert_false, assert_not_equal,
                         assert_equal)
@@ -58,10 +59,18 @@ def test_example_files():
         assert_conv_equal(rst_contents, md_contents)
 
 
+def test_indent_level():
+    # Test IndentLevel object
+    level = IndentLevel(['foo', 'bar'], 'prefix')
+    assert_equal(len(level), 0)
+    level.append('baz')
+    assert_equal(len(level), 1)
+
+
 def test_snippets():
-    assert_conv_equal("Some text", "Some text\n")
-    assert_conv_equal("With *emphasis*", "With *emphasis*\n")
-    assert_conv_equal("That's **strong**", "That's **strong**\n")
-    assert_conv_equal("As ``literal``", "As `literal`\n")
-    assert_conv_equal("To ``defrole``", "To `defrole`\n")
-    assert_conv_equal("Now :math:`a = 1`", "Now $a = 1$\n")
+    assert_conv_equal("Some text", b"Some text\n")
+    assert_conv_equal("With *emphasis*", b"With *emphasis*\n")
+    assert_conv_equal("That's **strong**", b"That's **strong**\n")
+    assert_conv_equal("As ``literal``", b"As `literal`\n")
+    assert_conv_equal("To ``defrole``", b"To `defrole`\n")
+    assert_conv_equal("Now :math:`a = 1`", b"Now $a = 1$\n")
