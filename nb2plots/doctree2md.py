@@ -7,12 +7,7 @@ from __future__ import unicode_literals
 
 __docformat__ = 'reStructuredText'
 
-import docutils
 from docutils import frontend, nodes, writers, languages
-try:
-    import roman
-except ImportError:
-    import docutils.utils.roman as roman
 
 
 class Writer(writers.Writer):
@@ -339,7 +334,7 @@ class Translator(nodes.NodeVisitor):
     def visit_subtitle(self, node):
         if isinstance(node.parent, nodes.document):
             self.visit_docinfo_item(node, 'subtitle')
-            raise SkipNode
+            raise nodes.SkipNode
 
     def visit_superscript(self, node):
         self.add(self.defs['superscript'][0])
@@ -353,7 +348,6 @@ class Translator(nodes.NodeVisitor):
         #    Level is too low to display:
         #    raise nodes.SkipNode
         attr = {}
-        backref_text = ''
         if node.hasattr('id'):
             attr['name'] = node['id']
         if node.hasattr('line'):
