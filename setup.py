@@ -3,30 +3,25 @@
 ''' Installation script for nb2plots package '''
 import os
 from os.path import join as pjoin, split as psplit, splitext
-import sys
 import re
 
-# For some commands, use setuptools.
-if len(set(('develop', 'bdist_egg', 'bdist_rpm', 'bdist', 'bdist_dumb',
-            'install_egg_info', 'egg_info', 'easy_install', 'bdist_wheel',
-            'bdist_mpkg')).intersection(sys.argv)) > 0:
-    import setuptools
-
+import setuptools
 from distutils.core import setup
 
 import versioneer
 
-# Get setuptools requirements from requirements.txt file
+# Get install requirements from requirements.txt file
 with open('requirements.txt', 'rt') as fobj:
-    INSTALL_REQUIRES = [line.strip() for line in fobj if line.strip()]
+    install_requires = [line.strip() for line in fobj
+                        if line.strip() and not line[0] in '#-']
+# Get any extra test requirements
+with open('test-requirements.txt', 'rt') as fobj:
+    test_requires = [line.strip() for line in fobj
+                     if line.strip() and not line[0] in '#-']
 
 # Requires for distutils (only used in pypi interface?)
-BREAK_VER = re.compile(r'(\S+?)(\[\S+\])?([=<>!]+\S+)')
-REQUIRES = [BREAK_VER.sub(r'\1 (\3)', req) for req in INSTALL_REQUIRES]
-
-# Specific to setuptools execution
-EXTRA_SETUP_KWARGS = ({} if 'setuptools' not in sys.modules
-                      else {'install_requires': INSTALL_REQUIRES})
+break_ver = re.compile(r'(\S+?)(\[\S+\])?([=<>!]+\S+)')
+requires = [break_ver.sub(r'\1 (\3)', req) for req in install_requires]
 
 # See: https://github.com/matthew-brett/myscripter
 from distutils.command.install_scripts import install_scripts
@@ -73,13 +68,13 @@ class my_install_scripts(install_scripts):
                 fobj.write(bat_contents)
 
 
-CMDCLASS = versioneer.get_cmdclass()
-CMDCLASS['install_scripts'] = my_install_scripts
+cmdclass = versioneer.get_cmdclass()
+cmdclass['install_scripts'] = my_install_scripts
 
 
 setup(name='nb2plots',
       version=versioneer.get_version(),
-      cmdclass=CMDCLASS,
+      cmdclass=cmdclass,
       description='Converting between ipython notebooks and sphinx docs',
       author='Matthew Brett',
       author_email='matthew.brett@gmail.com',
@@ -113,5 +108,6 @@ setup(name='nb2plots',
         ],
       scripts = ['scripts/nb2plots'],
       long_description = open('README.rst', 'rt').read(),
-      **EXTRA_SETUP_KWARGS
+      install_requires = install_requires,
+      extras_require = {'test': test_requires}
       )

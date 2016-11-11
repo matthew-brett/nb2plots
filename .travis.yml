@@ -52,7 +52,7 @@ before_install:
     - source venv/bin/activate
     - python -m pip install --upgrade pip wheel
     - python --version  # just to check
-    - retry pip install nose # always
+    - retry pip install nose mock # always
     - retry pip install -f $EXTRA_WHEELS $DEPENDS
     - if [ "${COVERAGE}" == "1" ]; then
       pip install coverage;
