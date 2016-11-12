@@ -99,19 +99,35 @@ class Translator(nodes.NodeVisitor):
 
     std_indent = '    '
 
+    # Customise Markdown syntax here. Still need to add term,
+    # indent, problematic etc...
+    syntax_defs = {
+        'emphasis': ('*', '*'),   # Could also use ('_', '_')
+        'problematic' : ('\n\n', '\n\n'),
+        'strong' : ('**', '**'),  # Could also use ('__', '__')
+        'literal' : ('`', '`'),
+        'math' : ('$', '$'),
+        'subscript' : ('<sub>', '</sub>'),
+        'superscript' : ('<sup>', '</sup>'),
+    }
+
     def __init__(self, document):
         nodes.NodeVisitor.__init__(self, document)
         self.settings = settings = document.settings
         lcode = settings.language_code
         self.language = languages.get_language(lcode, document.reporter)
-
-        self.head = []
-        self.body = []
-        self.foot = []
+        # Reset attributes modified by reading
+        self.reset()
         # Lookup table to get section list from name
         self._lists = dict(head=self.head,
                            body=self.body,
                            foot=self.foot)
+
+    def reset(self):
+        """ Initialize object for fresh read """
+        self.head = []
+        self.body = []
+        self.foot = []
 
         # Current section heading level during writing
         self.section_level = 0
@@ -136,18 +152,6 @@ class Translator(nodes.NodeVisitor):
             'date' : '',
             'copyright' : '',
             'version' : '',
-            }
-
-        # Customise Markdown syntax here. Still need to add term,
-        # indent, problematic etc...
-        self.defs = {
-            'emphasis': ('*', '*'),   # Could also use ('_', '_')
-            'problematic' : ('\n\n', '\n\n'),
-            'strong' : ('**', '**'),  # Could also use ('__', '__')
-            'literal' : ('`', '`'),
-            'math' : ('$', '$'),
-            'subscript' : ('<sub>', '</sub>'),
-            'superscript' : ('<sup>', '</sup>'),
             }
 
     # Utility methods
@@ -243,10 +247,10 @@ class Translator(nodes.NodeVisitor):
                 L.pop()
 
     def visit_emphasis(self, node):
-        self.add(self.defs['emphasis'][0])
+        self.add(self.syntax_defs['emphasis'][0])
 
     def depart_emphasis(self, node):
-        self.add(self.defs['emphasis'][1])
+        self.add(self.syntax_defs['emphasis'][1])
 
     def visit_paragraph(self, node):
         pass
@@ -277,10 +281,10 @@ class Translator(nodes.NodeVisitor):
         self.finish_level()
 
     def visit_problematic(self, node):
-        self.add(self.defs['problematic'][0])
+        self.add(self.syntax_defs['problematic'][0])
 
     def depart_problematic(self, node):
-        self.add(self.defs['problematic'][1])
+        self.add(self.syntax_defs['problematic'][1])
 
     def visit_section(self, node):
         self.section_level += 1
@@ -289,22 +293,22 @@ class Translator(nodes.NodeVisitor):
         self.section_level -= 1
 
     def visit_strong(self, node):
-        self.add(self.defs['strong'][0])
+        self.add(self.syntax_defs['strong'][0])
 
     def depart_strong(self, node):
-        self.add(self.defs['strong'][1])
+        self.add(self.syntax_defs['strong'][1])
 
     def visit_literal(self, node):
-        self.add(self.defs['literal'][0])
+        self.add(self.syntax_defs['literal'][0])
 
     def depart_literal(self, node):
-        self.add(self.defs['literal'][1])
+        self.add(self.syntax_defs['literal'][1])
 
     def visit_math(self, node):
-        self.add(self.defs['math'][0])
+        self.add(self.syntax_defs['math'][0])
 
     def depart_math(self, node):
-        self.add(self.defs['math'][1])
+        self.add(self.syntax_defs['math'][1])
 
     def visit_enumerated_list(self, node):
         self.list_prefixes.append('1. ')
@@ -326,10 +330,10 @@ class Translator(nodes.NodeVisitor):
         self.finish_level()
 
     def visit_subscript(self, node):
-        self.add(self.defs['subscript'][0])
+        self.add(self.syntax_defs['subscript'][0])
 
     def depart_subscript(self, node):
-        self.add(self.defs['subscript'][1])
+        self.add(self.syntax_defs['subscript'][1])
 
     def visit_subtitle(self, node):
         if isinstance(node.parent, nodes.document):
@@ -337,10 +341,10 @@ class Translator(nodes.NodeVisitor):
             raise nodes.SkipNode
 
     def visit_superscript(self, node):
-        self.add(self.defs['superscript'][0])
+        self.add(self.syntax_defs['superscript'][0])
 
     def depart_superscript(self, node):
-        self.add(self.defs['superscript'][1])
+        self.add(self.syntax_defs['superscript'][1])
 
     def visit_system_message(self, node):
         # TODO add report_level
