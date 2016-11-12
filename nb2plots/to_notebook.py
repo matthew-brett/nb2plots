@@ -16,7 +16,7 @@ from sphinx.errors import ExtensionError
 # Use notebook format version 4
 from .ipython_shim import nbf
 
-from .doctree2nb import doctree2ipynb
+from .doctree2nb import doctree2ipynb, Translator
 
 
 class ToNotebookError(ExtensionError):
@@ -174,3 +174,8 @@ def setup(app):
     app.connect('build-finished', write_notebooks)
     app.add_node(notebook_reference,
                  html=(visit_notebook_node, depart_notebook_node))
+    # Register translator to allow other extensions to extend ipynb visit,
+    # depart methods with app.add_node as we have just done for the html
+    # translator in the lines above.  See also:
+    # http://www.sphinx-doc.org/en/1.4.8/extdev/tutorial.html#the-setup-function
+    app.set_translator('ipynb', Translator)

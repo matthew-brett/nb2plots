@@ -5,63 +5,13 @@ import tempfile
 import pickle
 import re
 from os.path import join as pjoin, isdir
-from copy import copy
-from contextlib import contextmanager
 
-from docutils import nodes
-from docutils.parsers.rst import directives, roles
-from sphinx.application import Sphinx
+from nb2plots.sphinxutils import TestApp
 
 from nose.tools import assert_equal
 
-
 def assert_matches(regex, text):
     return re.match(regex, text) is not None
-
-
-fresh_roles = copy(roles._roles)
-fresh_directives = copy(directives._directives)
-fresh_visitor_dict = nodes.GenericNodeVisitor.__dict__.copy()
-
-
-def reset_class(cls, original_dict):
-    for key in list(cls.__dict__):
-        if key not in original_dict:
-            delattr(cls, key)
-        else:
-            setattr(cls, key, original_dict[key])
-
-
-class TestApp(Sphinx):
-
-    def __init__(self, *args, **kwargs):
-        self._docutils_cache = dict(
-            directives=copy(fresh_directives),
-            roles=copy(fresh_roles),
-            visitor_dict = fresh_visitor_dict)
-        with self.own_namespace():
-            super(TestApp, self).__init__(*args, **kwargs)
-
-    @contextmanager
-    def own_namespace(self):
-        """ Set docutils namespace for builds """
-        cache = self._docutils_cache
-        _directives = directives._directives
-        _roles = roles._roles
-        _visitor_dict = nodes.GenericNodeVisitor.__dict__.copy()
-        directives._directives = cache['directives']
-        roles._roles = cache['roles']
-        reset_class(nodes.GenericNodeVisitor, cache['visitor_dict'])
-        try:
-            yield
-        finally:
-            directives._directives = _directives
-            roles._roles = _roles
-            reset_class(nodes.GenericNodeVisitor, _visitor_dict)
-
-    def build(self, *args, **kwargs):
-        with self.own_namespace():
-            return super(TestApp, self).build(*args, **kwargs)
 
 
 class PageBuilder(object):
@@ -79,9 +29,6 @@ class PageBuilder(object):
     def setup_class(cls):
         cls.build_error = None
         cls.build_path = tempfile.mkdtemp()
-        cls._directives = copy(fresh_directives)
-        cls._roles = copy(fresh_roles)
-        cls._visitor_dict = fresh_visitor_dict
         try:  # Catch exceptions during test setup
             # Sets page_source, maybe modifies source
             cls.set_page_source()

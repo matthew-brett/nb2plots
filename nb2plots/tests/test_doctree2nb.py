@@ -9,28 +9,15 @@ n_nb = nbf.new_notebook
 n_md_c = nbf.new_markdown_cell
 n_c_c = nbf.new_code_cell
 
-from .pagebuilder import TestApp
-from nb2plots.tmpdirs import dtemporize
+from nb2plots.sphinxutils import TempApp
 
 from nose.tools import assert_equal
 
 
-DEFAULT_CONF =  """\
-extensions = ["nb2plots.nbplots",
-              "nb2plots.to_notebook"]
-"""
-
-
-@dtemporize
-def build_rst(rst_text, conf_text=DEFAULT_CONF):
-    with open('conf.py', 'wt') as fobj:
-        fobj.write(conf_text)
-    with open('contents.rst', 'wt') as fobj:
-        fobj.write(rst_text)
-    app = TestApp('.', '.', '.', '.', 'html', warningiserror=True)
-    with app.own_namespace():
-        app.build(False, [])
-        doctree = app.env.get_doctree('contents')
+def build_rst(rst_text, conf_text=None):
+    app = TempApp(rst_text, conf_text)
+    app.build(False, [])
+    doctree = app.env.get_doctree('contents')
     return app, doctree
 
 
