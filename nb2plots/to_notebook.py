@@ -16,6 +16,8 @@ from sphinx.errors import ExtensionError
 # Use notebook format version 4
 from .ipython_shim import nbf
 
+from .doctree2nb import doctree2ipynb
+
 
 class ToNotebookError(ExtensionError):
     """ Error for notebook sphinx extension """
@@ -115,16 +117,8 @@ def collect_notebooks(app, doctree, fromdocname):
     env.notebooks[fromdocname] = to_build
 
 
-def get_doctree(docname, env):
-    dt_fname = pjoin(env.doctreedir, docname + '.doctree')
-    with open(dt_fname, 'rb') as fobj:
-        content = fobj.read()
-    return pickle.loads(content)
-
-
 def build_notebook(docname):
     return nbf.new_notebook()
-
 
 def fill_notebook(nb):
     return nb
@@ -148,8 +142,8 @@ def write_notebooks(app, exception):
     if not hasattr(env, 'notebooks'):
         return
     for docname, to_build in env.notebooks.items():
-        doctree = get_doctree(docname, env)
-        clear_nb = build_notebook(doctree)
+        doctree = app.env.get_doctree(docname)
+        clear_nb = nbf.reads(doctree2ipynb(doctree))
         for rel_fn in to_build.get('clear', []):
             out_fn = _relfn2outpath(rel_fn, app)
             write_notebook(clear_nb, out_fn)

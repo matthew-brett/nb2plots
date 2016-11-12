@@ -6,6 +6,7 @@ import re
 from textwrap import dedent
 
 from docutils import nodes
+from docutils.io import StringOutput
 
 from .ipython_shim import nbf
 from . import doctree2md as d2m
@@ -43,6 +44,24 @@ def parse_doctest(doctest_txt):
         source = '\n'.join([L[indent + 4:] for L in source_lines])
         parts.append(source)
     return '\n'.join(parts)
+
+
+def doctree2ipynb(doctree):
+    """ Convert doctree `doctree` to Jupyter notebook JSON
+
+    Parameters
+    ----------
+    doctree : node
+        document node.
+
+    Returns
+    ------
+    ipynb_json : str
+        JSON string representation of Jupyter notebook.
+    """
+    writer = Writer()
+    destination = StringOutput(encoding='utf8')
+    return writer.write(doctree, destination)
 
 
 class Translator(d2m.Translator):

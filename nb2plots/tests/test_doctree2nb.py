@@ -1,9 +1,7 @@
 """ Test conversion of doctree to Jupyter notebook
 """
 
-from docutils.io import StringOutput
-
-from nb2plots import doctree2nb as d2nb
+from nb2plots.doctree2nb import doctree2ipynb
 from nb2plots.doctree2nb import parse_doctest
 from nb2plots.to_notebook import nbf
 # Shortcuts
@@ -37,10 +35,8 @@ def build_rst(rst_text, conf_text=DEFAULT_CONF):
 
 
 def rst2ipynb(rst_text):
-    writer = d2nb.Writer()
     app, doctree = build_rst(rst_text)
-    destination = StringOutput(encoding='utf8')
-    return writer.write(doctree, destination)
+    return doctree2ipynb(doctree)
 
 
 def cells2json(cells):
