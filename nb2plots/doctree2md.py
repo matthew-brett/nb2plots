@@ -116,6 +116,7 @@ class Translator(nodes.NodeVisitor):
         self.settings = settings = document.settings
         lcode = settings.language_code
         self.language = languages.get_language(lcode, document.reporter)
+        self.head, self.body, self.foot = [], [], []
         # Reset attributes modified by reading
         self.reset()
         # Lookup table to get section list from name
@@ -125,9 +126,9 @@ class Translator(nodes.NodeVisitor):
 
     def reset(self):
         """ Initialize object for fresh read """
-        self.head = []
-        self.body = []
-        self.foot = []
+        self.head[:] = []
+        self.body[:] = []
+        self.foot[:] = []
 
         # Current section heading level during writing
         self.section_level = 0
@@ -158,7 +159,14 @@ class Translator(nodes.NodeVisitor):
 
     def astext(self):
         """Return the final formatted document as a string."""
+        self.drop_trailing_eols()
         return ''.join(self.head + self.body + self.foot)
+
+    def drop_trailing_eols(self):
+        # Drop trailing carriage return from ends of lists
+        for L in self._lists.values():
+            if L and L[-1] == '\n':
+                L.pop()
 
     def deunicode(self, text):
         text = text.replace(u'\xa0', '\\ ')
@@ -241,10 +249,7 @@ class Translator(nodes.NodeVisitor):
         pass
 
     def depart_document(self, node):
-        # Drop trailing carriage return from ends of lists
-        for L in (self.head, self.body, self.foot):
-            if L and L[-1] == '\n':
-                L.pop()
+        pass
 
     def visit_emphasis(self, node):
         self.add(self.syntax_defs['emphasis'][0])
