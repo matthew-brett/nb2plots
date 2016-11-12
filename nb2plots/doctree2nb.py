@@ -50,6 +50,11 @@ class Translator(d2m.Translator):
     def __init__(self, document):
         d2m.Translator.__init__(self, document)
         self._notebook = nbf.new_notebook()
+        self._in_nbplot = False
+
+    def reset(self):
+        d2m.Translator.reset(self)
+        self._in_nbplot = False
 
     def flush_md(self):
         md_txt = d2m.Translator.astext(self).strip()
@@ -62,12 +67,32 @@ class Translator(d2m.Translator):
         self.flush_md()
         return nbf.writes(self._notebook)
 
-    def visit_doctest_block(self, node):
+    def add_code_cell(self, text):
         self.flush_md()
+        self._notebook['cells'].append(nbf.new_code_cell(text))
+
+    def visit_doctest_block(self, node):
         doctest_txt = node.astext().strip()
         if doctest_txt:
-            parsed = parse_doctest(doctest_txt)
-            self._notebook['cells'].append(nbf.new_code_cell(parsed))
+            self.add_code_cell(parse_doctest(doctest_txt))
+        raise nodes.SkipNode
+
+    def visit_only(self, node):
+        if node['expr'] == 'markdown':
+            self.add(dedent(node.astext()) + '\n')
+        raise nodes.SkipNode
+
+    def visit_container(self, node):
+        self._in_nbplot = 'nbplot' in node['classes']
+
+    def depart_container(self, node):
+        self._in_nbplot = False
+
+    def visit_literal_block(self, node):
+        """ A literal block may be in an nbplot container """
+        if not self._in_nbplot:
+            return d2m.Translator.visit_literal_block(self, node)
+        self.add_code_cell(node.astext())
         raise nodes.SkipNode
 
 
