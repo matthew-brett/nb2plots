@@ -32,22 +32,36 @@ def reset_class(cls, original_dict):
             setattr(cls, key, original_dict[key])
 
 
-@contextmanager
-def namespace(cls):
-    """ Set docutils namespace for builds """
-    try:
+class TestApp(Sphinx):
+
+    def __init__(self, *args, **kwargs):
+        self._docutils_cache = dict(
+            directives=copy(fresh_directives),
+            roles=copy(fresh_roles),
+            visitor_dict = fresh_visitor_dict)
+        with self.own_namespace():
+            super(TestApp, self).__init__(*args, **kwargs)
+
+    @contextmanager
+    def own_namespace(self):
+        """ Set docutils namespace for builds """
+        cache = self._docutils_cache
         _directives = directives._directives
         _roles = roles._roles
         _visitor_dict = nodes.GenericNodeVisitor.__dict__.copy()
-        directives._directives = cls._directives
-        roles._roles = cls._roles
-        reset_class(nodes.GenericNodeVisitor, cls._visitor_dict)
+        directives._directives = cache['directives']
+        roles._roles = cache['roles']
+        reset_class(nodes.GenericNodeVisitor, cache['visitor_dict'])
+        try:
+            yield
+        finally:
+            directives._directives = _directives
+            roles._roles = _roles
+            reset_class(nodes.GenericNodeVisitor, _visitor_dict)
 
-        yield
-    finally:
-        directives._directives = _directives
-        roles._roles = _roles
-        reset_class(nodes.GenericNodeVisitor, _visitor_dict)
+    def build(self, *args, **kwargs):
+        with self.own_namespace():
+            return super(TestApp, self).build(*args, **kwargs)
 
 
 class PageBuilder(object):
@@ -68,30 +82,28 @@ class PageBuilder(object):
         cls._directives = copy(fresh_directives)
         cls._roles = copy(fresh_roles)
         cls._visitor_dict = fresh_visitor_dict
-        with namespace(cls):
-            try:  # Catch exceptions during test setup
-                # Sets page_source, maybe modifies source
-                cls.set_page_source()
-                cls.out_dir = pjoin(cls.build_path, cls.builder)
-                cls.doctree_dir = pjoin(cls.build_path, 'doctrees')
-                # App to build the pages with warnings turned into errors
-                cls.build_app = Sphinx(
-                    cls.page_source,
-                    cls.page_source,
-                    cls.out_dir,
-                    cls.doctree_dir,
-                    cls.builder,
-                    warningiserror=True)
-            except Exception as e:  # Exceptions during test setup
-                shutil.rmtree(cls.build_path)
-                raise e
+        try:  # Catch exceptions during test setup
+            # Sets page_source, maybe modifies source
+            cls.set_page_source()
+            cls.out_dir = pjoin(cls.build_path, cls.builder)
+            cls.doctree_dir = pjoin(cls.build_path, 'doctrees')
+            # App to build the pages with warnings turned into errors
+            cls.build_app = TestApp(
+                cls.page_source,
+                cls.page_source,
+                cls.out_dir,
+                cls.doctree_dir,
+                cls.builder,
+                warningiserror=True)
+        except Exception as e:  # Exceptions during test setup
+            shutil.rmtree(cls.build_path)
+            raise e
         cls.build_source()
 
     @classmethod
     def build_source(cls):
         try:  # Catch exceptions during sphinx build
-            with namespace(cls):
-                cls.build_app.build(False, [])
+            cls.build_app.build(False, [])
             if cls.build_app.statuscode != 0:
                 cls.build_error = "Unknown error"
         except Exception as e:  # Exceptions during sphinx build
