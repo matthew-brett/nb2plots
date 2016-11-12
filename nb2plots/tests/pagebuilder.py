@@ -4,24 +4,50 @@ import shutil
 import tempfile
 import pickle
 import re
-
 from os.path import join as pjoin, isdir
+from copy import copy
+from contextlib import contextmanager
 
-from subprocess import call, Popen, PIPE
+from docutils import nodes
+from docutils.parsers.rst import directives, roles
+from sphinx.application import Sphinx
 
-from nose import SkipTest
 from nose.tools import assert_equal
-
-
-def setup_module():
-    try:
-        call(['sphinx-build', '--help'], stdout=PIPE, stderr=PIPE)
-    except OSError:
-        raise SkipTest('Need sphinx-build on PATH for these tests')
 
 
 def assert_matches(regex, text):
     return re.match(regex, text) is not None
+
+
+fresh_roles = copy(roles._roles)
+fresh_directives = copy(directives._directives)
+fresh_visitor_dict = nodes.GenericNodeVisitor.__dict__.copy()
+
+
+def reset_class(cls, original_dict):
+    for key in list(cls.__dict__):
+        if key not in original_dict:
+            delattr(cls, key)
+        else:
+            setattr(cls, key, original_dict[key])
+
+
+@contextmanager
+def namespace(cls):
+    """ Set docutils namespace for builds """
+    try:
+        _directives = directives._directives
+        _roles = roles._roles
+        _visitor_dict = nodes.GenericNodeVisitor.__dict__.copy()
+        directives._directives = cls._directives
+        roles._roles = cls._roles
+        reset_class(nodes.GenericNodeVisitor, cls._visitor_dict)
+
+        yield
+    finally:
+        directives._directives = _directives
+        roles._roles = _roles
+        reset_class(nodes.GenericNodeVisitor, _visitor_dict)
 
 
 class PageBuilder(object):
@@ -39,26 +65,34 @@ class PageBuilder(object):
     def setup_class(cls):
         cls.build_error = None
         cls.build_path = tempfile.mkdtemp()
-        try:  # Catch exceptions during test setup
-            cls.set_page_source()  # Sets page_source, maybe modifies source
-            cls.out_dir = pjoin(cls.build_path, cls.builder)
-            cls.doctree_dir = pjoin(cls.build_path, 'doctrees')
-            # Build the pages with warnings turned into errors
-            cls.build_cmd = ['sphinx-build', '-W', '-b', cls.builder,
-                             '-d', cls.doctree_dir,
-                             cls.page_source,
-                             cls.out_dir]
-        except Exception as e:  # Exceptions during test setup
-            shutil.rmtree(cls.build_path)
-            raise e
+        cls._directives = copy(fresh_directives)
+        cls._roles = copy(fresh_roles)
+        cls._visitor_dict = fresh_visitor_dict
+        with namespace(cls):
+            try:  # Catch exceptions during test setup
+                # Sets page_source, maybe modifies source
+                cls.set_page_source()
+                cls.out_dir = pjoin(cls.build_path, cls.builder)
+                cls.doctree_dir = pjoin(cls.build_path, 'doctrees')
+                # App to build the pages with warnings turned into errors
+                cls.build_app = Sphinx(
+                    cls.page_source,
+                    cls.page_source,
+                    cls.out_dir,
+                    cls.doctree_dir,
+                    cls.builder,
+                    warningiserror=True)
+            except Exception as e:  # Exceptions during test setup
+                shutil.rmtree(cls.build_path)
+                raise e
         cls.build_source()
 
     @classmethod
     def build_source(cls):
         try:  # Catch exceptions during sphinx build
-            proc = Popen(cls.build_cmd, stdout=PIPE, stderr=PIPE)
-            cls.stdout, cls.stderr = proc.communicate()
-            if proc.returncode != 0:
+            with namespace(cls):
+                cls.build_app.build(False, [])
+            if cls.build_app.statuscode != 0:
                 cls.build_error = "Unknown error"
         except Exception as e:  # Exceptions during sphinx build
             cls.build_error = e
@@ -67,9 +101,8 @@ class PageBuilder(object):
             return
         # An unexpected error - delete temp dir and report.
         shutil.rmtree(cls.build_path)
-        raise RuntimeError('sphinx-build failed with stdout:\n'
-                           '{0}\nstderr:\n{1}\nbuild error {2}'.format(
-                               cls.stdout, cls.stderr, cls.build_error))
+        raise RuntimeError('page build failed with build error {}'
+                           .format(cls.build_error))
 
     @classmethod
     def set_page_source(cls):

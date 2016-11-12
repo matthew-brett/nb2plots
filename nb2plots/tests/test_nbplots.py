@@ -4,10 +4,9 @@ from os.path import (join as pjoin, dirname, isdir)
 from io import StringIO
 
 from ..nbplots import run_code
-from .pagebuilder import setup_module
 from .test_proj1 import ModifiedProj1Builder
 
-from nose.tools import assert_true, assert_false, assert_equal, assert_raises
+from nose.tools import (assert_true, assert_false, assert_equal)
 
 HERE = dirname(__file__)
 OTHER_PAGES = pjoin(HERE, 'otherpages')

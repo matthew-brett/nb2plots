@@ -2,7 +2,7 @@
 
 from os.path import (join as pjoin, dirname, isdir, exists)
 
-from .pagebuilder import setup_module, PageBuilder, ModifiedPageBuilder
+from .pagebuilder import PageBuilder, ModifiedPageBuilder
 
 from nose.tools import assert_true, assert_equal
 
