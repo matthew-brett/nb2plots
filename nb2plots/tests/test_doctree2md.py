@@ -11,6 +11,9 @@ from os.path import (dirname, join as pjoin, abspath)
 from glob import glob
 import difflib
 
+from docutils import nodes
+from docutils.io import StringOutput
+from docutils.utils import new_document
 from docutils.core import publish_string
 from docutils.writers.pseudoxml import Writer as PXMLWriter
 
@@ -50,6 +53,11 @@ def assert_conv_equal(rst_str, md_expected):
     assert_equal(md_actual, md_expected, msg=msg)
 
 
+def assert_dt_equal(doctree, md_expected):
+    destination = StringOutput(encoding='utf8')
+    assert_equal(Writer().write(doctree, destination), md_expected)
+
+
 def test_example_files():
     # test rst2md script over all .rst files checking against .md files
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
@@ -65,6 +73,15 @@ def test_indent_level():
     assert_equal(len(level), 0)
     level.append('baz')
     assert_equal(len(level), 1)
+
+
+def test_container():
+    # Test container node passed through
+    doc = new_document('md-test')
+    container = nodes.container()
+    doc.append(container)
+    container.append(nodes.Text('Boo!'))
+    assert_dt_equal(doc, b'Boo!')
 
 
 def test_snippets():

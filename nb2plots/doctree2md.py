@@ -251,6 +251,12 @@ class Translator(nodes.NodeVisitor):
     def depart_document(self, node):
         pass
 
+    def visit_container(self, node):
+        pass
+
+    def depart_container(self, node):
+        pass
+
     def visit_emphasis(self, node):
         self.add(self.syntax_defs['emphasis'][0])
 
