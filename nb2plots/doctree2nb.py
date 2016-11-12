@@ -107,6 +107,9 @@ class Translator(d2m.Translator):
     def depart_container(self, node):
         self._in_nbplot = False
 
+    def visit_notebook_reference(self, node):
+        raise nodes.SkipNode
+
     def visit_literal_block(self, node):
         """ A literal block may be in an nbplot container """
         if not self._in_nbplot:

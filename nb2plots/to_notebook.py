@@ -143,7 +143,7 @@ def write_notebooks(app, exception):
         return
     for docname, to_build in env.notebooks.items():
         doctree = app.env.get_doctree(docname)
-        clear_nb = nbf.reads(doctree2ipynb(doctree))
+        clear_nb = nbf.reads(doctree2ipynb(doctree).decode('utf8'))
         for rel_fn in to_build.get('clear', []):
             out_fn = _relfn2outpath(rel_fn, app)
             write_notebook(clear_nb, out_fn)
