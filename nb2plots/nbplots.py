@@ -130,6 +130,9 @@ import sys, os, shutil, io, re, textwrap
 from os.path import relpath
 import traceback
 
+
+from docutils.statemachine import StringList
+from docutils import nodes
 from docutils.parsers.rst import directives
 from docutils.parsers.rst.directives.images import Image
 align = Image.align
@@ -192,6 +195,29 @@ class NBPlotDirective(Directive):
                    'encoding': directives.encoding,
                    'raises': directives.unchanged,
                   }
+
+    def rst2nodes(self, lines):
+        """ Build docutils nodes from list of ReST strings `lines`
+
+        Parameters
+        ----------
+        lines : list
+            list of strings containing ReST.
+
+        Returns
+        -------
+        nodes : list
+            length 1 list of nodes, where contained node is of type
+            'container', and container contents are nodes generated from ReST
+            in `lines`.
+        """
+        text = '\n'.join(lines)
+        node = nodes.container(text)
+        contents = StringList(lines)
+        node['classes'].append('nbplot')
+        self.add_name(node)
+        self.state.nested_parse(contents, self.content_offset, node)
+        return [node]
 
     def run(self):
         document = self.state.document
@@ -349,9 +375,7 @@ class NBPlotDirective(Directive):
             total_lines.extend(result.split("\n"))
             total_lines.extend("\n")
 
-        if total_lines:
-            self.state_machine.insert_input(
-                total_lines, source=source_file_name)
+        new_nodes = self.rst2nodes(total_lines) if total_lines else []
 
         # copy image files to builder's output directory, if necessary
         if not os.path.exists(dest_dir):
@@ -373,7 +397,7 @@ class NBPlotDirective(Directive):
                 code_escaped = code
             f.write(code_escaped)
 
-        return errors
+        return new_nodes + errors
 
 
 def mark_plot_labels(app, document):
