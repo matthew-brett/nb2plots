@@ -14,3 +14,6 @@ try:
     import nbconvert
 except ImportError:
     from IPython import nbconvert
+
+# Use notebook format version 4 by default
+nbf = nbformat.v4

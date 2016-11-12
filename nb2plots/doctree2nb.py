@@ -7,7 +7,7 @@ from textwrap import dedent
 
 from docutils import nodes
 
-from .to_notebook import nbf
+from .ipython_shim import nbf
 from . import doctree2md as d2m
 
 # The following regular expression comes from Python source file "doctest.py".

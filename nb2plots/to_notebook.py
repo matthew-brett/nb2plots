@@ -14,8 +14,7 @@ from sphinx.util.nodes import split_explicit_title, set_role_source_info
 from sphinx.errors import ExtensionError
 
 # Use notebook format version 4
-from .ipython_shim import nbformat
-nbf = nbformat.v4
+from .ipython_shim import nbf
 
 
 class ToNotebookError(ExtensionError):
