@@ -41,15 +41,17 @@ def _diff_strs(first, second):
     return ''.join(difflib.ndiff(firstlines, secondlines))
 
 
-def assert_conv_equal(rst_str, md_expected):
+def assert_conv_equal(rst_str, md_expected, encoding='utf8'):
     md_actual = publish_string(rst_str, writer=Writer())
     if (md_actual == md_expected):
         assert_equal(md_actual, md_expected)
         return
     # Make some useful debugging output
-    msg = 'actual, expected not equal:\n' + _diff_strs(md_actual, md_expected)
+    msg = ('actual, expected not equal:\n' +
+           _diff_strs(md_actual.decode(encoding),
+                      md_expected.decode(encoding)))
     pxml = publish_string(rst_str, writer=PXMLWriter())
-    msg += '\nwith doctree\n' + pxml
+    msg += '\nwith doctree\n' + pxml.decode(encoding)
     assert_equal(md_actual, md_expected, msg=msg)
 
 

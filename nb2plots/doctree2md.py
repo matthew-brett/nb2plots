@@ -95,21 +95,76 @@ class IndentLevel(object):
         self.base.append(''.join(texts))
 
 
+def _make_method(to_add):
+    """ Make a method that adds `to_add`
+
+    We need this function so that `to_add` is a fresh and unique variable at
+    the time the method is defined.
+    """
+
+    def method(self, node):
+        self.add(to_add)
+
+    return method
+
+
+def add_pref_suff(pref_suff_map):
+    """ Decorator adds visit, depart methods for prefix/suffix pairs
+    """
+    def dec(cls):
+        # Need _make_method to ensure new variable picked up for each iteration
+        # of the loop.  The defined method picks up this new variable in its
+        # scope.
+        for key, (prefix, suffix) in pref_suff_map.items():
+            setattr(cls, 'visit_' + key, _make_method(prefix))
+            setattr(cls, 'depart_' + key, _make_method(suffix))
+        return cls
+
+    return dec
+
+
+def add_pass_thru(pass_thrus):
+    """ Decorator adds explicit pass-through visit and depart methods
+    """
+    def meth(self, node):
+        pass
+
+    def dec(cls):
+        for element_name in pass_thrus:
+            for meth_prefix in ('visit_', 'depart_'):
+                meth_name = meth_prefix + element_name
+                if hasattr(cls, meth_name):
+                    raise ValueError('method name {} already defined'
+                                     .format(meth_name))
+                setattr(cls, meth_name, meth)
+        return cls
+
+    return dec
+
+
+# Doctree elements for which Markdown element is <prefix><content><suffix>
+PREF_SUFF_ELEMENTS = {
+    'emphasis': ('*', '*'),   # Could also use ('_', '_')
+    'problematic' : ('\n\n', '\n\n'),
+    'strong' : ('**', '**'),  # Could also use ('__', '__')
+    'literal' : ('`', '`'),
+    'math' : ('$', '$'),
+    'subscript' : ('<sub>', '</sub>'),
+    'superscript' : ('<sup>', '</sup>'),
+}
+
+# Doctree elements explicitly passed through without extra markup
+PASS_THRU_ELEMENTS = ('document',
+                      'container',
+                      'target',
+                      'inline')
+
+
+@add_pass_thru(PASS_THRU_ELEMENTS)
+@add_pref_suff(PREF_SUFF_ELEMENTS)
 class Translator(nodes.NodeVisitor):
 
     std_indent = '    '
-
-    # Customise Markdown syntax here. Still need to add term,
-    # indent, problematic etc...
-    syntax_defs = {
-        'emphasis': ('*', '*'),   # Could also use ('_', '_')
-        'problematic' : ('\n\n', '\n\n'),
-        'strong' : ('**', '**'),  # Could also use ('__', '__')
-        'literal' : ('`', '`'),
-        'math' : ('$', '$'),
-        'subscript' : ('<sub>', '</sub>'),
-        'superscript' : ('<sup>', '</sup>'),
-    }
 
     def __init__(self, document):
         nodes.NodeVisitor.__init__(self, document)
@@ -117,6 +172,8 @@ class Translator(nodes.NodeVisitor):
         lcode = settings.language_code
         self.language = languages.get_language(lcode, document.reporter)
         self.head, self.body, self.foot = [], [], []
+        # Warn only once per writer about unsupported elements
+        self._warned = set()
         # Reset attributes modified by reading
         self.reset()
         # Lookup table to get section list from name
@@ -155,8 +212,6 @@ class Translator(nodes.NodeVisitor):
             'version' : '',
             }
 
-    # Utility methods
-
     def astext(self):
         """Return the final formatted document as a string."""
         self.drop_trailing_eols()
@@ -167,11 +222,6 @@ class Translator(nodes.NodeVisitor):
         for L in self._lists.values():
             if L and L[-1] == '\n':
                 L.pop()
-
-    def deunicode(self, text):
-        text = text.replace(u'\xa0', '\\ ')
-        text = text.replace(u'\u2020', '\\(dg')
-        return text
 
     def ensure_eol(self):
         """Ensure the last line in current base is terminated by new line."""
@@ -225,8 +275,6 @@ class Translator(nodes.NodeVisitor):
         level = self.indent_levels.pop()
         level.write()
 
-    # Node visitor methods
-
     def visit_Text(self, node):
         text = node.astext()
         self.add(text)
@@ -244,24 +292,6 @@ class Translator(nodes.NodeVisitor):
         else:
             self._docinfo[name] = node.astext()
         raise nodes.SkipNode
-
-    def visit_document(self, node):
-        pass
-
-    def depart_document(self, node):
-        pass
-
-    def visit_container(self, node):
-        pass
-
-    def depart_container(self, node):
-        pass
-
-    def visit_emphasis(self, node):
-        self.add(self.syntax_defs['emphasis'][0])
-
-    def depart_emphasis(self, node):
-        self.add(self.syntax_defs['emphasis'][1])
 
     def visit_paragraph(self, node):
         pass
@@ -291,35 +321,11 @@ class Translator(nodes.NodeVisitor):
     def depart_block_quote(self, node):
         self.finish_level()
 
-    def visit_problematic(self, node):
-        self.add(self.syntax_defs['problematic'][0])
-
-    def depart_problematic(self, node):
-        self.add(self.syntax_defs['problematic'][1])
-
     def visit_section(self, node):
         self.section_level += 1
 
     def depart_section(self, node):
         self.section_level -= 1
-
-    def visit_strong(self, node):
-        self.add(self.syntax_defs['strong'][0])
-
-    def depart_strong(self, node):
-        self.add(self.syntax_defs['strong'][1])
-
-    def visit_literal(self, node):
-        self.add(self.syntax_defs['literal'][0])
-
-    def depart_literal(self, node):
-        self.add(self.syntax_defs['literal'][1])
-
-    def visit_math(self, node):
-        self.add(self.syntax_defs['math'][0])
-
-    def depart_math(self, node):
-        self.add(self.syntax_defs['math'][1])
 
     def visit_enumerated_list(self, node):
         self.list_prefixes.append('1. ')
@@ -340,22 +346,10 @@ class Translator(nodes.NodeVisitor):
     def depart_list_item(self, node):
         self.finish_level()
 
-    def visit_subscript(self, node):
-        self.add(self.syntax_defs['subscript'][0])
-
-    def depart_subscript(self, node):
-        self.add(self.syntax_defs['subscript'][1])
-
     def visit_subtitle(self, node):
         if isinstance(node.parent, nodes.document):
             self.visit_docinfo_item(node, 'subtitle')
             raise nodes.SkipNode
-
-    def visit_superscript(self, node):
-        self.add(self.syntax_defs['superscript'][0])
-
-    def depart_superscript(self, node):
-        self.add(self.syntax_defs['superscript'][1])
 
     def visit_system_message(self, node):
         # TODO add report_level
@@ -401,56 +395,12 @@ class Translator(nodes.NodeVisitor):
     def depart_reference(self, node):
         pass
 
-    def visit_target(self, node):
-        pass
-
-    def depart_target(self, node):
-        pass
-
-    def visit_inline(self, node):
-        pass
-
-    def depart_inline(self, node):
-        pass
-
-# The following code adds visit/depart methods for any reStructuredText element
-# which we have not explicitly implemented above.
-
-# All reStructuredText elements:
-rst_elements = ('abbreviation', 'acronym', 'address', 'admonition',
-    'attention', 'attribution', 'author', 'authors', 'block_quote', 
-    'bullet_list', 'caption', 'caution', 'citation', 'citation_reference', 
-    'classifier', 'colspec', 'comment', 'compound', 'contact', 'container', 
-    'copyright', 'danger', 'date', 'decoration', 'definition',
-    'definition_list', 'definition_list_item', 'description', 'docinfo', 
-    'doctest_block', 'document', 'emphasis', 'entry', 'enumerated_list', 
-    'error', 'field', 'field_body', 'field_list', 'field_name', 'figure', 
-    'footer', 'footnote', 'footnote_reference', 'generated', 'header', 
-    'hint', 'image', 'important', 'inline', 'label', 'legend', 'line', 
-    'line_block', 'list_item', 'literal', 'literal_block', 'math', 
-    'math_block', 'note', 'option' ,'option_argument', 'option_group', 
-    'option_list', 'option_list_item', 'option_string', 'organization', 
-    'paragraph', 'pending', 'problematic', 'raw', 'reference', 'revision', 
-    'row', 'rubric', 'section', 'sidebar', 'status', 'strong', 'subscript', 
-    'substitution_definition', 'substitution_reference', 'subtitle', 
-    'superscript', 'system_message', 'table', 'target', 'tbody,' 'term', 
-    'tgroup', 'thead', 'tip', 'title', 'title_reference', 'topic', 
-    'transition','version','warning',)
-
-##TODO Eventually we should silently ignore unsupported reStructuredText 
-##     constructs and document somewhere that they are not supported.
-##     In the meantime raise a warning *once* for each unsupported element.
-_warned = set()
-
-def visit_unsupported(self, node):
-    node_type = node.__class__.__name__
-    if node_type not in _warned:
-        self.document.reporter.warning('The ' + node_type + \
-            ' element is not supported.')
-        _warned.add(node_type)
-    raise nodes.SkipNode
-
-for element in rst_elements:
-    if not hasattr(Translator, 'visit_' + element):
-        setattr(Translator, 'visit_' + element , visit_unsupported)
-
+    def unknown_visit(self, node):
+        """ Warn once per instance for unsupported nodes
+        """
+        node_type = node.__class__.__name__
+        if node_type not in self._warned:
+            self.document.reporter.warning('The ' + node_type + \
+                ' element is not supported.')
+            self._warned.add(node_type)
+        raise nodes.SkipNode
