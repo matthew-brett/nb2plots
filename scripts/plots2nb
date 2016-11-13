@@ -1,0 +1,38 @@
+#!python
+""" Convert single ReST document to notebook JSON
+
+Example:
+
+    plots2nb example.rst
+
+Write to <fname>.ipynb by default.
+"""
+# vim: ft=python
+from __future__ import division, print_function, absolute_import
+
+from os.path import splitext
+from argparse import ArgumentParser
+
+from nb2plots.to_notebook import rst2ipynb
+
+
+def main():
+    parser = ArgumentParser(
+        description="Convert ReST file to notebook JSON")
+    parser.add_argument('rst_file', help = 'ReST file to convert')
+    parser.add_argument('--conf-dir',
+                        help = 'directory containing conf.py file')
+    parser.add_argument('--out-file',
+                        help = 'filename to save notebook to')
+    args = parser.parse_args()
+    if args.out_file is None:
+        out_file = splitext(args.rst_file)[0] + '.ipynb'
+    else:
+        out_file = args.out_file
+    ipynb_json = rst2ipynb(args.rst_file, conf_dir=args.conf_dir)
+    with open(out_file, 'wb') as fobj:
+        fobj.write(ipynb_json)
+
+
+if __name__ == '__main__':
+    main()

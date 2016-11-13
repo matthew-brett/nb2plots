@@ -1,29 +1,16 @@
 """ Test conversion of doctree to Jupyter notebook
 """
 
-from nb2plots.doctree2nb import doctree2ipynb
 from nb2plots.doctree2nb import parse_doctest
-from nb2plots.to_notebook import nbf
+from nb2plots.to_notebook import rst2ipynb
+from nb2plots.ipython_shim import nbf
+
 # Shortcuts
 n_nb = nbf.new_notebook
 n_md_c = nbf.new_markdown_cell
 n_c_c = nbf.new_code_cell
 
-from nb2plots.sphinxutils import TempApp
-
 from nose.tools import assert_equal
-
-
-def build_rst(rst_text, conf_text=None):
-    app = TempApp(rst_text, conf_text)
-    app.build(False, [])
-    doctree = app.env.get_doctree('contents')
-    return app, doctree
-
-
-def rst2ipynb(rst_text):
-    app, doctree = build_rst(rst_text)
-    return doctree2ipynb(doctree)
 
 
 def cells2json(cells):

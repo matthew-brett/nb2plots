@@ -1,10 +1,8 @@
 """ Sphinx extension to convert RST pages to notebooks """
 
 import re
-import os
 from os.path import (join as pjoin, relpath, splitext,
                      abspath, dirname, exists)
-import pickle
 
 from docutils import nodes, utils
 from docutils.parsers.rst import directives
@@ -17,6 +15,31 @@ from sphinx.errors import ExtensionError
 from .ipython_shim import nbf
 
 from .doctree2nb import doctree2ipynb, Translator
+
+from nb2plots.sphinxutils import build_rst
+
+
+def rst2ipynb(rst_text, conf_txt=None, conf_dir=None):
+    """ Build ReST text `rst_text` into doctree
+
+    Parameters
+    ----------
+    rst_text : str
+        string containing ReST to build.
+    conf_txt : None or str, optional
+        text for configuration ``conf.py`` file.  None gives a default conf
+        file.
+    conf_dir : None or str, optional
+        directory containing ``conf.py`` file. `conf_txt` must be None when
+        `conf_dir` is a string.
+
+    Returns
+    -------
+    doctree : node
+        document node containing parsed `rst_text`.
+    """
+    app, doctree = build_rst(rst_text, conf_txt, conf_dir=conf_dir)
+    return doctree2ipynb(doctree)
 
 
 class ToNotebookError(ExtensionError):

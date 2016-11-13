@@ -70,19 +70,33 @@ class TempApp(TestApp):
     """
 
     def __init__(self, rst_text, conf_text=None, buildername='html',
-                 warningiserror=True):
+                 warningiserror=True, conf_dir=None):
+        if conf_dir is None and conf_text is not None:
+            raise ValueError('conf_text must be None if conf_dir set')
         conf_text = DEFAULT_CONF if conf_text is None else conf_text
         tmp_dir = mkdtemp()
         self.tmp_dir = tmp_dir
-        with open(pjoin(tmp_dir, 'conf.py'), 'wt') as fobj:
-            fobj.write(conf_text)
+        if conf_dir is None:
+            conf_dir = tmp_dir
+            with open(pjoin(tmp_dir, 'conf.py'), 'wt') as fobj:
+                fobj.write(conf_text)
         with open(pjoin(tmp_dir, 'contents.rst'), 'wt') as fobj:
             fobj.write(rst_text)
+        # Write a default index file in case we're using a conf file that needs
+        # it.
+        with open(pjoin(tmp_dir, 'index.rst'), 'wt') as fobj:
+            fobj.write("""\
+.. toctree::
+    :hidden:
+
+    contents
+    index
+""")
         self._set_cache()
         with self.own_namespace():
             TestApp.__init__(self,
                              tmp_dir,
-                             tmp_dir,
+                             conf_dir,
                              tmp_dir,
                              tmp_dir,
                              buildername,
@@ -92,3 +106,8 @@ class TempApp(TestApp):
         shutil.rmtree(self.tmp_dir)
 
 
+def build_rst(rst_text, conf_text=None, conf_dir=None):
+    app = TempApp(rst_text, conf_text, conf_dir=conf_dir)
+    app.build(False, [])
+    doctree = app.env.get_doctree('contents')
+    return app, doctree
