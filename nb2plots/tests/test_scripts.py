@@ -7,6 +7,7 @@ Test running scripts
 from __future__ import division, print_function, absolute_import
 
 from os.path import (dirname, join as pjoin, abspath)
+from glob import glob
 
 from nose.tools import (assert_true, assert_false, assert_not_equal,
                         assert_equal)
@@ -22,17 +23,18 @@ def script_test(func):
     # Decorator to label test as a script_test
     func.script_test = True
     return func
-script_test.__test__ = False # It's not a test
+script_test.__test__ = False # It's not a nose test
 
-DATA_PATH = abspath(pjoin(dirname(__file__), 'data'))
+DATA_PATH = abspath(pjoin(dirname(__file__), 'rst_md_files'))
 
 
 @script_test
-def test_nb2plots():
-    # test nb2plots script
-    fname = pjoin(DATA_PATH, 'small.ipynb')
-    cmd = ['nb2plots', fname]
-    code, stdout, stderr = run_command(cmd)
-    with open(pjoin(DATA_PATH, 'small.rst'), 'rb') as fobj:
-        expected_rst = fobj.read()
-    assert_equal(stdout, expected_rst)
+def test_rst2md():
+    # test rst2md script over all .rst files checking against .md files
+    for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
+        md_fname = rst_fname[:-3] + 'md'
+        cmd = ['rst2md', rst_fname]
+        code, stdout, stderr = run_command(cmd)
+        with open(md_fname, 'rb') as fobj:
+            expected_md = fobj.read()
+        assert_equal(stdout, expected_md)

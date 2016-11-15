@@ -1,0 +1,28 @@
+#!python
+"""
+rst2md
+======
+
+A command line interface that uses the Markdown writer to output from
+ReStructuredText source.
+"""
+
+import locale
+try:
+    locale.setlocale(locale.LC_ALL, '')
+except:
+    pass
+
+from docutils.core import publish_cmdline, default_description
+
+from nb2plots.doctree2md import Writer
+
+description = ('Generates Markdown formatted text from standalone '
+               'reStructuredText sources.  ' + default_description)
+
+def main():
+    publish_cmdline(writer=Writer(), description=description)
+
+
+if __name__ == '__main__':
+    main()

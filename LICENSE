@@ -116,10 +116,11 @@ The following license covers the plot directive code:
 rst2md
 ------
 
-The file nb2plots/doctree2md.py derives from the "markdown.py" file from
-"rst2md" project by Chris Wrench: https://github.com/cgwrench/rst2md
+The files nb2plots/doctree2md.py and scripts/rst2md derive from the
+"markdown.py" and "rst2md.py" files from "rst2md" project by Chris Wrench:
+https://github.com/cgwrench/rst2md
 
-``doctree2md.py`` has the following license:
+``rst2md`` has the following license:
 
      Copyright (c) 2012, C. G. Wrench <c.g.wrench@gmail.com>
      All rights reserved.
@@ -145,4 +146,3 @@ The file nb2plots/doctree2md.py derives from the "markdown.py" file from
      LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
      NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
      SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
