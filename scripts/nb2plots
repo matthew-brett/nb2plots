@@ -11,9 +11,8 @@ Prints to stdout
 from __future__ import division, print_function, absolute_import
 
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser
 
-from nb2plots import __version__
 from nb2plots.from_notebook import convert_nb_fname
 
 # Bytes stream for writing to stdout
@@ -21,14 +20,11 @@ bin_stdout = sys.stdout.buffer if sys.version_info[0] > 2 else sys.stdout
 
 
 def main():
-    parser = OptionParser(
-        usage="%s NOTEBOOK_FNAME\n\n" % sys.argv[0] + __doc__,
-        version="%prog " + __version__)
-    (opts, notebooks) = parser.parse_args()
-    if len(notebooks) != 1:
-        parser.print_help()
-        sys.exit(1)
-    rst_text = convert_nb_fname(notebooks[0]) + '\n'
+    parser = ArgumentParser(
+        description="Convert notebook to ReST format with plot directives")
+    parser.add_argument('notebook', help = 'notebook file to convert')
+    args = parser.parse_args()
+    rst_text = convert_nb_fname(args.notebook) + '\n'
     bin_stdout.write(rst_text.encode('utf8'))
 
 
