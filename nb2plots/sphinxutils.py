@@ -1,6 +1,7 @@
 """ Utilties for running sphinx tasks in-process
 """
 
+import sys
 from os.path import join as pjoin
 import shutil
 from contextlib import contextmanager
@@ -61,53 +62,77 @@ class TestApp(Sphinx):
 
 DEFAULT_CONF =  """\
 extensions = ["nb2plots.nbplots",
-              "nb2plots.to_notebook"]
+              "nb2plots.to_notebook",
+              'sphinx.ext.mathjax']
 """
 
 
 class TempApp(TestApp):
-    """ An application running in its own temporary directory
+    """ An application pointing to its own temporary directory.
+
+    The instance deletes its temporary directory when garbage collected.
+
+    Parameters
+    ----------
+    rst_text : str
+        string containing ReST to build.
+    conf_text : None or str, optional
+        text for configuration ``conf.py`` file.  Default is None, equivalent
+        to a minimum conf file loading nbplots and to_notebook extensions.
+    status : file-like object or None
+        File-like object to which to write build status messages, or None for
+        no build status messages.
+    warningiserror : {True, False}, optional
+        if True, raise an error for warning during the Sphinx build.
     """
 
-    def __init__(self, rst_text, conf_text=None, buildername='html',
-                 warningiserror=True, conf_dir=None):
-        if conf_dir is None and conf_text is not None:
-            raise ValueError('conf_text must be None if conf_dir set')
+    def __init__(self, rst_text, conf_text=DEFAULT_CONF, buildername='html',
+                 status=sys.stdout, warningiserror=True):
         conf_text = DEFAULT_CONF if conf_text is None else conf_text
-        tmp_dir = mkdtemp()
-        self.tmp_dir = tmp_dir
-        if conf_dir is None:
-            conf_dir = tmp_dir
-            with open(pjoin(tmp_dir, 'conf.py'), 'wt') as fobj:
-                fobj.write(conf_text)
+        self.tmp_dir = tmp_dir = mkdtemp()
+        with open(pjoin(tmp_dir, 'conf.py'), 'wt') as fobj:
+            fobj.write(conf_text)
         with open(pjoin(tmp_dir, 'contents.rst'), 'wt') as fobj:
             fobj.write(rst_text)
-        # Write a default index file in case we're using a conf file that needs
-        # it.
-        with open(pjoin(tmp_dir, 'index.rst'), 'wt') as fobj:
-            fobj.write("""\
-.. toctree::
-    :hidden:
-
-    contents
-    index
-""")
         self._set_cache()
         with self.own_namespace():
             TestApp.__init__(self,
                              tmp_dir,
-                             conf_dir,
+                             tmp_dir,
                              tmp_dir,
                              tmp_dir,
                              buildername,
+                             status=status,
                              warningiserror=warningiserror)
 
     def __del__(self):
         shutil.rmtree(self.tmp_dir)
 
 
-def build_rst(rst_text, conf_text=None, conf_dir=None):
-    app = TempApp(rst_text, conf_text, conf_dir=conf_dir)
+def build_rst(rst_text, conf_text=None, status=sys.stdout,
+              warningiserror=True):
+    """ Build ReST text in string `rst_text` into doctree.
+
+    Parameters
+    ----------
+    rst_text : str
+        string containing ReST to build.
+    conf_text : None or str, optional
+        text for configuration ``conf.py`` file.  Default is None, equivalent
+        to a minimum conf file loading nbplots and to_notebook extensions.
+    status : file-like object or None
+        File-like object to which to write build status messages, or None for
+        no build status messages.
+    warningiserror : {True, False}, optional
+        if True, raise an error for warning during the Sphinx build.
+
+    Returns
+    -------
+    doctree : node
+        doccument node.
+    """
+    app = TempApp(rst_text, conf_text, status=status,
+                  warningiserror=warningiserror)
     app.build(False, [])
     doctree = app.env.get_doctree('contents')
-    return app, doctree
+    return doctree

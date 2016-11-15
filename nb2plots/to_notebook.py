@@ -1,8 +1,8 @@
 """ Sphinx extension to convert RST pages to notebooks """
 
+import sys
 import re
-from os.path import (join as pjoin, relpath, splitext,
-                     abspath, dirname, exists)
+from os.path import join as pjoin
 
 from docutils import nodes, utils
 from docutils.parsers.rst import directives
@@ -19,7 +19,7 @@ from .doctree2nb import doctree2ipynb, Translator
 from nb2plots.sphinxutils import build_rst
 
 
-def rst2ipynb(rst_text, conf_txt=None, conf_dir=None):
+def rst2ipynb(rst_text, conf_txt=None, status=sys.stdout, warningiserror=True):
     """ Build ReST text `rst_text` into doctree
 
     Parameters
@@ -29,16 +29,19 @@ def rst2ipynb(rst_text, conf_txt=None, conf_dir=None):
     conf_txt : None or str, optional
         text for configuration ``conf.py`` file.  None gives a default conf
         file.
-    conf_dir : None or str, optional
-        directory containing ``conf.py`` file. `conf_txt` must be None when
-        `conf_dir` is a string.
+    status : file-like object or None
+        File-like object to which to write build status messages, or None for
+        no build status messages.
+    warningiserror : {True, False}, optional
+        if True, raise an error for warning during the Sphinx build.
 
     Returns
     -------
-    doctree : node
-        document node containing parsed `rst_text`.
+    ipynb_json
+        JSON byte string representing notebook from `rst_text`.
     """
-    app, doctree = build_rst(rst_text, conf_txt, conf_dir=conf_dir)
+    doctree = build_rst(rst_text, conf_txt, status=status,
+                        warningiserror=warningiserror)
     return doctree2ipynb(doctree)
 
 
