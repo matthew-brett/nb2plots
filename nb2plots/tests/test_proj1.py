@@ -2,12 +2,11 @@
 
 from os.path import (join as pjoin, dirname, isdir, exists)
 
-from .pagebuilder import PageBuilder, ModifiedPageBuilder
+from nb2plots.sphinxutils import ModifiedPageBuilder
 
 from nose.tools import assert_true, assert_equal
 
 HERE = dirname(__file__)
-PAGES = pjoin(HERE, 'proj1')
 
 PAGE_HEADER = """\
 A title
@@ -16,7 +15,13 @@ A title
 """
 
 class Proj1Builder(ModifiedPageBuilder):
-    page_source_template = PAGES
+    """ Build using 'proj1' directory as template to modify
+    """
+
+    page_source_template = pjoin(HERE, 'proj1')
+
+    # default_page used in 'replace_page' class method
+    default_page = 'a_page.rst'
 
 
 class TestProj1(Proj1Builder):
@@ -41,12 +46,7 @@ class TestProj1(Proj1Builder):
         assert_true(exists(pjoin(self.build_path, 'html', 'a_page.ipynb')))
 
 
-class ModifiedProj1Builder(ModifiedPageBuilder):
-    page_source_template = PAGES
-    default_page = 'a_page.rst'
-
-
-class TestNotSameName(ModifiedProj1Builder):
+class TestNotSameName(Proj1Builder):
 
     @classmethod
     def modify_source(cls):
@@ -59,8 +59,7 @@ class TestNotSameName(ModifiedProj1Builder):
 """)
 
 
-class TestSameName(ModifiedPageBuilder):
-    page_source_template = PAGES
+class TestSameName(Proj1Builder):
     should_error = True
 
     @classmethod

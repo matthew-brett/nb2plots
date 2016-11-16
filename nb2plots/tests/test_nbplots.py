@@ -2,14 +2,17 @@
 
 from os.path import (join as pjoin, dirname, isdir)
 
-from ..nbplots import run_code
-from .test_proj1 import ModifiedProj1Builder
-from .pagebuilder import SourcesBuilder
+from nb2plots.nbplots import run_code
+from nb2plots.sphinxutils import SourcesBuilder
 
 from nose.tools import (assert_true, assert_false, assert_equal)
 
 HERE = dirname(__file__)
-OTHER_PAGES = pjoin(HERE, 'otherpages')
+
+
+def get_otherpage(fname):
+    with open(pjoin(HERE, 'otherpages', fname), 'rt') as fobj:
+        return fobj.read()
 
 
 def file_same(file1, file2):
@@ -37,14 +40,13 @@ def test_run_code():
     run_code('d', raises=NameError)
 
 
-class TestNbplots(ModifiedProj1Builder):
+class TestNbplots(SourcesBuilder):
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
-                        'nbplot_include_source = False\n'
-                        'nbplot_html_show_source_link = True')
-        cls.replace_page(pjoin(OTHER_PAGES, 'some_plots.rst'))
+    conf_source = ('extensions = ["nb2plots.nbplots"]\n'
+                   'nbplot_include_source = False\n'
+                   'nbplot_html_show_source_link = True')
+
+    rst_sources = dict(a_page=get_otherpage('some_plots.rst'))
 
     def test_some_plots(self):
         assert_true(isdir(self.out_dir))
@@ -267,7 +269,7 @@ Plot color resumes at red:
         assert_true(file_same(gpf('b_page', 1), red_bright))
 
 
-class TestDefaultPre(ModifiedProj1Builder):
+class TestDefaultPre(PlotsBuilder):
     """ Check that default pre code is importing numpy as pyplot
 
     Tested in plot directive body
