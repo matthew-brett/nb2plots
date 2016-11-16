@@ -174,6 +174,10 @@ def _option_align(arg):
         ("top", "middle", "bottom", "left", "center", "right"))
 
 
+class nbplot(nodes.container):
+    pass
+
+
 class NBPlotDirective(Directive):
     """ Implements nbplot directive
 
@@ -208,13 +212,12 @@ class NBPlotDirective(Directive):
         -------
         nodes : list
             length 1 list of nodes, where contained node is of type
-            'container', and container contents are nodes generated from ReST
-            in `lines`.
+            'nbplot', and nbplot node contents are nodes generated from ReST in
+            `lines`.
         """
         text = '\n'.join(lines)
-        node = nodes.container(text)
+        node = nbplot(text)
         contents = StringList(lines)
-        node['classes'].append('nbplot')
         self.add_name(node)
         self.state.nested_parse(contents, self.content_offset, node)
         return [node]
@@ -439,11 +442,21 @@ def clear_reset_marker(app, env, docname):
     env.nbplot_reset_markers[docname] = False
 
 
+def null_visit(self, node):
+    pass
+
+
+def null_depart(self, node):
+    pass
+
+
 def setup(app):
     setup.app = app
     setup.config = app.config
     setup.confdir = app.confdir
 
+    app.add_node(nbplot, **{builder: (null_visit, null_depart)
+                            for builder in ('html', 'latex', 'text')})
     app.add_directive('nbplot', NBPlotDirective)
     pre_default = "import numpy as np\nfrom matplotlib import pyplot as plt\n"
     app.add_config_value('nbplot_pre_code', pre_default, True)
