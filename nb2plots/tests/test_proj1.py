@@ -15,7 +15,7 @@ A title
 
 """
 
-class Proj1Builder(PageBuilder):
+class Proj1Builder(ModifiedPageBuilder):
     page_source_template = PAGES
 
 

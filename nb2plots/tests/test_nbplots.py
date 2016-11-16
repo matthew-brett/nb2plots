@@ -1,10 +1,10 @@
 """ Tests for build using nbplot extension """
 
 from os.path import (join as pjoin, dirname, isdir)
-from io import StringIO
 
 from ..nbplots import run_code
 from .test_proj1 import ModifiedProj1Builder
+from .pagebuilder import SourcesBuilder
 
 from nose.tools import (assert_true, assert_false, assert_equal)
 
@@ -77,14 +77,17 @@ class TestNbplots(ModifiedProj1Builder):
         assert_true('href=".//a_page-1.py">Source code</a>' in html)
 
 
-class TestDefaultSource(ModifiedProj1Builder):
+class PlotsBuilder(SourcesBuilder):
+    """ Build pages with nbplots default extensions
+    """
+
+    conf_source = 'extensions = ["nb2plots.nbplots", "sphinx.ext.doctest"]'
+
+
+class TestDefaultSource(PlotsBuilder):
     """ Check that default is to include source, not source links """
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    rst_sources = dict(a_page="""\
 A title
 -------
 
@@ -106,19 +109,17 @@ A title
         assert_false('href=".//a_page-1.py">Source code</a>' in html)
 
 
-class TestAnnoyingParens(ModifiedProj1Builder):
+class TestAnnoyingParens(PlotsBuilder):
     """ Test we've fixed the empty parens bug
 
     The matplotlib plotter puts an annoying empty open/close parens in the
     output when html source link is off, and there are no figures.
     """
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
-                        'nbplot_html_show_source_link = False')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    conf_source = ('extensions = ["nb2plots.nbplots"]\n'
+                   'nbplot_html_show_source_link = False')
+
+    rst_sources = dict(a_page="""\
 A title
 -------
 
@@ -134,14 +135,11 @@ A title
         assert_false('<p>()</p>' in html_contents)
 
 
-class TestDefaultContext(ModifiedProj1Builder):
+class TestDefaultContext(PlotsBuilder):
     """ Test that default context is to keep across plots, reset each doc
     """
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+
+    rst_sources = dict(a_page="""\
 A title
 -------
 
@@ -174,8 +172,9 @@ Yet more text.
     # Here, no plot, without the keepfigs directive
     assert b == 4
 
-""")
-        cls.add_page(StringIO(u"""\
+""",
+
+                      another_page="""\
 Another title
 -------------
 
@@ -191,7 +190,7 @@ Some text.
 
     c = a
 
-"""), 'another_page')
+""")
 
     def test_rebuild_context(self):
         # Does rebuilding still delete context? (Tested in nbplots asserts)
@@ -202,15 +201,12 @@ Some text.
         self.__class__.build_source()
 
 
-class TestRcparams(ModifiedProj1Builder):
+class TestRcparams(PlotsBuilder):
     """ Test that rcparams get applied and kept across plots in documents
     """
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
-                        'nbplot_rcparams = {"text.color": "red"}\n')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    conf_source = ('extensions = ["nb2plots.nbplots"]\n'
+                   'nbplot_rcparams = {"text.color": "red"}\n')
+    rst_sources = dict(a_page="""\
 The start
 ---------
 
@@ -239,8 +235,8 @@ Plot 4 - new default is blue:
 
     plt.text(0, 0, 'Open up my eager eyes', color='blue')
 
-""")
-        cls.add_page(StringIO(u"""
+""",
+                       b_page="""
 Another title
 -------------
 
@@ -255,7 +251,7 @@ Plot color resumes at red:
     plt.rcParams['text.color'] = 'blue'
     plt.text(0, 0, "Open up my eager eyes")
 
-"""), 'b_page')
+""")
 
     def test_rcparams(self):
         # Test plot rcparams applied at beginning of page
@@ -277,11 +273,7 @@ class TestDefaultPre(ModifiedProj1Builder):
     Tested in plot directive body
     """
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    rst_sources=dict(a_page="""\
 A title
 -------
 
@@ -292,18 +284,14 @@ A title
 """)
 
 
-class TestNonDefaultPre(ModifiedProj1Builder):
+class TestNonDefaultPre(PlotsBuilder):
     """ Check that pre code is run in fresh plot context
 
     Tested in plot directive body
     """
-
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n'
-                        'nbplot_pre_code = "import numpy as foo; bar = 1"\n')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    conf_source=('extensions = ["nb2plots.nbplots"]\n'
+                 'nbplot_pre_code = "import numpy as foo; bar = 1"\n')
+    rst_sources=dict(a_page="""\
 A title
 -------
 
@@ -314,7 +302,7 @@ A title
 """)
 
 
-class TestHiddenDoctests(ModifiedProj1Builder):
+class TestHiddenDoctests(PlotsBuilder):
     """ Check that doctest code gets hidden but still run
 
     Build using text builder to get more simply testable output.
@@ -322,12 +310,7 @@ class TestHiddenDoctests(ModifiedProj1Builder):
 
     builder = 'text'
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots",'
-                        '"sphinx.ext.doctest"]')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    rst_sources=dict(a_page="""\
 A title
 -------
 
@@ -368,7 +351,7 @@ Text3
         assert_false('c = 3' in html_contents)
 
 
-class TestMoreDoctests(ModifiedProj1Builder):
+class TestMoreDoctests(PlotsBuilder):
     """ Check that doctest code gets hidden but still tested
 
     Build using doctest builder
@@ -376,12 +359,7 @@ class TestMoreDoctests(ModifiedProj1Builder):
 
     builder = 'doctest'
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots",'
-                        '"sphinx.ext.doctest"]')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    rst_sources=dict(a_page="""\
 A title
 -------
 
@@ -416,16 +394,12 @@ Text3
 """)
 
 
-class TestNoRaises(ModifiedProj1Builder):
+class TestNoRaises(PlotsBuilder):
     """ Confirm that exception, without raises option, generates error
     """
     should_error = True
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    rst_sources=dict(a_page="""\
 A title
 -------
 
@@ -436,15 +410,11 @@ A title
 """)
 
 
-class TestRaisesOption(ModifiedProj1Builder):
+class TestRaisesOption(PlotsBuilder):
     """ Check raises option to nbplot directive proceeds without error
     """
 
-    @classmethod
-    def modify_source(cls):
-        cls.append_conf('extensions = ["nb2plots.nbplots"]\n')
-        with open(pjoin(cls.page_source, 'a_page.rst'), 'wt') as fobj:
-            fobj.write("""\
+    rst_sources=dict(a_page="""\
 A title
 -------
 

@@ -4,6 +4,7 @@ import shutil
 import tempfile
 import pickle
 import re
+import os
 from os.path import join as pjoin, isdir
 
 from nb2plots.sphinxutils import TestApp
@@ -16,8 +17,6 @@ def assert_matches(regex, text):
 
 class PageBuilder(object):
     """ Class to build sphinx pages in temporary directory """
-    # set to path containing original sources (not modified)
-    page_source_template = None
 
     # If True, assert that the build raised an error
     should_error = False
@@ -66,11 +65,10 @@ class PageBuilder(object):
     @classmethod
     def set_page_source(cls):
         """ Set directory containing page sources
-
-        In simplest case, we don't modify the sources, so the ``page_source``
-        is the same as the ``page_source_template``.
         """
-        cls.page_source = cls.page_source_template
+        cls.page_source = pjoin(cls.build_path, 'source')
+        os.mkdir(cls.page_source)
+        cls.modify_source()
 
     def get_doctree(self, name):
         """ Return doctree given by `name` from pickle in doctree file """
@@ -92,13 +90,41 @@ class PageBuilder(object):
             shutil.rmtree(cls.build_path)
 
 
+class SourcesBuilder(PageBuilder):
+    """ Build pages with text in class attribute ``rst_sources``.
+    """
+
+    rst_sources = dict()
+    conf_source = ''
+
+    @classmethod
+    def modify_source(cls):
+        with open(pjoin(cls.page_source, 'conf.py'), 'wt') as fobj:
+            fobj.write(cls.conf_source)
+        for page_root, page_content in cls.rst_sources.items():
+            with open(pjoin(cls.page_source, page_root + '.rst'), 'wt') as fobj:
+                fobj.write(page_content)
+        # Add pages to toctree to avoid sphinx warning -> error
+        indent = ' ' * 4
+        page_list = ("\n" + indent).join(cls.rst_sources)
+        page_text = "\n\n.. toctree::\n{}:hidden:\n\n{}{}\n\n".format(
+                indent,
+                indent,
+                page_list)
+        with open(pjoin(cls.page_source, 'contents.rst'), 'wt') as fobj:
+            fobj.write(page_text)
+
+
 class ModifiedPageBuilder(PageBuilder):
-    """ Class to modify sphinx pages in temporary directory before build
+    """ Modify existing sphinx pages in temporary directory before build
 
     This allows us to make new build configurations and pages in the test
     functions rather than having multiple sphinx project subdirectories in the
     test tree.
     """
+    # set to path containing original sources (not modified)
+    page_source_template = None
+
     # Default page.  Should specify a path-less page name that can be replaced
     # in modified builds.
     default_page = None
