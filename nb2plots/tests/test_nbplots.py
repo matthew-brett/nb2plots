@@ -65,18 +65,11 @@ class TestNbplots(SourcesBuilder):
         # Plot 9 shows the default close-figures behavior in action
         assert_true(file_same(range_4, plot_file(9)))
         # Plot 9 does not include source
-        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
-            html_contents = fobj.read()
-        assert_false('# Very unusual comment' in html_contents)
+        html_contents = self.get_built_file('a_page.html')
         # Plot 10 has included source
-        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
-            html_contents = fobj.read()
         assert_true('# Only a comment' in html_contents)
-
-    def test_html_links_to_source(self):
-        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
-            html = fobj.read()
-        assert_true('href=".//a_page-1.py">Source code</a>' in html)
+        # HTML links to source
+        assert_true('href=".//a_page-1.py">Source code</a>' in html_contents)
 
 
 class PlotsBuilder(SourcesBuilder):
@@ -100,15 +93,11 @@ A title
 
     def test_include_source_default(self):
         # Plot 1 has included source
-        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
-            html_contents = fobj.read()
+        html_contents = self.get_built_file('a_page.html')
         assert_true('# Only a comment' in html_contents)
-
-    def test_no_source_link(self):
-        # Plot 1 has included source
-        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
-            html = fobj.read()
-        assert_false('href=".//a_page-1.py">Source code</a>' in html)
+        # Plot 1 has no source link
+        html_contents = self.get_built_file('a_page.html')
+        assert_false('href=".//a_page-1.py">Source code</a>' in html_contents)
 
 
 class TestAnnoyingParens(PlotsBuilder):
@@ -132,9 +121,7 @@ A title
 
     def test_annoying_parens(self):
         # Plot 1 has included source
-        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
-            html_contents = fobj.read()
-        assert_false('<p>()</p>' in html_contents)
+        assert_false('<p>()</p>' in self.get_built_file('a_page.html'))
 
 
 class TestDefaultContext(PlotsBuilder):
@@ -344,13 +331,12 @@ Text3
 """)
 
     def test_whats_in_the_page(self):
-        with open(pjoin(self.out_dir, 'a_page.txt'), 'rt') as fobj:
-            html_contents = fobj.read()
-        assert_false('a = 1' in html_contents)
-        assert_false('b = 2' in html_contents)
-        assert_true('a == 1' in html_contents)
-        assert_true('b == 2' in html_contents)
-        assert_false('c = 3' in html_contents)
+        txt_contents = self.get_built_file('a_page.txt')
+        assert_false('a = 1' in txt_contents)
+        assert_false('b = 2' in txt_contents)
+        assert_true('a == 1' in txt_contents)
+        assert_true('b == 2' in txt_contents)
+        assert_false('c = 3' in txt_contents)
 
 
 class TestMoreDoctests(PlotsBuilder):
@@ -429,6 +415,4 @@ A title
 
     def test_include_source_default(self):
         # Check that source still included
-        with open(pjoin(self.out_dir, 'a_page.html'), 'rt') as fobj:
-            html_contents = fobj.read()
-        assert_true('# Another comment' in html_contents)
+        assert_true('# Another comment' in self.get_built_file('a_page.html'))

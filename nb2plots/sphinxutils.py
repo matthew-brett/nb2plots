@@ -201,6 +201,21 @@ class PageBuilder(object):
             content = fobj.read()
         return pickle.loads(content)
 
+    @classmethod
+    def get_built_file(cls, basename, mode='t'):
+        """ Contents of file in build dir with basename `basename`
+
+        Parameters
+        ----------
+        basename : str
+            Basename of file to load, including extension.
+        mode : str, optional
+            'b' or 't' for binary / text mode.
+        """
+        with open(pjoin(cls.out_dir, basename), 'r' + mode) as fobj:
+            content = fobj.read()
+        return content
+
     def doctree2str(self, doctree):
         """ Return simple string representation from `doctree` """
         return '\n'.join(str(p) for p in doctree.document[0])
