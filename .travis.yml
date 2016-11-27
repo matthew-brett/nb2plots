@@ -56,7 +56,7 @@ before_install:
     - retry pip install -f $EXTRA_WHEELS $DEPENDS
     - if [ "${COVERAGE}" == "1" ]; then
       pip install coverage;
-      pip install coveralls;
+      pip install codecov;
       fi
 
 install:
@@ -90,4 +90,4 @@ script:
     - nosetests $COVER_ARGS $DOCTEST_ARGS $PKG_NAME
 
 after_success:
-    - if [ "${COVERAGE}" == "1" ]; then coveralls; fi
+    - if [ "${COVERAGE}" == "1" ]; then codecov; fi
