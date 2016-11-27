@@ -121,7 +121,7 @@ from collections import defaultdict
 import sys, os, shutil, io, re, textwrap
 from os.path import relpath
 import traceback
-
+from pprint import pformat
 
 from docutils.statemachine import StringList
 from docutils import nodes
@@ -146,6 +146,40 @@ __version__ = 2
 def setup_module(module):
     # Prevent nosetests trying to run setup function
     pass
+
+
+class NBPlotFlags(Directive):
+    """ Set flag namespace for nbplot
+    """
+    has_content = True
+    required_arguments = 0
+    optional_arguments = 0
+
+    def run(self):
+        document = self.state.document
+        env = document.settings.env
+        docname = env.docname
+        local_ns = env.nbplot_flag_namespaces[docname]
+        six.exec_('\n'.join(self.content), None, local_ns)
+        return []
+
+
+class NBPlotShowFlags(Directive):
+    """ Show flag namespace for nbplot
+
+    This directive is mainly for testing
+    """
+    has_content = True
+    required_arguments = 0
+    optional_arguments = 0
+
+    def run(self):
+        document = self.state.document
+        env = document.settings.env
+        docname = env.docname
+        local_ns = env.nbplot_flag_namespaces[docname]
+        content = pformat(local_ns)
+        return [nodes.literal_block(content, content)]
 
 
 # Options for NBPlotDirective
@@ -784,13 +818,16 @@ def _false():
 
 
 def do_builder_init(app):
-    app.env.nbplot_reset_markers = defaultdict(_false)
+    env = app.env
+    env.nbplot_reset_markers = defaultdict(_false)
+    env.nbplot_flag_namespaces = defaultdict(dict)
 
 
-def clear_reset_marker(app, env, docname):
+def do_purge_doc(app, env, docname):
     """ Clear markers for whether `docname` has seen a plot context reset
     """
     env.nbplot_reset_markers[docname] = False
+    env.nbplot_flag_namespaces[docname] = env.config.nbplot_flags.copy()
 
 
 def null_visit(self, node):
@@ -818,6 +855,8 @@ def setup(app):
                  **{builder: (null_visit, null_depart)
                     for builder in ('html', 'latex', 'text')})
     app.add_directive('nbplot', NBPlotDirective)
+    app.add_directive('nbplot-flags', NBPlotFlags)
+    app.add_directive('nbplot-show-flags', NBPlotShowFlags)
     pre_default = "import numpy as np\nfrom matplotlib import pyplot as plt\n"
     app.add_config_value('nbplot_pre_code', pre_default, True)
     app.add_config_value('nbplot_include_source', True, True)
@@ -827,8 +866,9 @@ def setup(app):
     app.add_config_value('nbplot_rcparams', {}, True)
     app.add_config_value('nbplot_working_directory', None, True)
     app.add_config_value('nbplot_template', None, True)
+    app.add_config_value('nbplot_flags', {}, True)
 
     # Create dictionaries in builder environment
     app.connect(str('builder-inited'), do_builder_init)
     # Clear marker indicating that we have already started parsing a page
-    app.connect(str('env-purge-doc'), clear_reset_marker)
+    app.connect(str('env-purge-doc'), do_purge_doc)

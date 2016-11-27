@@ -460,3 +460,66 @@ r"""<document _plot_counter="1" source=".*?a_page.rst">
                     the ref
             \.""", re.DOTALL)
         assert_true(expected_regexp.match(built))
+
+
+class TestFlags(PlotsBuilder):
+    """ Check flags get set correctly
+    """
+
+    builder = 'pseudoxml'
+
+    rst_sources=dict(a_page="""\
+A title
+-------
+
+.. nbplot-flags::
+
+    a = 1
+    b = 2
+
+.. nbplot-show-flags::
+
+Some text
+
+.. nbplot-flags::
+
+    c = 3
+
+.. nbplot-show-flags::
+""")
+
+    def test_flags(self):
+        # Check that flags correctly set from flag directives
+        built = self.get_built_file('a_page.pseudoxml')
+        assert_true("""
+        <title>
+            A title
+        <literal_block xml:space="preserve">
+            {'a': 1, 'b': 2}
+        <paragraph>
+            Some text
+        <literal_block xml:space="preserve">
+            {'a': 1, 'b': 2, 'c': 3}""" in built)
+
+
+class TestFlagsConfig(TestFlags):
+    """ Check flags set from global config """
+
+    conf_source=("""\
+extensions = ["nb2plots.nbplots"]
+nbplot_flags = {'flag1': 5, 'flag2': 6}
+""")
+
+    def test_flags(self):
+        # Check that global flags merged with local
+        built = self.get_built_file('a_page.pseudoxml')
+        assert_true("""
+        <title>
+            A title
+        <literal_block xml:space="preserve">
+            {'a': 1, 'b': 2, 'flag1': 5, 'flag2': 6}
+        <paragraph>
+            Some text
+        <literal_block xml:space="preserve">
+            {'a': 1, 'b': 2, 'c': 3, 'flag1': 5, 'flag2': 6}"""
+                    in built)

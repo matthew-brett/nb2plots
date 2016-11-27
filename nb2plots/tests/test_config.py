@@ -13,18 +13,18 @@ def test_nbplots_setup():
     # Test extension setup works as expected
     app = mockapp.get_app()
     nbp.setup(app)
-    config_names = ['nbplot_rcparams',
-                    'nbplot_pre_code',
+    config_names = ['nbplot_pre_code',
                     'nbplot_include_source',
                     'nbplot_html_show_source_link',
                     'nbplot_formats',
-                    'nbplot_basedir',
                     'nbplot_html_show_formats',
+                    'nbplot_rcparams',
                     'nbplot_working_directory',
-                    'nbplot_template']
+                    'nbplot_template',
+                    'nbplot_flags']
     connects = [
         ('builder-inited', nbp.do_builder_init),
-        ('env-purge-doc', nbp.clear_reset_marker),
+        ('env-purge-doc', nbp.do_purge_doc),
     ]
     for method_name, args, kwargs in app.method_calls:
         if (method_name == 'add_config_value' and
