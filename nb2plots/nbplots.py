@@ -84,11 +84,6 @@ The nbplot directive has the following configuration options:
     nbplot_pre_code
         Code that should be executed before each plot.
 
-    nbplot_basedir
-        Base directory, to which ``plot::`` file names are relative
-        to.  (If None or empty, file names are relative to the
-        directory where the file containing the directive is.)
-
     nbplot_formats
         File formats to generate. List of tuples or strings::
 
@@ -828,7 +823,6 @@ def setup(app):
     app.add_config_value('nbplot_include_source', True, True)
     app.add_config_value('nbplot_html_show_source_link', False, True)
     app.add_config_value('nbplot_formats', ['png', 'hires.png', 'pdf'], True)
-    app.add_config_value('nbplot_basedir', None, True)
     app.add_config_value('nbplot_html_show_formats', True, True)
     app.add_config_value('nbplot_rcparams', {}, True)
     app.add_config_value('nbplot_working_directory', None, True)
