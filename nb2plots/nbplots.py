@@ -279,7 +279,8 @@ class NBPlotDirective(Directive):
         rst_dir = os.path.dirname(rst_file)
 
         source_file_name = rst_file
-        code = textwrap.dedent("\n".join(map(str, self.content)))
+        to_render = textwrap.dedent("\n".join(map(str, self.content)))
+        to_run = to_render
         counter = document.attributes.get('_plot_counter', 0) + 1
         document.attributes['_plot_counter'] = counter
         base, ext = os.path.splitext(os.path.basename(source_file_name))
@@ -294,11 +295,6 @@ class NBPlotDirective(Directive):
         # ensure that LaTeX includegraphics doesn't choke in foo.bar.pdf
         # filenames
         output_base = output_base.replace('.', '-')
-
-        # is it in doctest format?
-        is_doctest = contains_doctest(code)
-        if 'format' in self.options:
-            is_doctest = False if self.options['format'] == 'python' else True
 
         # should the code raise an exception?
         raises = (eval(self.options['raises']) if 'raises' in self.options
@@ -336,16 +332,16 @@ class NBPlotDirective(Directive):
 
         # make figures
         try:
-            results = render_figures(code,
-                                     source_file_name,
-                                     build_dir,
-                                     output_base,
-                                     config=config,
-                                     context = True,  # keep plot context
-                                     function_name = None,
-                                     context_reset=context_reset,
-                                     close_figs=close_figs,
-                                     raises=raises)
+            images = render_figures(to_run,
+                                    source_file_name,
+                                    build_dir,
+                                    output_base,
+                                    config=config,
+                                    context = True,  # keep plot context
+                                    function_name = None,
+                                    context_reset=context_reset,
+                                    close_figs=close_figs,
+                                    raises=raises)
             errors = []
         except PlotError as err:
             reporter = self.state.memo.reporter
@@ -356,64 +352,65 @@ class NBPlotDirective(Directive):
                 'with code:\n\n{code}\n\n'
                 'Exception:\n{err}'.format(**locals()),
                 line=self.lineno)
-            results = [(code, [])]
+            images = []
             errors = [sm]
 
         # generate output restructuredtext
+        # is the code in doctest format?
+        is_doctest = contains_doctest(to_render)
+        if 'format' in self.options:
+            is_doctest = False if self.options['format'] == 'python' else True
+
         total_lines = []
-        for j, (code_piece, images) in enumerate(results):
-            if is_doctest:
-                lines = [''] + [row.rstrip() for row in code_piece.split('\n')]
-            else:
-                lines = ['.. code-block:: python', '']
-                lines += ['    %s' % row.rstrip()
-                        for row in code_piece.split('\n')]
-            if self.options['include-source']:
-                source_code = '\n'.join(lines)
-            else:  # Doctest blocks still go into page, but hidden
-                if is_doctest:
-                    source_code = ('.. doctest::\n'
-                                   '    :hide:\n'
-                                   '    ' + '\n    '.join(lines))
-                else:  # Non-doctest blocks get dropped from page output
-                    source_code = ""
+        if is_doctest:
+            lines = [''] + [row.rstrip() for row in to_render.split('\n')]
+        else:
+            lines = ['.. code-block:: python', '']
+            lines += ['    %s' % row.rstrip()
+                      for row in to_render.split('\n')]
+        if self.options['include-source']:
+            source_code = '\n'.join(lines)
+        elif is_doctest:
+            # Doctest blocks still go into page, but hidden
+            source_code = ('.. doctest::\n'
+                            '    :hide:\n'
+                            '    ' + '\n    '.join(lines))
+        else:  # Non-doctest blocks get dropped from page output
+            source_code = ""
 
-            if nofigs:
-                images = []
+        images_to_show = [] if nofigs else images[:]
+        n_to_show = len(images_to_show)
 
-            opts = [':%s: %s' % (key, val)
-                    for key, val in self.options.items()
-                    if key in ('alt', 'height', 'width', 'scale', 'align',
-                               'class')]
+        opts = [':%s: %s' % (key, val)
+                for key, val in self.options.items()
+                if key in ('alt', 'height', 'width', 'scale', 'align',
+                            'class')]
 
-            only_html = ".. only:: html"
-            only_latex = ".. only:: latex"
-            only_texinfo = ".. only:: texinfo"
+        only_html = ".. only:: html"
+        only_latex = ".. only:: latex"
+        only_texinfo = ".. only:: texinfo"
 
-            # Not-None src_link signals the need for a source link in the generated
-            # html
-            if j == 0 and config.nbplot_html_show_source_link:
-                src_link = source_link
-            else:
-                src_link = None
+        # Not-None src_link signals the need for a source link in the generated
+        # html
+        src_link = source_link if config.nbplot_html_show_source_link else None
 
-            result = format_template(
-                config.nbplot_template or TEMPLATE,
-                dest_dir=dest_dir_link,
-                build_dir=build_dir_link,
-                source_link=src_link,
-                multi_image=len(images) > 1,
-                only_html=only_html,
-                only_latex=only_latex,
-                only_texinfo=only_texinfo,
-                options=opts,
-                images=images,
-                source_code=source_code,
-                html_show_formats=config.nbplot_html_show_formats and len(images),
-                caption='')
+        result = format_template(
+            config.nbplot_template or TEMPLATE,
+            dest_dir=dest_dir_link,
+            build_dir=build_dir_link,
+            source_link=src_link,
+            multi_image=n_to_show > 1,
+            only_html=only_html,
+            only_latex=only_latex,
+            only_texinfo=only_texinfo,
+            options=opts,
+            images=images_to_show,
+            source_code=source_code,
+            html_show_formats=config.nbplot_html_show_formats and n_to_show,
+            caption='')
 
-            total_lines.extend(result.split("\n"))
-            total_lines.extend("\n")
+        total_lines.extend(result.split("\n"))
+        total_lines.extend("\n")
 
         new_nodes = self.rst2nodes(total_lines) if total_lines else []
 
@@ -421,21 +418,11 @@ class NBPlotDirective(Directive):
         if not os.path.exists(dest_dir):
             cbook.mkdirs(dest_dir)
 
-        for code_piece, images in results:
-            for img in images:
-                for fn in img.filenames():
-                    destimg = os.path.join(dest_dir, os.path.basename(fn))
-                    if fn != destimg:
-                        shutil.copyfile(fn, destimg)
-
-        # copy script (if necessary)
-        target_name = os.path.join(dest_dir, output_base + source_ext)
-        with io.open(target_name, 'w', encoding="utf-8") as f:
-            if source_file_name == rst_file:
-                code_escaped = unescape_doctest(code)
-            else:
-                code_escaped = code
-            f.write(code_escaped)
+        for img in images:
+            for fn in img.filenames():
+                destimg = os.path.join(dest_dir, os.path.basename(fn))
+                if fn != destimg:
+                    shutil.copyfile(fn, destimg)
 
         return new_nodes + errors
 
@@ -475,29 +462,6 @@ def unescape_doctest(text):
         else:
             code += "\n"
     return code
-
-
-def split_code_at_show(text):
-    """
-    Split code at plt.show()
-
-    """
-
-    parts = []
-    is_doctest = contains_doctest(text)
-
-    part = []
-    for line in text.split("\n"):
-        if (not is_doctest and line.strip() == 'plt.show()') or \
-               (is_doctest and line.strip() == '>>> plt.show()'):
-            part.append(line)
-            parts.append("\n".join(part))
-            part = []
-        else:
-            part.append(line)
-    if "\n".join(part).strip():
-        parts.append("\n".join(part))
-    return parts
 
 
 def remove_coding(text):
@@ -755,13 +719,7 @@ def render_figures(code, code_path, output_dir, output_base, config,
             raise PlotError('invalid image format "%r" in nbplot_formats' % fmt)
 
     # Build the output
-    code_pieces = split_code_at_show(code)
-
-    results = []
-    if context:
-        ns = plot_context
-    else:
-        ns = {}
+    ns = plot_context if context else {}
 
     if context_reset:
         plt.close('all')
@@ -779,35 +737,28 @@ def render_figures(code, code_path, output_dir, output_base, config,
     else:
         workdir = None
 
-    for i, code_piece in enumerate(code_pieces):
+    if close_figs:
+        plt.close('all')
 
-        if close_figs:
-            plt.close('all')
+    run_code(code, code_path, ns, function_name, workdir=workdir,
+             pre_code=setup.config.nbplot_pre_code, raises=raises)
 
-        run_code(code_piece, code_path, ns, function_name, workdir=workdir,
-                 pre_code=setup.config.nbplot_pre_code, raises=raises)
+    images = []
+    fig_managers = Gcf.get_all_fig_managers()
+    for j, figman in enumerate(fig_managers):
+        if len(fig_managers) == 1:
+            img = ImageFile(output_base, output_dir)
+        else:
+            img = ImageFile("%s_%02d" % (output_base, j), output_dir)
+        images.append(img)
+        for format, dpi in formats:
+            try:
+                figman.canvas.figure.savefig(img.filename(format), dpi=dpi)
+            except Exception:
+                raise PlotError(traceback.format_exc())
+            img.formats.append(format)
 
-        images = []
-        fig_managers = Gcf.get_all_fig_managers()
-        for j, figman in enumerate(fig_managers):
-            if len(fig_managers) == 1 and len(code_pieces) == 1:
-                img = ImageFile(output_base, output_dir)
-            elif len(code_pieces) == 1:
-                img = ImageFile("%s_%02d" % (output_base, j), output_dir)
-            else:
-                img = ImageFile("%s_%02d_%02d" % (output_base, i, j),
-                                output_dir)
-            images.append(img)
-            for format, dpi in formats:
-                try:
-                    figman.canvas.figure.savefig(img.filename(format), dpi=dpi)
-                except Exception:
-                    raise PlotError(traceback.format_exc())
-                img.formats.append(format)
-
-        results.append((code_piece, images))
-
-    return results
+    return images
 
 
 # Sphinx event handlers
