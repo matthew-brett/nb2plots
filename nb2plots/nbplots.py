@@ -122,10 +122,7 @@ from __future__ import (absolute_import, division, print_function,
 
 import six
 
-def setup_module(module):
-    # Prevent nosetests trying to run setup function
-    pass
-
+from collections import defaultdict
 import sys, os, shutil, io, re, textwrap
 from os.path import relpath
 import traceback
@@ -149,6 +146,12 @@ import matplotlib.pyplot as plt
 from matplotlib._pylab_helpers import Gcf
 
 __version__ = 2
+
+
+def setup_module(module):
+    # Prevent nosetests trying to run setup function
+    pass
+
 
 # Options for NBPlotDirective
 
@@ -174,8 +177,11 @@ def _option_align(arg):
         ("top", "middle", "bottom", "left", "center", "right"))
 
 
-class nbplot(nodes.container):
-    pass
+class nbplot(nodes.container, nodes.Targetable):
+    """ Container for nbplot contents
+
+    Also serves as a reference target.
+    """
 
 
 class NBPlotDirective(Directive):
@@ -200,6 +206,9 @@ class NBPlotDirective(Directive):
                    'raises': directives.unchanged,
                   }
 
+    # Class for nbplot node
+    nbplot_node = nbplot
+
     def rst2nodes(self, lines):
         """ Build docutils nodes from list of ReST strings `lines`
 
@@ -211,12 +220,11 @@ class NBPlotDirective(Directive):
         Returns
         -------
         nodes : list
-            length 1 list of nodes, where contained node is of type
-            'nbplot', and nbplot node contents are nodes generated from ReST in
-            `lines`.
+            length 1 list of nodes, where contained node is of type 'nbplot',
+            and nbplot node contents are nodes generated from ReST in `lines`.
         """
         text = '\n'.join(lines)
-        node = nbplot(text)
+        node = self.nbplot_node(text)
         contents = StringList(lines)
         self.add_name(node)
         self.state.nested_parse(contents, self.content_offset, node)
@@ -402,75 +410,6 @@ class NBPlotDirective(Directive):
 
         return new_nodes + errors
 
-
-def mark_plot_labels(app, document):
-    """
-    To make plots referenceable, we need to move the reference from
-    the "htmlonly" (or "latexonly") node to the actual figure node
-    itself.
-    """
-    for name, explicit in document.nametypes.items():
-        if not explicit:
-            continue
-        labelid = document.nameids[name]
-        if labelid is None:
-            continue
-        node = document.ids[labelid]
-        if node.tagname in ('html_only', 'latex_only'):
-            for n in node:
-                if n.tagname == 'figure':
-                    sectname = name
-                    for c in n:
-                        if c.tagname == 'caption':
-                            sectname = c.astext()
-                            break
-
-                    node['ids'].remove(labelid)
-                    node['names'].remove(name)
-                    n['ids'].append(labelid)
-                    n['names'].append(name)
-                    document.settings.env.labels[name] = \
-                        document.settings.env.docname, labelid, sectname
-                    break
-
-
-def clear_reset_marker(app, env, docname):
-    """ Clear markers for whether `docname` has seen a plot context reset
-    """
-    if not hasattr(env, 'nbplot_reset_markers'):
-        env.nbplot_reset_markers = {}
-    env.nbplot_reset_markers[docname] = False
-
-
-def null_visit(self, node):
-    pass
-
-
-def null_depart(self, node):
-    pass
-
-
-def setup(app):
-    setup.app = app
-    setup.config = app.config
-    setup.confdir = app.confdir
-
-    app.add_node(nbplot, **{builder: (null_visit, null_depart)
-                            for builder in ('html', 'latex', 'text')})
-    app.add_directive('nbplot', NBPlotDirective)
-    pre_default = "import numpy as np\nfrom matplotlib import pyplot as plt\n"
-    app.add_config_value('nbplot_pre_code', pre_default, True)
-    app.add_config_value('nbplot_include_source', True, True)
-    app.add_config_value('nbplot_html_show_source_link', False, True)
-    app.add_config_value('nbplot_formats', ['png', 'hires.png', 'pdf'], True)
-    app.add_config_value('nbplot_basedir', None, True)
-    app.add_config_value('nbplot_html_show_formats', True, True)
-    app.add_config_value('nbplot_rcparams', {}, True)
-    app.add_config_value('nbplot_working_directory', None, True)
-    app.add_config_value('nbplot_template', None, True)
-
-    app.connect(str('env-purge-doc'), clear_reset_marker)
-    app.connect(str('doctree-read'), mark_plot_labels)
 
 #------------------------------------------------------------------------------
 # Doctest handling
@@ -840,3 +779,62 @@ def render_figures(code, code_path, output_dir, output_base, config,
         results.append((code_piece, images))
 
     return results
+
+
+# Sphinx event handlers
+
+def _false():
+    # Must be function rather than lambda to allow pickling of environment
+    return False
+
+
+def do_builder_init(app):
+    app.env.nbplot_reset_markers = defaultdict(_false)
+
+
+def clear_reset_marker(app, env, docname):
+    """ Clear markers for whether `docname` has seen a plot context reset
+    """
+    env.nbplot_reset_markers[docname] = False
+
+
+def null_visit(self, node):
+    pass
+
+
+def null_depart(self, node):
+    pass
+
+
+def visit_skipped(self, node):
+    self.visit_doctest_block(node)
+
+
+def depart_skipped(self, node):
+    self.depart_doctest_block(node)
+
+
+def setup(app):
+    setup.app = app
+    setup.config = app.config
+    setup.confdir = app.confdir
+
+    app.add_node(nbplot,
+                 **{builder: (null_visit, null_depart)
+                    for builder in ('html', 'latex', 'text')})
+    app.add_directive('nbplot', NBPlotDirective)
+    pre_default = "import numpy as np\nfrom matplotlib import pyplot as plt\n"
+    app.add_config_value('nbplot_pre_code', pre_default, True)
+    app.add_config_value('nbplot_include_source', True, True)
+    app.add_config_value('nbplot_html_show_source_link', False, True)
+    app.add_config_value('nbplot_formats', ['png', 'hires.png', 'pdf'], True)
+    app.add_config_value('nbplot_basedir', None, True)
+    app.add_config_value('nbplot_html_show_formats', True, True)
+    app.add_config_value('nbplot_rcparams', {}, True)
+    app.add_config_value('nbplot_working_directory', None, True)
+    app.add_config_value('nbplot_template', None, True)
+
+    # Create dictionaries in builder environment
+    app.connect(str('builder-inited'), do_builder_init)
+    # Clear marker indicating that we have already started parsing a page
+    app.connect(str('env-purge-doc'), clear_reset_marker)

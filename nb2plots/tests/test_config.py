@@ -22,8 +22,10 @@ def test_nbplots_setup():
                     'nbplot_html_show_formats',
                     'nbplot_working_directory',
                     'nbplot_template']
-    connects = [('env-purge-doc', nbp.clear_reset_marker),
-                ('doctree-read', nbp.mark_plot_labels)]
+    connects = [
+        ('builder-inited', nbp.do_builder_init),
+        ('env-purge-doc', nbp.clear_reset_marker),
+    ]
     for method_name, args, kwargs in app.method_calls:
         if (method_name == 'add_config_value' and
             args[0] in config_names):

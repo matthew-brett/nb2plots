@@ -1,6 +1,7 @@
 """ Tests for build using nbplot extension """
 
 from os.path import (join as pjoin, dirname, isdir)
+import re
 
 from nb2plots.nbplots import run_code
 from nb2plots.sphinxutils import SourcesBuilder
@@ -416,3 +417,46 @@ A title
     def test_include_source_default(self):
         # Check that source still included
         assert_true('# Another comment' in self.get_built_file('a_page.html'))
+
+
+class TestReference(PlotsBuilder):
+    """ Check that reference is correctly generated.
+
+    First check that the code gets built for html as predicted
+    """
+
+    builder = 'pseudoxml'
+
+    rst_sources=dict(a_page="""\
+A title
+-------
+
+.. _a-ref:
+
+.. nbplot::
+
+    >>> a = 1
+
+See :ref:`the ref <a-ref>`.
+""")
+
+    def test_reference(self):
+        # Check that reference correctly included
+        built = self.get_built_file('a_page.pseudoxml')
+        expected_regexp = re.compile(
+r"""<document _plot_counter="1" source=".*?a_page.rst">
+    <section ids="a-title" names="a\\ title">
+        <title>
+            A title
+        <target ids="a-ref" names="a-ref">
+        <nbplot>
+            <doctest_block.*>
+                >>> a = 1
+            <.*>
+        <paragraph>
+            See\s
+            <reference internal="True" refid="a-ref">
+                <inline.*?>
+                    the ref
+            \.""", re.DOTALL)
+        assert_true(expected_regexp.match(built))
