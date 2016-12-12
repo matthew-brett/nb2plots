@@ -101,11 +101,14 @@ class Translator(d2m.Translator):
             self.add(dedent(node.astext()) + '\n')
         raise nodes.SkipNode
 
-    def visit_nbplot(self, node):
+    def visit_nbplot_rendered(self, node):
         self._in_nbplot = True
 
-    def depart_nbplot(self, node):
+    def depart_nbplot_rendered(self, node):
         self._in_nbplot = False
+
+    def visit_nbplot_not_rendered(self, node):
+        raise nodes.SkipNode
 
     def visit_notebook_reference(self, node):
         raise nodes.SkipNode

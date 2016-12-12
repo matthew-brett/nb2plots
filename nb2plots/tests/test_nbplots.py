@@ -3,10 +3,10 @@
 from os.path import (join as pjoin, dirname, isdir)
 import re
 
-from nb2plots.nbplots import run_code
+from nb2plots.nbplots import run_code, parse_parts
 from nb2plots.sphinxutils import SourcesBuilder
 
-from nose.tools import (assert_true, assert_false, assert_equal)
+from nose.tools import (assert_true, assert_false, assert_equal, assert_raises)
 
 HERE = dirname(__file__)
 
@@ -449,7 +449,7 @@ r"""<document _plot_counter="1" source=".*?a_page.rst">
         <title>
             A title
         <target ids="a-ref" names="a-ref">
-        <nbplot>
+        <nbplot_rendered>
             <doctest_block.*>
                 >>> a = 1
             <.*>
@@ -523,3 +523,133 @@ nbplot_flags = {'flag1': 5, 'flag2': 6}
         <literal_block xml:space="preserve">
             {'a': 1, 'b': 2, 'c': 3, 'flag1': 5, 'flag2': 6}"""
                     in built)
+
+
+class TestSkips(PlotsBuilder):
+    """ Check that doctest code can be skipped
+
+    First check that the code gets built for html as predicted
+    """
+    builder = 'text'
+    conf_source = ('extensions = ["nb2plots.nbplots", "sphinx.ext.doctest"]\n'
+                   'nbplot_flags = {"skip": False}')
+
+    rst_sources=dict(a_page="""\
+A title
+-------
+
+.. nbplot::
+
+    >>> # always
+    >>> a = 'default'
+
+Some text
+
+.. nbplot::
+    :render-parts: 1 if skip else 0
+
+    >>> a = 'not skipped'
+
+    .. part
+
+    >>> a = 'yes too skipped'
+
+Keep text coming
+
+.. nbplot::
+    :render-parts: 0 if skip else 1
+
+    >>> a == 'yes too skipped again'
+    True
+
+    .. part
+
+    >>> a == 'not skipped again'
+    True
+""")
+
+    def test_html_pages(self):
+        # Test txt pages always have main sections, regardless of selected
+        # parts.
+        html = self.get_built_file('a_page.txt')
+        assert_true(">>> # always\n>>> a = 'default'" in html)
+        assert_true(">>> a = 'not skipped'" in html)
+        assert_true(">>> a = 'yes too skipped'" not in html)
+        assert_true(">>> a == 'yes too skipped again'" in html)
+        assert_true(">>> a == 'not skipped again'" not in html)
+
+
+def test_part_finding():
+    assert_equal(parse_parts([]), [{'contents': []}])
+    assert_equal(parse_parts(['a = 1', 'b = 2']),
+                             [{'contents': ['a = 1', 'b = 2']}])
+    assert_equal(parse_parts(['a = 1', 'b = 2', '', '.. part', '', 'c = 4']),
+                             [{'contents': ['a = 1', 'b = 2']},
+                              {'contents': ['c = 4']}])
+    # Need blank lines between
+    assert_equal(parse_parts(['a = 1', 'b = 2', '.. part', '', 'c = 4']),
+                             [{'contents':
+                               ['a = 1', 'b = 2', '.. part', '', 'c = 4']}]),
+    assert_equal(parse_parts(['a = 1', 'b = 2', '', '.. part', 'c = 4']),
+                             [{'contents':
+                               ['a = 1', 'b = 2', '', '.. part', 'c = 4']}]),
+    # Add some attributes
+    assert_equal(parse_parts(['a = 1', 'b = 2', '',
+                              '.. part', ' foo=bar', ' baz=boo',
+                              '', 'c = 4']),
+                             [{'contents': ['a = 1', 'b = 2']},
+                              {'contents': ['c = 4'],
+                               'foo': 'bar', 'baz': 'boo'}])
+    # Can have spaces around the equals
+    assert_equal(parse_parts(['a = 1', 'b = 2', '',
+                              '.. part', ' foo =bar', ' baz= boo',
+                              '', 'c = 4']),
+                             [{'contents': ['a = 1', 'b = 2']},
+                              {'contents': ['c = 4'],
+                               'foo': 'bar', 'baz': 'boo'}])
+    assert_equal(parse_parts(['a = 1', 'b = 2', '',
+                              '.. part', ' foo = bar', ' baz=  boo',
+                              '', 'c = 4']),
+                             [{'contents': ['a = 1', 'b = 2']},
+                              {'contents': ['c = 4'],
+                               'foo': 'bar', 'baz': 'boo'}])
+    # Cannot continue on same line as part separator
+    assert_equal(parse_parts(['a = 1', 'b = 2', '',
+                              '.. part foo=bar',
+                              '', 'c = 4']),
+                             [{'contents': ['a = 1', 'b = 2', '',
+                              '.. part foo=bar',
+                              '', 'c = 4']}])
+    # Must be indentation
+    assert_raises(ValueError,
+                  parse_parts,
+                  ['a = 1', 'b = 2', '',
+                   '.. part', 'foo=bar',
+                   '', 'c = 4'])
+    # Must be same indentation
+    assert_raises(ValueError,
+                  parse_parts,
+                  ['a = 1', 'b = 2', '',
+                   '.. part', ' foo=bar', 'baz=boo',
+                   '', 'c = 4'])
+    assert_raises(ValueError,
+                  parse_parts,
+                  ['a = 1', 'b = 2', '',
+                   '.. part', ' foo=bar', '  baz=boo',
+                   '', 'c = 4'])
+    # Add some attributes in the first part
+    assert_equal(parse_parts(['.. part', ' mr=brightside', ' eager=eyes', '',
+                              'a = 1', 'b = 2', '',
+                              '.. part', ' foo=bar', ' baz=boo', '', 'c = 4']),
+                             [{'contents': ['a = 1', 'b = 2'],
+                               'mr': 'brightside',
+                               'eager': 'eyes'},
+                              {'contents': ['c = 4'],
+                               'foo': 'bar', 'baz': 'boo'}])
+    # Contents with spaces, leading and trailing spaces skipped
+    assert_equal(parse_parts(['a = 1', 'b = 2', '',
+                              '.. part', ' foo=[1, 2, s]', ' bar= more stuff ',
+                              '', 'c = 4']),
+                             [{'contents': ['a = 1', 'b = 2']},
+                              {'contents': ['c = 4'],
+                               'foo': '[1, 2, s]', 'bar': 'more stuff'}])
