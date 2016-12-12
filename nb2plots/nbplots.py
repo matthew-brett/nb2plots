@@ -511,8 +511,7 @@ class NBPlotDirective(Directive):
             options=opts,
             images=images_to_show,
             source_code=source_code,
-            html_show_formats=config.nbplot_html_show_formats and n_to_show,
-            caption='')
+            html_show_formats=config.nbplot_html_show_formats and n_to_show)
 
         total_lines.extend(result.split("\n"))
         total_lines.extend("\n")
@@ -616,7 +615,6 @@ TEMPLATE = """
         )
       {%- endif -%}
 
-      {{ caption }}
    {% endfor %}
 
 {{ only_latex }}
