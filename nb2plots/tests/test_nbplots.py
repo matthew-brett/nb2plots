@@ -525,10 +525,10 @@ nbplot_flags = {'flag1': 5, 'flag2': 6}
                     in built)
 
 
-class TestSkips(PlotsBuilder):
-    """ Check that doctest code can be skipped
+class TestWithoutSkip(PlotsBuilder):
+    """ Check that doctest code can be bracketed into skipped, not skipped
 
-    First check that the code gets built for html as predicted
+    First check that the code gets built for txt as predicted
     """
     builder = 'text'
     conf_source = ('extensions = ["nb2plots.nbplots", "sphinx.ext.doctest"]\n'
@@ -547,36 +547,197 @@ Some text
 
 .. nbplot::
     :render-parts: 1 if skip else 0
+    :run-parts: 1 if skip else 0
 
-    >>> a = 'not skipped'
+    >>> a = 'skip is False'
 
     .. part
 
-    >>> a = 'yes too skipped'
+    >>> a = 'skip is True'
 
 Keep text coming
 
 .. nbplot::
-    :render-parts: 0 if skip else 1
+    :render-parts: 1 if skip else 2
+    :run-parts: 1 if skip else 2
 
-    >>> a == 'yes too skipped again'
+    >>> # An empty part, never used
+
+    .. part
+
+    >>> b = 'skip appears to be True'
+    >>> a == 'skip is True'
     True
 
     .. part
 
-    >>> a == 'not skipped again'
+    >>> b = 'skip appears to be False'
+    >>> a == 'skip is False'
+    True
+
+Text continues
+
+.. nbplot::
+    :run-parts: 1 if skip else 0
+
+    >>> # doctest only run when skip flag False, always rendered
+    >>> b == 'skip appears to be False'
+    True
+
+    .. part
+
+    >>> # only when skip flag True
+    >>> b == 'skip appears to be True'
     True
 """)
 
-    def test_html_pages(self):
-        # Test txt pages always have main sections, regardless of selected
-        # parts.
-        html = self.get_built_file('a_page.txt')
-        assert_true(">>> # always\n>>> a = 'default'" in html)
-        assert_true(">>> a = 'not skipped'" in html)
-        assert_true(">>> a = 'yes too skipped'" not in html)
-        assert_true(">>> a == 'yes too skipped again'" in html)
-        assert_true(">>> a == 'not skipped again'" not in html)
+    def test_pages(self):
+        # Test that the skip=False sections selected
+        txt = self.get_built_file('a_page.txt')
+        assert_true(">>> # always\n>>> a = 'default'" in txt)
+        assert_true(">>> a = 'skip is False'" in txt)
+        assert_true(">>> a = 'skip is True'" not in txt)
+        # Note ==, distinguishing from test above
+        assert_true(">>> a == 'skip is True'" not in txt)
+        assert_true(">>> a == 'skip is False'" in txt)
+        assert_true(">>> b == 'skip appears to be False'" in txt)
+        assert_true(">>> b == 'skip appears to be True'" not in txt)
+
+
+class TestWithoutSkipDoctest(TestWithoutSkip):
+    builder = 'doctest'
+
+    def test_pages(self):
+        # No pages built by doctest
+        return
+
+
+class TestWithoutSkipStructure(TestWithoutSkip):
+    builder = 'pseudoxml'
+
+    def test_pages(self):
+        # Test that the skip=False sections selected
+        p_xml = self.get_built_file('a_page.pseudoxml')
+        regex = re.compile(
+            r"""<document _plot_counter="\d" source=".+?">
+    <section ids="a-title" names="a\\ title">
+        <title>
+            A title
+        <nbplot_rendered>
+            <doctest_block xml:space="preserve">
+                >>> # always
+                >>> a = 'default'
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+        <paragraph>
+            Some text
+        <nbplot_rendered>
+            <doctest_block xml:space="preserve">
+                >>> a = 'skip is False'
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+        <paragraph>
+            Keep text coming
+        <nbplot_rendered>
+            <doctest_block xml:space="preserve">
+                >>> b = 'skip appears to be False'
+                >>> a == 'skip is False'
+                True
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+        <paragraph>
+            Text continues
+        <nbplot_rendered>
+            <doctest_block xml:space="preserve">
+                >>> # doctest only run when skip flag False, always rendered
+                >>> b == 'skip appears to be False'
+                True""")
+        assert(regex.match(p_xml) is not None)
+
+
+class TestWithSkip(TestWithoutSkip):
+    """ Check that doctest code can be skipped according to flag
+    """
+    conf_source = ('extensions = ["nb2plots.nbplots", "sphinx.ext.doctest"]\n'
+                   'nbplot_flags = {"skip": True}')
+
+    def test_pages(self):
+        # Test that the skip=True sections selected
+        txt = self.get_built_file('a_page.txt')
+        assert_true(">>> # always\n>>> a = 'default'" in txt)
+        assert_true(">>> a = 'skip is False'" not in txt)
+        assert_true(">>> a = 'skip is True'" in txt)
+        # Note ==, distinguishing from test above
+        assert_true(">>> a == 'skip is True'" in txt)
+        assert_true(">>> a == 'skip is False'" not in txt)
+        # The rendered version always has the first section, regardless of skip
+        assert_true(">>> b == 'skip appears to be False'" in txt)
+        assert_true(">>> b == 'skip appears to be True'" not in txt)
+
+
+class TestWithSkipStructure(TestWithSkip):
+    builder = 'pseudoxml'
+
+    def test_pages(self):
+        # Test that the skip=True sections selected
+        p_xml = self.get_built_file('a_page.pseudoxml')
+        regex = re.compile(
+            r"""<document _plot_counter="\d" source=".+?">
+    <section ids="a-title" names="a\\ title">
+        <title>
+            A title
+        <nbplot_rendered>
+            <doctest_block xml:space="preserve">
+                >>> # always
+                >>> a = 'default'
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+        <paragraph>
+            Some text
+        <nbplot_rendered>
+            <doctest_block xml:space="preserve">
+                >>> a = 'skip is True'
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+        <paragraph>
+            Keep text coming
+        <nbplot_rendered>
+            <doctest_block xml:space="preserve">
+                >>> b = 'skip appears to be True'
+                >>> a == 'skip is True'
+                True
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+        <paragraph>
+            Text continues
+        <nbplot_rendered>
+            <skipped_doctest_block xml:space="preserve">
+                >>> # doctest only run when skip flag False, always rendered
+                >>> b == 'skip appears to be False'
+                True
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+            <comment xml:space="preserve">
+        <nbplot_not_rendered>
+            <doctest_block xml:space="preserve">
+                >>> # only when skip flag True
+                >>> b == 'skip appears to be True'
+                True""")
+        assert(regex.match(p_xml) is not None)
+
+
+class TestWithSkipDoctest(TestWithSkip):
+    builder = 'doctest'
+
+    def test_pages(self):
+        # No pages built by doctest
+        return
 
 
 def test_part_finding():

@@ -435,7 +435,7 @@ class NBPlotDirective(Directive):
         source_link = dest_dir_link + '/' + output_base + source_ext
 
         # Break contents into parts, and select
-        to_run, to_render = self._select_parts()
+        to_render, to_run = self._select_parts()
 
         # make figures
         try:
