@@ -19,8 +19,11 @@ from .doctree2nb import doctree2ipynb, Translator
 from nb2plots.sphinxutils import build_rst
 
 
-def rst2ipynb(rst_text, conf_txt=None, status=sys.stdout, warningiserror=True):
-    """ Build ReST text `rst_text` into doctree
+def sphinx2ipynb(rst_text,
+                conf_txt=None,
+                status=sys.stdout,
+                warningiserror=True):
+    """ Build Sphinx ReST text `rst_text` into Notebook JSON
 
     Parameters
     ----------
@@ -37,8 +40,8 @@ def rst2ipynb(rst_text, conf_txt=None, status=sys.stdout, warningiserror=True):
 
     Returns
     -------
-    ipynb_json
-        JSON byte string representing notebook from `rst_text`.
+    ipynb_json : str
+        JSON string representing notebook from `rst_text`.
     """
     doctree = build_rst(rst_text, conf_txt, status=status,
                         warningiserror=warningiserror)
@@ -146,6 +149,7 @@ def collect_notebooks(app, doctree, fromdocname):
 def build_notebook(docname):
     return nbf.new_notebook()
 
+
 def fill_notebook(nb):
     return nb
 
@@ -169,7 +173,7 @@ def write_notebooks(app, exception):
         return
     for docname, to_build in env.notebooks.items():
         doctree = app.env.get_doctree(docname)
-        clear_nb = nbf.reads(doctree2ipynb(doctree).decode('utf8'))
+        clear_nb = nbf.reads(doctree2ipynb(doctree))
         for rel_fn in to_build.get('clear', []):
             out_fn = _relfn2outpath(rel_fn, app)
             write_notebook(clear_nb, out_fn)

@@ -2,7 +2,7 @@
 """
 
 from nb2plots.doctree2nb import parse_doctest
-from nb2plots.to_notebook import rst2ipynb
+from nb2plots.to_notebook import sphinx2ipynb
 from nb2plots.ipython_shim import nbf
 
 # Shortcuts
@@ -16,11 +16,11 @@ from nose.tools import assert_equal
 def cells2json(cells):
     nb = nbf.new_notebook()
     nb['cells'] += cells
-    return nbf.writes(nb).encode('utf8')
+    return nbf.writes(nb)
 
 
 def assert_rst_cells_equal(rst_text, cells):
-    assert_equal(rst2ipynb(rst_text), cells2json(cells))
+    assert_equal(sphinx2ipynb(rst_text), cells2json(cells))
 
 
 def test_basic():

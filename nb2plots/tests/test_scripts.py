@@ -6,13 +6,14 @@ Test running scripts
 """
 from __future__ import division, print_function, absolute_import
 
-from os.path import (dirname, join as pjoin, abspath)
+from os.path import (dirname, join as pjoin, abspath, exists)
 from glob import glob
 
 from nose.tools import (assert_true, assert_false, assert_not_equal,
                         assert_equal)
 
 from .scriptrunner import ScriptRunner
+from .convutils import fcontents, DATA_PATH
 
 
 runner = ScriptRunner()
@@ -25,16 +26,28 @@ def script_test(func):
     return func
 script_test.__test__ = False # It's not a nose test
 
-DATA_PATH = abspath(pjoin(dirname(__file__), 'rst_md_files'))
-
 
 @script_test
 def test_rst2md():
-    # test rst2md script over all .rst files checking against .md files
+    # test rst2md script over all .rst files checking against .smd / .md files
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
         md_fname = rst_fname[:-3] + 'md'
         cmd = ['rst2md', rst_fname]
         code, stdout, stderr = run_command(cmd)
         with open(md_fname, 'rb') as fobj:
             expected_md = fobj.read()
+        assert_equal(stdout, expected_md)
+
+
+@script_test
+def test_sphinx2md():
+    # test rst2md script over all .rst files checking against .md files
+    for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
+        # Try .smd filename first, otherwise ordinary .md
+        md_fname = rst_fname[:-3] + 'smd'
+        if not exists(md_fname):
+            md_fname = rst_fname[:-3] + 'md'
+        expected_md = fcontents(md_fname)
+        cmd = ['sphinx2md', rst_fname]
+        code, stdout, stderr = run_command(cmd)
         assert_equal(stdout, expected_md)

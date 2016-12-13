@@ -1,22 +1,19 @@
 #!python
-""" Convert notebook to ReST format with plot directives
+""" Convert notebook to Sphinx ReST format with nbplot directives
 
 Example:
 
     nb2plots example.ipynb
 
-Prints to stdout
+Prints to stdout with UTF-8 encoding.
 """
 # vim: ft=python
 from __future__ import division, print_function, absolute_import
 
-import sys
 from argparse import ArgumentParser
 
+from nb2plots.commands import bin_stdout
 from nb2plots.from_notebook import convert_nb_fname
-
-# Bytes stream for writing to stdout
-bin_stdout = sys.stdout.buffer if sys.version_info[0] > 2 else sys.stdout
 
 
 def main():
@@ -25,7 +22,7 @@ def main():
     parser.add_argument('notebook', help = 'notebook file to convert')
     args = parser.parse_args()
     rst_text = convert_nb_fname(args.notebook) + '\n'
-    bin_stdout.write(rst_text.encode('utf8'))
+    bin_stdout.write(rst_text.encode('utf-8'))
 
 
 if __name__ == '__main__':

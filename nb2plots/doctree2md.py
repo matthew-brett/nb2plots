@@ -2,12 +2,12 @@
 """Simple Markdown writer for reStructuredText.
 
 """
-
 from __future__ import unicode_literals
 
 __docformat__ = 'reStructuredText'
 
 from docutils import frontend, nodes, writers, languages
+from docutils.io import Output
 
 
 class Writer(writers.Writer):
@@ -79,7 +79,7 @@ class IndentLevel(object):
         Add processed ``self.contents`` to ``self.base``.  The first line has
         ``first_prefix`` prepended, further lines have ``prefix`` prepended.
 
-        Empty (all whitepsace) lines get written as bare carriage returns, to
+        Empty (all whitespace) lines get written as bare carriage returns, to
         avoid ugly extra whitespace.
         """
         string = ''.join(self.content)
@@ -148,7 +148,6 @@ PREF_SUFF_ELEMENTS = {
     'problematic' : ('\n\n', '\n\n'),
     'strong' : ('**', '**'),  # Could also use ('__', '__')
     'literal' : ('`', '`'),
-    'math' : ('$', '$'),
     'subscript' : ('<sub>', '</sub>'),
     'superscript' : ('<sup>', '</sup>'),
 }
@@ -301,11 +300,29 @@ class Translator(nodes.NodeVisitor):
         self.add('\n')
 
     def visit_math_block(self, node):
+        # docutils math block
         self.add('$$\n')
 
     def depart_math_block(self, node):
         self.ensure_eol()
         self.add('$$\n\n')
+
+    def visit_displaymath(self, node):
+        # sphinx math blocks become displaymath
+        self.add('$$\n{}\n$$\n\n'.format(node['latex']))
+        raise nodes.SkipNode
+
+    def visit_math(self, node):
+        # sphinx math node has 'latex' attribute, docutils does not
+        if 'latex' in node:  # sphinx math node
+            self.add('${}$'.format(node['latex']))
+            raise nodes.SkipNode
+        # docutils math node
+        self.add('$')
+
+    def depart_math(self, node):
+        # sphinx node skipped in visit, only docutils gets here
+        self.add('$')
 
     def visit_literal_block(self, node):
         code_type = node['classes'][1] if 'code' in node['classes'] else ''
@@ -404,3 +421,15 @@ class Translator(nodes.NodeVisitor):
                 ' element is not supported.')
             self._warned.add(node_type)
         raise nodes.SkipNode
+
+
+class UnicodeOutput(Output):
+    """ Don't do anything to the string; just return it.
+    """
+
+    default_destination_path = '<string>'
+
+    def write(self, data):
+        """ Store `data` in `self.destination`, and return it."""
+        self.destination = data
+        return data

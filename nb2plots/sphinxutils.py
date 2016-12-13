@@ -4,6 +4,7 @@
 import sys
 import os
 from os.path import join as pjoin, isdir
+from importlib import import_module
 import shutil
 from contextlib import contextmanager
 from copy import copy
@@ -62,11 +63,27 @@ class TestApp(Sphinx):
             return super(TestApp, self).build(*args, **kwargs)
 
 
+def can_import(module_str):
+    try:
+        import_module(module_str)
+    except ImportError:
+        return False
+    return True
+
+
+DEFAULT_EXTENSIONS = [ext_name for ext_name in
+                      ["nb2plots.nbplots",
+                       "nb2plots.to_notebook",
+                       'sphinx.ext.autodoc',  # to silence math_dollar warning
+                       'sphinx.ext.mathjax',  # to enable math output
+                       'texext.math_dollar']  # to enable inline dollar syntax
+                      if can_import(ext_name)]
+
+
 DEFAULT_CONF =  """\
-extensions = ["nb2plots.nbplots",
-              "nb2plots.to_notebook",
-              'sphinx.ext.mathjax']
-"""
+extensions = [{}]
+""".format(',\n'.join('"{}"'.format(ext_name)
+                      for ext_name in DEFAULT_EXTENSIONS))
 
 
 class TempApp(TestApp):

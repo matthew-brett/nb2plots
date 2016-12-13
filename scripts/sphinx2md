@@ -1,0 +1,17 @@
+#!python
+""" Convert single Sphinx ReST document to Markdown
+
+Example:
+
+    sphinx2md example.rst
+
+Write Markdown to stdout as UTF-8.
+"""
+# vim: ft=python
+
+from nb2plots.sphinx2md import sphinx2md
+from nb2plots.commands import do_main
+
+
+if __name__ == '__main__':
+    do_main("Convert Sphinx ReST file to Markdown", sphinx2md)

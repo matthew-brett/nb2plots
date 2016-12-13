@@ -1,0 +1,17 @@
+#!python
+""" Convert single ReST document to Notebook JSON
+
+Example:
+
+    sphinx2nb example.rst
+
+Write notebook JSON to stdout as UTF-8.
+"""
+# vim: ft=python
+
+from nb2plots.to_notebook import sphinx2ipynb
+from nb2plots.commands import do_main
+
+
+if __name__ == '__main__':
+    do_main("Convert Sphinx ReST file to Notebook JSON", sphinx2ipynb)

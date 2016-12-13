@@ -6,7 +6,6 @@ import re
 from textwrap import dedent
 
 from docutils import nodes
-from docutils.io import StringOutput
 
 from .ipython_shim import nbf
 from . import doctree2md as d2m
@@ -60,7 +59,7 @@ def doctree2ipynb(doctree):
         JSON string representation of Jupyter notebook.
     """
     writer = Writer()
-    destination = StringOutput(encoding='utf8')
+    destination = d2m.UnicodeOutput()
     return writer.write(doctree, destination)
 
 
