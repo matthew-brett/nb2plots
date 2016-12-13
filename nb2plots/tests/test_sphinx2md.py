@@ -18,7 +18,8 @@ def assert_conv_equal(rst_str, md_expected):
 
 
 def test_example_files():
-    # test rst2md script over all .rst files checking against .md files
+    # test sphinx2md script over all .rst files checking against .smd / .md
+    # files
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
         rst_contents = fcontents(rst_fname, 't')
         # Try .smd filename first, otherwise ordinary .md

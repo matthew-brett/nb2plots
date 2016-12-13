@@ -1,10 +1,12 @@
-Here is some:
+Here is some code:
 
 .. code:: python
 
     a = 1
     b = 2
     print(a + b)
+
+Some intervening text, then more code:
 
 .. code:: c
 

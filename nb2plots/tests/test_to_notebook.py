@@ -1,5 +1,7 @@
 """ Tests for to_notebook module
 """
+from os.path import join as pjoin, exists
+from glob import glob
 
 from nb2plots import to_notebook as tn
 from nb2plots.to_notebook import sphinx2ipynb
@@ -7,6 +9,8 @@ from nb2plots.to_notebook import sphinx2ipynb
 from nose.tools import assert_equal
 
 from nb2plots.tests import mockapp
+
+from .convutils import convert_assert, fcontents, DATA_PATH
 
 
 def test_to_notebook_setup(*args):
@@ -29,6 +33,19 @@ def test_to_notebook_setup(*args):
     assert_equal(len(connects), 0, 'Connections failed')
     assert_equal(len(roles), 0, 'Roles failed')
     assert_equal(len(translators), 0, 'Translators failed')
+
+
+def assert_conv_equal(rst_str, md_expected):
+    convert_assert(rst_str, sphinx2ipynb, md_expected, None)
+
+
+def test_example_files():
+    # test sphinx2nb script over all .rst files checking against .ipynb files
+    for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
+        rst_contents = fcontents(rst_fname, 't')
+        nb_fname = rst_fname[:-3] + 'ipynb'
+        md_contents = fcontents(nb_fname, 't')
+        assert_conv_equal(rst_contents, md_contents)
 
 
 def test_notebook_basic():

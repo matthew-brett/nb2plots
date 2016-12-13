@@ -29,7 +29,7 @@ script_test.__test__ = False # It's not a nose test
 
 @script_test
 def test_rst2md():
-    # test rst2md script over all .rst files checking against .smd / .md files
+    # test rst2md script over all .rst files checking against .md files
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
         md_fname = rst_fname[:-3] + 'md'
         cmd = ['rst2md', rst_fname]
@@ -41,7 +41,8 @@ def test_rst2md():
 
 @script_test
 def test_sphinx2md():
-    # test rst2md script over all .rst files checking against .md files
+    # test sphinx2md script over all .rst files checking against .smd / .md
+    # files
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
         # Try .smd filename first, otherwise ordinary .md
         md_fname = rst_fname[:-3] + 'smd'
@@ -51,3 +52,14 @@ def test_sphinx2md():
         cmd = ['sphinx2md', rst_fname]
         code, stdout, stderr = run_command(cmd)
         assert_equal(stdout, expected_md)
+
+
+@script_test
+def test_sphinx2nb():
+    # test sphinx2nb script over all .rst files checking against .ipynb files
+    for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
+        nb_fname = rst_fname[:-3] + 'ipynb'
+        expected = fcontents(nb_fname)
+        cmd = ['sphinx2nb', rst_fname]
+        code, stdout, stderr = run_command(cmd)
+        assert_equal(stdout, expected)
