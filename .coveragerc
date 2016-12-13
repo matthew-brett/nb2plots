@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = nb2plots
+include = */nb2plots/*
+omit =
+    nb2plots/_version.py
