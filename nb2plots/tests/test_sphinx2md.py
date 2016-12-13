@@ -10,6 +10,8 @@ from glob import glob
 
 from ..sphinx2md import sphinx2md
 
+from nose.tools import assert_equal
+
 from .convutils import convert_assert, fcontents, DATA_PATH
 
 
@@ -28,3 +30,10 @@ def test_example_files():
             md_fname = rst_fname[:-3] + 'md'
         md_contents = fcontents(md_fname, 't')
         assert_conv_equal(rst_contents, md_contents)
+
+
+def test_default_mathdollar():
+    # Test mathdollar extension present by default.
+    md = sphinx2md(r'Some text with $a = 1$ math.')
+    expected = "Some text with $a = 1$ math.\n"
+    assert_equal(md, expected)

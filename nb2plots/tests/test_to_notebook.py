@@ -121,3 +121,23 @@ More text.
  "nbformat_minor": 1
 }"""
     assert_equal(ipynb, expected)
+
+
+def test_default_mathdollar():
+    # Test mathdollar extension present by default.
+    ipynb = sphinx2ipynb(r'Some text with $a = 1$ math.')
+    expected = r"""{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Some text with $a = 1$ math.",
+   ]
+  },
+ ],
+ "metadata": {},
+ "nbformat": 4,
+ "nbformat_minor": 1
+}"""
+    assert_equal(ipynb, expected)
