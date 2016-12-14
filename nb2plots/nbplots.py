@@ -156,7 +156,8 @@ import six
 
 from collections import defaultdict, Sequence
 import sys, os, shutil, io, re, textwrap
-from os.path import relpath
+from os.path import (relpath, abspath, join as pjoin, dirname, exists,
+                     basename, splitext, isdir)
 import traceback
 from pprint import pformat
 
@@ -355,12 +356,12 @@ class NBPlotDirective(Directive):
 
     def _copy_image_files(self, images, dest_dir):
         # copy image files to builder's output directory, if necessary
-        if not os.path.exists(dest_dir):
+        if not exists(dest_dir):
             cbook.mkdirs(dest_dir)
 
         for img in images:
             for fn in img.filenames():
-                destimg = os.path.join(dest_dir, os.path.basename(fn))
+                destimg = pjoin(dest_dir, basename(fn))
                 if fn != destimg:
                     shutil.copyfile(fn, destimg)
 
@@ -381,15 +382,15 @@ class NBPlotDirective(Directive):
         close_figs = False if 'keepfigs' in self.options else True
 
         rst_file = document.attributes['source']
-        rst_dir = os.path.dirname(rst_file)
+        rst_dir = dirname(rst_file)
         source_file_name = rst_file
 
         counter = document.attributes.get('_plot_counter', 0) + 1
         document.attributes['_plot_counter'] = counter
-        base, ext = os.path.splitext(os.path.basename(source_file_name))
+        base, ext = splitext(basename(source_file_name))
         output_base = '%s-%d.py' % (base, counter)
 
-        base, source_ext = os.path.splitext(output_base)
+        base, source_ext = splitext(output_base)
         if source_ext in ('.py', '.rst', '.txt'):
             output_base = base
         else:
@@ -405,32 +406,31 @@ class NBPlotDirective(Directive):
 
         # determine output directory name fragment
         source_rel_name = relpath(source_file_name, setup.confdir)
-        source_rel_dir = os.path.dirname(source_rel_name)
+        source_rel_dir = dirname(source_rel_name)
         while source_rel_dir.startswith(os.path.sep):
             source_rel_dir = source_rel_dir[1:]
 
         # build_dir: where to place output files (temporarily)
-        build_dir = os.path.join(os.path.dirname(setup.app.doctreedir),
-                                 'nbplot_directive',
-                                 source_rel_dir)
+        build_dir = pjoin(dirname(setup.app.doctreedir),
+                          'nbplot_directive',
+                          source_rel_dir)
         # get rid of .. in paths, also changes pathsep
         # see note in Python docs for warning about symbolic links on Windows.
         # need to compare source and dest paths at end
         build_dir = os.path.normpath(build_dir)
 
-        if not os.path.exists(build_dir):
+        if not exists(build_dir):
             os.makedirs(build_dir)
 
         # output_dir: final location in the builder's directory
-        dest_dir = os.path.abspath(os.path.join(setup.app.builder.outdir,
-                                                source_rel_dir))
-        if not os.path.exists(dest_dir):
+        dest_dir = abspath(pjoin(setup.app.builder.outdir, source_rel_dir))
+        if not exists(dest_dir):
             # no problem here for me, but just use built-ins
             os.makedirs(dest_dir)
 
         # how to link to files from the RST file
-        dest_dir_link = os.path.join(relpath(setup.confdir, rst_dir),
-                                     source_rel_dir).replace(os.path.sep, '/')
+        dest_dir_link = pjoin(relpath(setup.confdir, rst_dir),
+                              source_rel_dir).replace(os.path.sep, '/')
         build_dir_link = relpath(build_dir, rst_dir).replace(os.path.sep, '/')
         source_link = dest_dir_link + '/' + output_base + source_ext
 
@@ -651,13 +651,13 @@ plot_context = dict()
 
 
 class ImageFile(object):
-    def __init__(self, basename, dirname):
+    def __init__(self, basename, path):
         self.basename = basename
-        self.dirname = dirname
+        self.dirname = path
         self.formats = []
 
     def filename(self, format):
-        return os.path.join(self.dirname, "%s.%s" % (self.basename, format))
+        return pjoin(self.dirname, "%s.%s" % (self.basename, format))
 
     def filenames(self):
         return [self.filename(fmt) for fmt in self.formats]
@@ -895,7 +895,7 @@ def render_figures(code, code_path, output_dir, output_base, config,
     if setup.config.nbplot_working_directory is not None:
         workdir = _check_wd(setup.config.nbplot_working_directory)
     elif code_path is not None:
-        workdir = os.path.abspath(os.path.dirname(code_path))
+        workdir = abspath(dirname(code_path))
     else:
         workdir = None
 
