@@ -66,13 +66,13 @@ install:
       elif [ "$INSTALL_TYPE" == "sdist" ]; then
         python setup.py egg_info  # check egg_info while we're here
         python setup.py sdist
-        wheelhouse_pip_install dist/*.tar.gz
+        pip install -f $EXTRA_WHEELS dist/*.tar.gz
       elif [ "$INSTALL_TYPE" == "wheel" ]; then
         pip install wheel
         python setup.py bdist_wheel
-        wheelhouse_pip_install dist/*.whl
+        pip install -f $EXTRA_WHEELS dist/*.whl
       elif [ "$INSTALL_TYPE" == "requirements" ]; then
-        wheelhouse_pip_install -r requirements.txt
+        pip install -f $EXTRA_WHEELS -r requirements.txt
         python setup.py install
       fi
 
