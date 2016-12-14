@@ -5,6 +5,7 @@ from glob import glob
 
 from nb2plots import to_notebook as tn
 from nb2plots.to_notebook import sphinx2ipynb
+from nb2plots.ipython_shim import nbf
 
 from nose.tools import assert_equal
 
@@ -35,8 +36,18 @@ def test_to_notebook_setup(*args):
     assert_equal(len(translators), 0, 'Translators failed')
 
 
-def assert_conv_equal(rst_str, md_expected):
-    convert_assert(rst_str, sphinx2ipynb, md_expected, None)
+def assert_nb_equiv(ipynb, expected):
+    actual_nb = nbf.reads(ipynb)
+    expected_nb = nbf.reads(expected)
+    # Ignore different minor versions of Notebook format
+    # It does not appear to be possible to request specific minor versions of
+    # the Notebook format.
+    expected_nb['nbformat_minor'] = actual_nb['nbformat_minor']
+    assert_equal(actual_nb, expected_nb)
+
+
+def assert_conv_equal(rst_str, expected):
+    assert_nb_equiv(sphinx2ipynb(rst_str), expected)
 
 
 def test_example_files():
@@ -44,8 +55,8 @@ def test_example_files():
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
         rst_contents = fcontents(rst_fname, 't')
         nb_fname = rst_fname[:-3] + 'ipynb'
-        md_contents = fcontents(nb_fname, 't')
-        assert_conv_equal(rst_contents, md_contents)
+        nb_contents = fcontents(nb_fname, 't')
+        assert_conv_equal(rst_contents, nb_contents)
 
 
 def test_notebook_basic():
@@ -120,7 +131,7 @@ More text.
  "nbformat": 4,
  "nbformat_minor": 1
 }"""
-    assert_equal(ipynb, expected)
+    assert_nb_equiv(ipynb, expected)
 
 
 def test_default_mathdollar():
@@ -132,12 +143,12 @@ def test_default_mathdollar():
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Some text with $a = 1$ math.",
+    "Some text with $a = 1$ math."
    ]
-  },
+  }
  ],
  "metadata": {},
  "nbformat": 4,
  "nbformat_minor": 1
 }"""
-    assert_equal(ipynb, expected)
+    assert_nb_equiv(ipynb, expected)
