@@ -37,7 +37,7 @@ def convert_assert(rst_str, converter, expected, encoding='utf8'):
     # Make some useful debugging output
     if encoding is not None:
         actual = actual.decode(encoding)
-        expected = actual.decode(encoding)
+        expected = expected.decode(encoding)
     msg = ('actual, expected not equal:\n' +
            _diff_strs(actual, expected))
     pxml = publish_string(rst_str, writer=PXMLWriter())

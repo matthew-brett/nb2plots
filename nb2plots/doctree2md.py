@@ -332,6 +332,11 @@ class Translator(nodes.NodeVisitor):
         self.ensure_eol()
         self.add('```\n\n')
 
+    def visit_doctest_block(self, node):
+        self.add('```python\n')
+
+    depart_doctest_block = depart_literal_block
+
     def visit_block_quote(self, node):
         self.start_level('> ')
 
