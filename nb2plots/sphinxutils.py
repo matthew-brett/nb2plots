@@ -259,7 +259,8 @@ class SourcesBuilder(PageBuilder):
         with open(pjoin(cls.page_source, 'conf.py'), 'wt') as fobj:
             fobj.write(cls.conf_source)
         for page_root, page_content in cls.rst_sources.items():
-            with open(pjoin(cls.page_source, page_root + '.rst'), 'wt') as fobj:
+            page_path = pjoin(cls.page_source, page_root + '.rst')
+            with open(page_path, 'wt') as fobj:
                 fobj.write(page_content)
         # Add pages to toctree to avoid sphinx warning -> error
         indent = ' ' * 4

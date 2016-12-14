@@ -2,6 +2,7 @@
 
 from os.path import (join as pjoin, dirname, isdir)
 import re
+import os
 
 from nb2plots.nbplots import run_code, parse_parts
 from nb2plots.sphinxutils import SourcesBuilder
@@ -281,6 +282,7 @@ class TestNonDefaultPre(PlotsBuilder):
     """
     conf_source=('extensions = ["nb2plots.nbplots"]\n'
                  'nbplot_pre_code = "import numpy as foo; bar = 1"\n')
+
     rst_sources=dict(a_page="""\
 A title
 -------
@@ -738,6 +740,30 @@ class TestWithSkipDoctest(TestWithSkip):
     def test_pages(self):
         # No pages built by doctest
         return
+
+
+class TestOtherWD(PlotsBuilder):
+    """ Check that it is possible to run code with other working directory
+    """
+
+    rst_sources=dict(a_page="""\
+A title
+-------
+
+.. nbplot::
+
+    >>> # Code run during page generation, e.g. html build
+    >>> import os
+    >>> assert os.getcwd().endswith('my_wd')
+""")
+
+    @classmethod
+    def modify_source(cls):
+        super(TestOtherWD, cls).modify_source()
+        work_dir = pjoin(cls.build_path, 'my_wd')
+        os.mkdir(work_dir)
+        with open(pjoin(cls.page_source, 'conf.py'), 'at') as fobj:
+            fobj.write('\nnbplot_working_directory = "{}"\n'.format(work_dir))
 
 
 def test_part_finding():

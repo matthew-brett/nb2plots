@@ -144,7 +144,9 @@ The nbplot directive has the following configuration options:
         path will be added to `sys.path` so it can import any helper modules
         sitting beside it.  This configuration option can be used to specify
         a central directory (also added to `sys.path`) where data files and
-        helper modules for all code are located.
+        helper modules for all code are located.  If the directory is relative,
+        directory taken to be relative to root directory of the project (rather
+        than source directory).
 
     nbplot_template
         Provide a customized template for preparing restructured text.
@@ -727,18 +729,18 @@ def parse_parts(lines):
     return _part_strs2dicts(part_strs)
 
 
-def _check_wd(dirname):
+def _check_wd(path):
     try:
-        os.chdir(dirname)
-    except OSError as err:
-        raise OSError(str(err) + '\n`nbplot_working_directory` option in'
-                        'Sphinx configuration file must be a valid '
-                        'directory path')
+        abs_path = abspath(path)
     except TypeError as err:
         raise TypeError(str(err) + '\n`nbplot_working_directory` option in '
                         'Sphinx configuration file must be a string or '
                         'None')
-    return dirname
+    if not isdir(abs_path):
+        raise OSError('`nbplot_working_directory` option (="{}") in '
+                      'Sphinx configuration file must be a valid '
+                      'directory path'.format(path))
+    return abs_path
 
 
 def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
