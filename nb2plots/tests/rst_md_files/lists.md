@@ -20,4 +20,3 @@
    You can have a line break within the list.
 
    Note that this line is separate, but within the same paragraph.
-

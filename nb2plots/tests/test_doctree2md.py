@@ -54,7 +54,7 @@ def test_container():
     container = nodes.container()
     doc.append(container)
     container.append(nodes.Text('Boo!'))
-    assert_dt_equal(doc, b'Boo!')
+    assert_dt_equal(doc, b'Boo!\n')
 
 
 def test_snippets():

@@ -8,6 +8,7 @@ __docformat__ = 'reStructuredText'
 
 from docutils import frontend, nodes, writers, languages
 from docutils.io import Output
+from collections import OrderedDict
 
 
 class Writer(writers.Writer):
@@ -156,7 +157,15 @@ PREF_SUFF_ELEMENTS = {
 PASS_THRU_ELEMENTS = ('document',
                       'container',
                       'target',
-                      'inline')
+                      'inline',
+                      'definition_list',
+                      'definition_list_item',
+                      'term',
+                      'field_list',
+                      'field_list_item',
+                      'field',
+                      'field_name'
+                     )
 
 
 @add_pass_thru(PASS_THRU_ELEMENTS)
@@ -170,21 +179,21 @@ class Translator(nodes.NodeVisitor):
         self.settings = settings = document.settings
         lcode = settings.language_code
         self.language = languages.get_language(lcode, document.reporter)
-        self.head, self.body, self.foot = [], [], []
         # Warn only once per writer about unsupported elements
         self._warned = set()
+        # Lookup table to get section list from name
+        self._lists = OrderedDict((('head', []),
+                                   ('body', []),
+                                   ('foot', [])))
         # Reset attributes modified by reading
         self.reset()
-        # Lookup table to get section list from name
-        self._lists = dict(head=self.head,
-                           body=self.body,
-                           foot=self.foot)
+        # Attribute shortcuts
+        self.head, self.body, self.foot = self._lists.values()
 
     def reset(self):
         """ Initialize object for fresh read """
-        self.head[:] = []
-        self.body[:] = []
-        self.foot[:] = []
+        for part in self._lists.values():
+            part[:] = []
 
         # Current section heading level during writing
         self.section_level = 0
@@ -201,26 +210,14 @@ class Translator(nodes.NodeVisitor):
         # the correct prefix for every line.
         self.indent_levels = []
 
-        ##TODO docinfo items can go in a footer HTML element (store in self.foot).
-        self._docinfo = {
-            'title' : '',
-            'subtitle' : '',
-            'author' : [],
-            'date' : '',
-            'copyright' : '',
-            'version' : '',
-            }
+        # Flag indicating we are processing docinfo items
+        self._in_docinfo = False
 
     def astext(self):
         """Return the final formatted document as a string."""
-        self.drop_trailing_eols()
-        return ''.join(self.head + self.body + self.foot)
-
-    def drop_trailing_eols(self):
-        # Drop trailing carriage return from ends of lists
-        for L in self._lists.values():
-            if L and L[-1] == '\n':
-                L.pop()
+        parts = [''.join(lines).strip() for lines in self._lists.values()]
+        parts = [part + '\n\n' for part in parts if part]
+        return ''.join(parts).strip() + '\n'
 
     def ensure_eol(self):
         """Ensure the last line in current base is terminated by new line."""
@@ -242,7 +239,9 @@ class Translator(nodes.NodeVisitor):
             String to add to output document
         section : {'body', 'head', 'foot'}, optional
             Section of document that generated text should be appended to, if
-            not already appending to an indent level.
+            not already appending to an indent level.  If already appending to
+            an indent level, method will ignore `section`.  Use
+            :meth:`add_section` to append to a section unconditionally.
         """
         self.get_current_output(section).append(string)
 
@@ -285,12 +284,28 @@ class Translator(nodes.NodeVisitor):
         self.add('<!-- ' + node.astext() + ' -->\n')
         raise nodes.SkipNode
 
-    def visit_docinfo_item(self, node, name):
-        if name == 'author':
-            self._docinfo[name].append(node.astext())
-        else:
-            self._docinfo[name] = node.astext()
+    def visit_docinfo(self, node):
+        self._in_docinfo = True
+
+    def depart_docinfo(self, node):
+        self._in_docinfo = False
+
+    def process_docinfo_item(self, node):
+        """ Called explicitly from methods in this class
+        """
+        self.add_section('% {}\n'.format(node.astext()), section='head')
         raise nodes.SkipNode
+
+    def visit_definition(self, node):
+        self.add('\n\n')
+        self.start_level('    ', ':   ')
+
+    def depart_definition(self, node):
+        self.finish_level()
+
+    visit_field_body = visit_definition
+
+    depart_field_body = depart_definition
 
     def visit_paragraph(self, node):
         pass
@@ -370,8 +385,7 @@ class Translator(nodes.NodeVisitor):
 
     def visit_subtitle(self, node):
         if isinstance(node.parent, nodes.document):
-            self.visit_docinfo_item(node, 'subtitle')
-            raise nodes.SkipNode
+            self.process_docinfo_item(node)
 
     def visit_system_message(self, node):
         # TODO add report_level
@@ -392,11 +406,7 @@ class Translator(nodes.NodeVisitor):
         pass
 
     def visit_title(self, node):
-        if self.section_level == 0:
-            self.add_section('# ', section='head')
-            self._docinfo['title'] = node.astext()
-        else:
-            self.add((self.section_level + 1) * '#' + ' ')
+        self.add((self.section_level + 1) * '#' + ' ')
 
     def depart_title(self, node):
         self.ensure_eol()
@@ -419,7 +429,13 @@ class Translator(nodes.NodeVisitor):
 
     def unknown_visit(self, node):
         """ Warn once per instance for unsupported nodes
+
+        Intercept docinfo items if in docinfo block.
         """
+        if self._in_docinfo:
+            self.process_docinfo_item(node)
+            return
+        # We really don't know this node type, warn once per node type
         node_type = node.__class__.__name__
         if node_type not in self._warned:
             self.document.reporter.warning('The ' + node_type + \

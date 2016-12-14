@@ -15,4 +15,3 @@ Interspersed with text.
 >>> b
 [1, 2, 3]
 ```
-
