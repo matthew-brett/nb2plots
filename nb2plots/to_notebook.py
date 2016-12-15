@@ -3,6 +3,7 @@
 import sys
 import re
 from os.path import join as pjoin
+from copy import deepcopy
 
 from docutils import nodes, utils
 from docutils.parsers.rst import directives
@@ -12,11 +13,12 @@ from sphinx.util.nodes import split_explicit_title, set_role_source_info
 from sphinx.errors import ExtensionError
 
 # Use notebook format version 4
-from .ipython_shim import nbf
+from .ipython_shim import nbf, nbconvert as nbc
 
 from .doctree2nb import doctree2ipynb, Translator
 
 from nb2plots.sphinxutils import build_rst
+from nb2plots.nbplots import drop_visit
 
 
 def sphinx2ipynb(rst_text,
@@ -97,7 +99,7 @@ def clearnotebook(name, rawtext, text, lineno, inliner, options={},
     # Get title and link
     text = utils.unescape(text)
     if text.strip() == '.':
-      text = 'Download this page as IPython notebook'
+        text = 'Download this page as IPython notebook'
     has_nb_fname, title, nb_fname = split_explicit_title(text)
     if not has_nb_fname:
         nb_fname = env.docname + '.ipynb'
@@ -151,7 +153,12 @@ def build_notebook(docname):
 
 
 def fill_notebook(nb):
-    return nb
+    preprocessor = nbc.preprocessors.execute.ExecutePreprocessor()
+    preprocessor.enabled = True
+    res = nbc.exporter.ResourcesDict()
+    res['metadata'] = nbc.exporter.ResourcesDict()
+    output_nb, _ = preprocessor(deepcopy(nb), res)
+    return output_nb
 
 
 def write_notebook(nb, filename):
@@ -203,9 +210,11 @@ def setup(app):
     app.connect('doctree-resolved', collect_notebooks)
     app.connect('build-finished', write_notebooks)
     app.add_node(notebook_reference,
-                 html=(visit_notebook_node, depart_notebook_node))
+                 html=(visit_notebook_node, depart_notebook_node),
+                 text=(drop_visit, None),
+                 latex=(drop_visit, None))
     # Register translator to allow other extensions to extend ipynb visit,
     # depart methods with app.add_node as we have just done for the html
-    # translator in the lines above.  See also:
+    # translator in the lines above.  See:
     # http://www.sphinx-doc.org/en/1.4.8/extdev/tutorial.html#the-setup-function
     app.set_translator('ipynb', Translator)

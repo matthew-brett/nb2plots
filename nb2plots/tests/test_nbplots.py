@@ -1,4 +1,5 @@
 """ Tests for build using nbplot extension """
+from __future__ import unicode_literals
 
 from os.path import (join as pjoin, dirname, isdir)
 import re
@@ -8,6 +9,8 @@ from nb2plots.nbplots import run_code, parse_parts
 from nb2plots.sphinxutils import SourcesBuilder
 
 from nose.tools import (assert_true, assert_false, assert_equal, assert_raises)
+
+from .test_to_notebook import assert_nb_equiv
 
 HERE = dirname(__file__)
 
@@ -768,6 +771,114 @@ A title
             fobj.write('# A funky module\n')
         with open(pjoin(cls.page_source, 'conf.py'), 'at') as fobj:
             fobj.write('\nnbplot_working_directory = "{}"\n'.format(work_dir))
+
+
+class TestClearNotebook(PlotsBuilder):
+    """ Test build of clear notebook with clearnotebook role
+    """
+
+    builder = 'text'
+
+    conf_source = ('extensions = ["nb2plots.nbplots", '
+                   '"nb2plots.to_notebook", '
+                   '"sphinx.ext.doctest"]')
+
+    rst_sources=dict(a_page="""\
+A title
+-------
+
+:clearnotebook:`.`
+:clearnotebook:`clear notebook <clear.ipynb>`
+:fullnotebook:`full notebook <full.ipynb>`
+
+Some text.
+
+.. nbplot::
+
+    >>> a = 1
+    >>> a
+    1
+""")
+
+    def test_pages(self):
+        txt = self.get_built_file('a_page.txt')
+        assert_equal(
+            txt,
+            '\nA title\n*******\n\n\nSome text.\n\n>>> a = 1\n>>> a\n1\n')
+        ipynb = self.get_built_file('a_page.ipynb')
+        assert_nb_equiv(ipynb, r"""
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## A title\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n",
+    "Some text."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "a = 1\n",
+    "a"
+   ]
+  }
+ ],
+ "metadata": {},
+ "nbformat": 4,
+ "nbformat_minor": 1
+}""")
+        assert_equal(self.get_built_file('clear.ipynb'), ipynb)
+        full = self.get_built_file('full.ipynb')
+        assert_nb_equiv(full, r"""
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## A title\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n",
+    "Some text."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "1"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "a = 1\n",
+    "a"
+   ]
+  }
+ ],
+ "metadata": {},
+ "nbformat": 4,
+ "nbformat_minor": 1
+}""")
 
 
 def test_part_finding():
