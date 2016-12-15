@@ -218,19 +218,26 @@ class PageBuilder(object):
         return pickle.loads(content)
 
     @classmethod
-    def get_built_file(cls, basename, mode='t'):
+    def get_built_file(cls, basename, encoding='utf8'):
         """ Contents of file in build dir with basename `basename`
 
         Parameters
         ----------
         basename : str
             Basename of file to load, including extension.
-        mode : str, optional
-            'b' or 't' for binary / text mode.
+        encoding : str, optional
+            If None, return contents as bytes.  If not None, decode contents
+            with the given encoding.
+
+        Returns
+        -------
+        content : str or bytes
+            Return text contents of file if `encoding` not None, else return
+            binary contents of file.
         """
-        with open(pjoin(cls.out_dir, basename), 'r' + mode) as fobj:
+        with open(pjoin(cls.out_dir, basename), 'rb') as fobj:
             content = fobj.read()
-        return content
+        return content if encoding is None else content.decode(encoding)
 
     def doctree2str(self, doctree):
         """ Return simple string representation from `doctree` """
