@@ -44,6 +44,13 @@ Yet more text
 
 .. nbplot::
 
+    >>> plt.imshow(np.arange(12).reshape((3, 4)))
+    <...>
+
+
+
+.. nbplot::
+
     >>> # Code that prints stuff with end result
     >>> print('one')
     >>> print('two')

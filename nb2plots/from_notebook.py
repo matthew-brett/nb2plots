@@ -77,12 +77,14 @@ def to_doctests(code, first='>>> ', cont='... '):
     return '\n'.join(new_code)
 
 
+MPL_LIST_OUT = re.compile('\[<matplotlib\..*?>\]')
 MPL_OBJ_OUT = re.compile('<matplotlib\..*?>')
 
 def ellipse_mpl(text):
     """ Replace outputs of matplotlib objects with ellipses
     """
-    return MPL_OBJ_OUT.sub('...', text)
+    text = MPL_LIST_OUT.sub('[...]', text)
+    return MPL_OBJ_OUT.sub('<...>', text)
 
 
 class PlotsExporter(nbconvert.RSTExporter):
