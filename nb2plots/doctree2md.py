@@ -146,7 +146,6 @@ def add_pass_thru(pass_thrus):
 # Doctree elements for which Markdown element is <prefix><content><suffix>
 PREF_SUFF_ELEMENTS = {
     'emphasis': ('*', '*'),   # Could also use ('_', '_')
-    'problematic' : ('\n\n', '\n\n'),
     'strong' : ('**', '**'),  # Could also use ('__', '__')
     'literal' : ('`', '`'),
     'subscript' : ('<sub>', '</sub>'),
@@ -383,23 +382,18 @@ class Translator(nodes.NodeVisitor):
     def depart_list_item(self, node):
         self.finish_level()
 
-    def visit_system_message(self, node):
-        # TODO add report_level
-        #if node['level'] < self.document.reporter['writer'].report_level:
-        #    Level is too low to display:
-        #    raise nodes.SkipNode
-        attr = {}
-        if node.hasattr('id'):
-            attr['name'] = node['id']
-        if node.hasattr('line'):
-            line = ', line %s' % node['line']
-        else:
-            line = ''
-        self.add('"System Message: %s/%s (%s:%s)"\n'
-            % (node['type'], node['level'], node['source'], line))
+    def visit_problematic(self, node):
+        self.add('\n\n```\n{}\n```\n\n'.format(node.astext()))
+        raise nodes.SkipNode
 
-    def depart_system_message(self, node):
-        pass
+    def visit_system_message(self, node):
+        if node['level'] < self.document.reporter.report_level:
+            # Level is too low to display
+            raise nodes.SkipNode
+        line = ', line %s' % node['line'] if node.hasattr('line') else ''
+        self.add("```\nSystem Message: {}:{}\n\n{}\n```\n\n".format(
+            node['source'], line, node.astext()))
+        raise nodes.SkipNode
 
     def visit_title(self, node):
         self.add((self.section_level + 1) * '#' + ' ')

@@ -7,9 +7,11 @@ Test running writer over example files and chosen snippets
 from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
 
+import sys
 from os.path import join as pjoin
 from glob import glob
 from functools import partial
+from io import TextIOWrapper, BytesIO
 
 from docutils import nodes
 from docutils.utils import new_document
@@ -64,3 +66,27 @@ def test_snippets():
     assert_conv_equal("As ``literal``", b"As `literal`\n")
     assert_conv_equal("To ``defrole``", b"To `defrole`\n")
     assert_conv_equal("Now :math:`a = 1`", b"Now $a = 1$\n")
+
+
+def test_system_message():
+    # This output could surely be improved.
+    old_stderr = sys.stderr
+    sys.stderr = TextIOWrapper(BytesIO())
+    try:
+        assert_conv_equal('Text. :bad-role:`.`.  More text.', b"""\
+Text. 
+
+```
+:bad-role:`.`
+```
+
+.  More text.
+
+```
+System Message: <string>:, line 1
+
+<string>:1: (ERROR/3) Unknown interpreted text role "bad-role".
+```
+""")
+    finally:
+        sys.stderr = old_stderr
