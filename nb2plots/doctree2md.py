@@ -383,10 +383,6 @@ class Translator(nodes.NodeVisitor):
     def depart_list_item(self, node):
         self.finish_level()
 
-    def visit_subtitle(self, node):
-        if isinstance(node.parent, nodes.document):
-            self.process_docinfo_item(node)
-
     def visit_system_message(self, node):
         # TODO add report_level
         #if node['level'] < self.document.reporter['writer'].report_level:
@@ -411,6 +407,11 @@ class Translator(nodes.NodeVisitor):
     def depart_title(self, node):
         self.ensure_eol()
         self.add('\n')
+
+    def visit_subtitle(self, node):
+        self.add((self.section_level + 2) * '#' + ' ')
+
+    depart_subtitle = depart_title
 
     def visit_transition(self, node):
         # Simply replace a transition by a horizontal rule.
