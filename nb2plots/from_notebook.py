@@ -8,12 +8,19 @@ from jinja2 import DictLoader
 
 from .ipython_shim import nbformat, nbconvert, traitlets, config
 
+MPL_INLINE = re.compile(r"^\s*%\s*matplotlib\s+(inline|nbagg)\s*$",
+                        re.MULTILINE)
+
 
 # Template to label code and output and plot blocks
 dl = DictLoader({'rst_plots': """\
 {%- extends 'rst.tpl' -%}
 
 {% block input %}
+{%- if cell.source.strip() | has_mpl_inline -%}
+.. mpl-interactive::
+
+{% endif -%}
 {%- if cell.source.strip() | strip_ipy -%}
 ##CODE_START##
 {{ cell.source | strip_ipy | to_doctests | indent}}
@@ -44,6 +51,10 @@ dl = DictLoader({'rst_plots': """\
 ##END_OUT_END##
 {%- endblock data_text -%}
 """})
+
+
+def has_mpl_inline(code):
+    return MPL_INLINE.search(code)
 
 
 def strip_ipy(code):
@@ -90,6 +101,7 @@ def ellipse_mpl(text):
 class PlotsExporter(nbconvert.RSTExporter):
     template_file = 'rst_plots'
     filters = traitlets.Dict(dict(
+        has_mpl_inline=has_mpl_inline,
         to_doctests=to_doctests,
         strip_ipy=strip_ipy,
         ellipse_mpl=ellipse_mpl,
@@ -119,8 +131,8 @@ PLOT_DIRECTIVE_PREFIX = """\
 def repl_code_plot(match):
     groups = match.groupdict(default='')
     out = ''.join((PLOT_DIRECTIVE_PREFIX,
-                    groups['code'],
-                    groups['end_out']))
+                   groups['code'],
+                   groups['end_out']))
     if groups['stdout']:
         out += '\n' + groups['stdout']
     return out

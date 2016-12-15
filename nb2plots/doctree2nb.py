@@ -119,6 +119,10 @@ class Translator(d2m.Translator):
         self.add_code_cell(node.astext())
         raise nodes.SkipNode
 
+    def visit_mpl_hint(self, node):
+        self.add_code_cell('%matplotlib inline')
+        raise nodes.SkipNode
+
 
 class Writer(d2m.Writer):
     supported = ('jupyter',)

@@ -5,7 +5,7 @@ from os.path import dirname, join as pjoin
 
 from ..ipython_shim import nbformat
 from ..from_notebook import (convert_nb, convert_nb_fname, to_doctests,
-                             CODE_WITH_OUTPUT)
+                             has_mpl_inline, CODE_WITH_OUTPUT)
 
 
 from nose.tools import (assert_true, assert_false, assert_raises,
@@ -44,6 +44,28 @@ def test_simple_cells():
     exp_mixed_magic = PLT_HDR + "    >>> b = 2\n"
     nb['cells'] = [mixed_magic_code_cell]
     assert_equal(convert_nb(nb), exp_mixed_magic)
+
+
+def test_mpl_inline_works():
+    # Test we get a mpl-interactive directive for %matplotlib inline
+    v4 = nbformat.v4
+    nb = v4.new_notebook()
+    code_cell = v4.new_code_cell('%matplotlib inline\na = 10')
+    nb['cells'] = [code_cell]
+    exp_code = "\n.. mpl-interactive::\n{}    >>> a = 10\n".format(PLT_HDR)
+    assert_equal(convert_nb(nb), exp_code)
+
+
+def test_mpl_inline():
+    assert_false(has_mpl_inline(''))
+    assert_false(has_mpl_inline('%matplotlib inline # foo'))
+    assert_true(has_mpl_inline('%matplotlib inline'))
+    assert_true(has_mpl_inline('%   matplotlib    inline'))
+    assert_true(has_mpl_inline('  %   matplotlib    inline'))
+    assert_false(has_mpl_inline('%matplotlib nbagg # foo'))
+    assert_true(has_mpl_inline('%matplotlib nbagg'))
+    assert_true(has_mpl_inline('% matplotlib nbagg\nb = 2'))
+    assert_true(has_mpl_inline('a = 1\n% matplotlib nbagg\nb = 2'))
 
 
 def test_to_doctests():
