@@ -755,6 +755,8 @@ A title
     >>> # Code run during page generation, e.g. html build
     >>> import os
     >>> assert os.getcwd().endswith('my_wd')
+    >>> # Working directory is on Python PATH
+    >>> import funky_module
 """)
 
     @classmethod
@@ -762,6 +764,8 @@ A title
         super(TestOtherWD, cls).modify_source()
         work_dir = pjoin(cls.build_path, 'my_wd')
         os.mkdir(work_dir)
+        with open(pjoin(work_dir, 'funky_module.py'), 'wt') as fobj:
+            fobj.write('# A funky module\n')
         with open(pjoin(cls.page_source, 'conf.py'), 'at') as fobj:
             fobj.write('\nnbplot_working_directory = "{}"\n'.format(work_dir))
 
