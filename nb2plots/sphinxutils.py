@@ -72,8 +72,7 @@ def can_import(module_str):
 
 
 DEFAULT_EXTENSIONS = [ext_name for ext_name in
-                      ["nb2plots.nbplots",
-                       "nb2plots.to_notebook",
+                      ["nb2plots",
                        'sphinx.ext.autodoc',  # to silence math_dollar warning
                        'sphinx.ext.mathjax',  # to enable math output
                        'texext.math_dollar']  # to enable inline dollar syntax

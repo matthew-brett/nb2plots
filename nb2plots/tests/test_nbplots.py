@@ -47,7 +47,7 @@ def test_run_code():
 
 class TestNbplots(SourcesBuilder):
 
-    conf_source = ('extensions = ["nb2plots.nbplots"]\n'
+    conf_source = ('extensions = ["nb2plots"]\n'
                    'nbplot_include_source = False\n'
                    'nbplot_html_show_source_link = True')
 
@@ -81,7 +81,7 @@ class PlotsBuilder(SourcesBuilder):
     """ Build pages with nbplots default extensions
     """
 
-    conf_source = 'extensions = ["nb2plots.nbplots", "sphinx.ext.doctest"]'
+    conf_source = 'extensions = ["nb2plots", "sphinx.ext.doctest"]'
 
 
 class TestDefaultSource(PlotsBuilder):
@@ -112,7 +112,7 @@ class TestAnnoyingParens(PlotsBuilder):
     output when html source link is off, and there are no figures.
     """
 
-    conf_source = ('extensions = ["nb2plots.nbplots"]\n'
+    conf_source = ('extensions = ["nb2plots"]\n'
                    'nbplot_html_show_source_link = False')
 
     rst_sources = dict(a_page="""\
@@ -198,7 +198,7 @@ Some text.
 class TestRcparams(PlotsBuilder):
     """ Test that rcparams get applied and kept across plots in documents
     """
-    conf_source = ('extensions = ["nb2plots.nbplots"]\n'
+    conf_source = ('extensions = ["nb2plots"]\n'
                    'nbplot_rcparams = {"text.color": "red"}\n')
     rst_sources = dict(a_page="""\
 The start
@@ -283,7 +283,7 @@ class TestNonDefaultPre(PlotsBuilder):
 
     Tested in plot directive body
     """
-    conf_source=('extensions = ["nb2plots.nbplots"]\n'
+    conf_source=('extensions = ["nb2plots"]\n'
                  'nbplot_pre_code = "import numpy as foo; bar = 1"\n')
 
     rst_sources=dict(a_page="""\
@@ -511,7 +511,7 @@ class TestFlagsConfig(TestFlags):
     """ Check flags set from global config """
 
     conf_source=("""\
-extensions = ["nb2plots.nbplots"]
+extensions = ["nb2plots"]
 nbplot_flags = {'flag1': 5, 'flag2': 6}
 """)
 
@@ -536,7 +536,7 @@ class TestWithoutSkip(PlotsBuilder):
     First check that the code gets built for txt as predicted
     """
     builder = 'text'
-    conf_source = ('extensions = ["nb2plots.nbplots", "sphinx.ext.doctest"]\n'
+    conf_source = ('extensions = ["nb2plots", "sphinx.ext.doctest"]\n'
                    'nbplot_flags = {"skip": False}')
 
     rst_sources=dict(a_page="""\
@@ -666,7 +666,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
 class TestWithSkip(TestWithoutSkip):
     """ Check that doctest code can be skipped according to flag
     """
-    conf_source = ('extensions = ["nb2plots.nbplots", "sphinx.ext.doctest"]\n'
+    conf_source = ('extensions = ["nb2plots", "sphinx.ext.doctest"]\n'
                    'nbplot_flags = {"skip": True}')
 
     def test_pages(self):
@@ -778,10 +778,6 @@ class TestClearNotebook(PlotsBuilder):
     """
 
     builder = 'text'
-
-    conf_source = ('extensions = ["nb2plots.nbplots", '
-                   '"nb2plots.to_notebook", '
-                   '"sphinx.ext.doctest"]')
 
     rst_sources=dict(a_page="""\
 A title
