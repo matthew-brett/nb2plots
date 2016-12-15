@@ -1,6 +1,6 @@
 """ Tests for to_notebook module
 """
-from os.path import join as pjoin, exists
+from os.path import join as pjoin
 from glob import glob
 
 from nb2plots import to_notebook as tn
@@ -11,7 +11,7 @@ from nose.tools import assert_equal
 
 from nb2plots.tests import mockapp
 
-from .convutils import convert_assert, fcontents, DATA_PATH
+from .convutils import fcontents, DATA_PATH
 
 
 def test_to_notebook_setup(*args):

@@ -6,14 +6,14 @@ Test running scripts
 """
 from __future__ import division, print_function, absolute_import
 
-from os.path import (dirname, join as pjoin, abspath, exists)
+from os.path import (join as pjoin, exists)
 from glob import glob
 
-from nose.tools import (assert_true, assert_false, assert_not_equal,
-                        assert_equal)
+from nose.tools import assert_equal
 
 from .scriptrunner import ScriptRunner
 from .convutils import fcontents, DATA_PATH
+from .test_to_notebook import assert_nb_equiv
 
 
 runner = ScriptRunner()
@@ -59,7 +59,7 @@ def test_sphinx2nb():
     # test sphinx2nb script over all .rst files checking against .ipynb files
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
         nb_fname = rst_fname[:-3] + 'ipynb'
-        expected = fcontents(nb_fname)
+        expected = fcontents(nb_fname, 't')
         cmd = ['sphinx2nb', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(stdout, expected)
+        assert_nb_equiv(stdout.decode('latin1'), expected)
