@@ -99,7 +99,7 @@ def clearnotebook(name, rawtext, text, lineno, inliner, options={},
     # Get title and link
     text = utils.unescape(text)
     if text.strip() == '.':
-        text = 'Download this page as IPython notebook'
+        text = 'Download this page as a Jupyter notebook'
     has_nb_fname, title, nb_fname = split_explicit_title(text)
     if not has_nb_fname:
         nb_fname = env.docname + '.ipynb'
@@ -148,11 +148,9 @@ def collect_notebooks(app, doctree, fromdocname):
     env.notebooks[fromdocname] = to_build
 
 
-def build_notebook(docname):
-    return nbf.new_notebook()
-
-
 def fill_notebook(nb):
+    """ Execute notebook `nb` and return notebook with built outputs
+    """
     preprocessor = nbc.preprocessors.execute.ExecutePreprocessor()
     preprocessor.enabled = True
     res = nbc.exporter.ResourcesDict()
@@ -162,6 +160,8 @@ def fill_notebook(nb):
 
 
 def write_notebook(nb, filename):
+    """ Write notebook `nb` to filename `filename`
+    """
     nb_str = nbf.writes(nb)
     with open(filename, 'wt') as fobj:
         fobj.write(nb_str)

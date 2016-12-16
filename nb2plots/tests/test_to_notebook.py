@@ -2,12 +2,14 @@
 """
 from os.path import join as pjoin
 from glob import glob
+import re
 
 from nb2plots import to_notebook as tn
 from nb2plots.to_notebook import sphinx2ipynb
 from nb2plots.ipython_shim import nbf
+from nb2plots.sphinxutils import build_rst, doctree2pxml
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_true
 
 from nb2plots.tests import mockapp
 
@@ -152,3 +154,73 @@ def test_default_mathdollar():
  "nbformat_minor": 1
 }"""
     assert_nb_equiv(ipynb, expected)
+
+
+def assert_rst_pxml(pxml_regex, rst_source):
+    doctree = build_rst(rst_source)
+    assert_true(re.match(pxml_regex, doctree2pxml(doctree)))
+
+
+def test_nb_role_doctrees():
+    # Test that notebook roles generate expected doctrees
+    expected_re_fmt = """\
+<document source=".*?">
+    <paragraph>
+        Text then 
+        <notebook_reference evaluate="{evaluate}" refdoc="contents" reftarget="{nb_base}.ipynb" reftype="{nb_type}notebook">
+            {nb_text}
+         then text."""
+
+    def assert_rst_pxml(pxml_params, rst_source):
+        doctree = build_rst(rst_source)
+        pxml_regex = expected_re_fmt.format(**pxml_params)
+        assert_true(re.match(pxml_regex, doctree2pxml(doctree)))
+
+    assert_rst_pxml(
+        dict(evaluate='False',
+             nb_base='contents',
+             nb_type='clear',
+             nb_text='Download this page as a Jupyter notebook'),
+        "Text then :clearnotebook:`.` then text.")
+    assert_rst_pxml(
+        dict(evaluate='True',
+             nb_base='contents',
+             nb_type='full',
+             nb_text='Download this page as a Jupyter notebook'),
+        "Text then :fullnotebook:`.` then text.")
+    assert_rst_pxml(
+        dict(evaluate='False',
+             nb_base='contents',
+             nb_type='clear',
+             nb_text='message to taste'),
+        "Text then :clearnotebook:`message to taste` then text.")
+    assert_rst_pxml(
+        dict(evaluate='True',
+             nb_base='contents',
+             nb_type='full',
+             nb_text='message to taste'),
+        "Text then :fullnotebook:`message to taste` then text.")
+    assert_rst_pxml(
+        dict(evaluate='False',
+             nb_base='foo',
+             nb_type='clear',
+             nb_text='message to taste'),
+        "Text then :clearnotebook:`message to taste <foo.ipynb>` then text.")
+    assert_rst_pxml(
+        dict(evaluate='True',
+             nb_base='foo',
+             nb_type='full',
+             nb_text='message to taste'),
+        "Text then :fullnotebook:`message to taste <foo.ipynb>` then text.")
+    assert_rst_pxml(
+        dict(evaluate='False',
+             nb_base='contents',
+             nb_type='clear',
+             nb_text='<foo.ipynb>'),
+        "Text then :clearnotebook:`<foo.ipynb>` then text.")
+    assert_rst_pxml(
+        dict(evaluate='True',
+             nb_base='contents',
+             nb_type='full',
+             nb_text='<foo.ipynb>'),
+        "Text then :fullnotebook:`<foo.ipynb>` then text.")
