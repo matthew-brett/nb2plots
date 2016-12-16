@@ -13,7 +13,7 @@ MPL_INLINE = re.compile(r"^\s*%\s*matplotlib\s+(inline|nbagg)\s*$",
 
 
 # Template to label code and output and plot blocks
-dl = DictLoader({'rst_plots': """\
+dl = DictLoader({'rst_plots.tpl': """\
 {%- extends 'rst.tpl' -%}
 
 {% block input %}
@@ -99,7 +99,7 @@ def ellipse_mpl(text):
 
 
 class PlotsExporter(nbconvert.RSTExporter):
-    template_file = 'rst_plots'
+    template_file = 'rst_plots.tpl'
     filters = traitlets.Dict(dict(
         has_mpl_inline=has_mpl_inline,
         to_doctests=to_doctests,
