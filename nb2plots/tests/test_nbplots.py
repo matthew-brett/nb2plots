@@ -798,9 +798,9 @@ Some text.
 
     def test_pages(self):
         txt = self.get_built_file('a_page.txt')
-        assert_equal(
-            txt,
-            '\nA title\n*******\n\n\nSome text.\n\n>>> a = 1\n>>> a\n1\n')
+        assert_true(re.match(
+            r'\n?A title\n\*{7}\n\n\nSome text.\n\n>>> a = 1\n>>> a\n1\n',
+            txt))
         ipynb = self.get_built_file('a_page.ipynb')
         assert_nb_equiv(ipynb, r"""
 {
