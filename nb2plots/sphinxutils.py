@@ -12,7 +12,10 @@ from tempfile import mkdtemp
 import pickle
 
 from docutils import nodes
+
 from docutils.parsers.rst import directives, roles
+from docutils.core import publish_from_doctree
+
 from sphinx.application import Sphinx
 
 fresh_roles = copy(roles._roles)
@@ -154,6 +157,23 @@ def build_rst(rst_text, conf_text=None, status=sys.stdout,
     app.build(False, [])
     doctree = app.env.get_doctree('contents')
     return doctree
+
+
+def doctree2pxml(doctree):
+    """ Return `doctree` as PseudoXML
+
+    Parameters
+    ----------
+    doctree : node
+        doccument node.
+
+    Returns
+    -------
+    pxml : str
+        PseudoXML rendering of `doctree`
+    """
+    return publish_from_doctree(doctree).decode('latin1')
+
 
 
 class PageBuilder(object):

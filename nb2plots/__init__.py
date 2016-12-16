@@ -7,6 +7,7 @@ del get_versions
 from . import nbplots
 from . import to_notebook
 from . import mpl_interactive
+from . import as_notebooks
 
 
 def setup_package():
@@ -18,3 +19,4 @@ def setup(app):
     nbplots.setup(app)
     to_notebook.setup(app)
     mpl_interactive.setup(app)
+    as_notebooks.setup(app)
