@@ -40,7 +40,7 @@ and doctest blocks in Nbplot directives.
 
 Now let us say that you would like to make this page available to your users
 as Jupyter notebooks.  To do this add the following directive to the end of
-your page (or where-ever you like)::
+your page (or where-ever you like):
 
 .. code-block:: rest
 

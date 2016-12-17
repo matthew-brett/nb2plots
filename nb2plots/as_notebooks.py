@@ -2,7 +2,7 @@
 
 As a bare directive, with no options, inserts links to the current document as
 a clear notebook (no outputs) and a full notebook (outputs inserted by
-executing the built notebook):
+executing the built notebook)::
 
     .. as-notebooks:
 
