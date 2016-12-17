@@ -72,7 +72,7 @@ install:
     - |
       if [ "$INSTALL_TYPE" == "pip" ]; then
           pip install .
-      if [ "$INSTALL_TYPE" == "setup" ]; then
+      elif [ "$INSTALL_TYPE" == "setup" ]; then
           python setup.py install
       elif [ "$INSTALL_TYPE" == "sdist" ]; then
         python setup.py egg_info  # check egg_info while we're here
