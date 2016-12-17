@@ -6,14 +6,20 @@
 nb2plots - the documentation that is not missing
 ================================================
 
-User docs:
+Introduction:
 
 .. toctree::
     :maxdepth: 2
 
-    quickstart
+    introduction
     worked_example
     scripts
+
+In more depth:
+
+.. toctree::
+    :maxdepth: 2
+
     nbplots
     mpl_interactive
     as_notebooks
@@ -23,8 +29,8 @@ Developer docs:
 .. toctree::
     :maxdepth: 2
 
+    devel/improving_markdown
     devel/make_release
-
 
 .. toctree::
     :hidden:

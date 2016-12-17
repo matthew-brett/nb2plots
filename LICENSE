@@ -46,20 +46,25 @@ listed below.
 Matplotlib plot extension
 -------------------------
 
-The ``nbplots`` module is a slightly edited version of
+The ``nbplots`` module is an edited version of
 ``matplotlib/lib/matplotlib/sphinxext/plot_directive.py``.
 
-The changes are the following:
+Among the major changes are the following:
 
-* Use of external `six` module;
-* empty ``setup_module`` to avoid breakage of nose doctests;
-* fix of plot doctest.
 * rename of 'plot' directive to 'nbplot';
 * rename of 'plot_*' configuration options to 'nbplot_*' equivalent;
+* nbplot removes the option to point to Python script file rather than
+  using the code in the directive;
+* nbplot keeps the namespace across directives in the same page, by default;
 * include-source is True by default;
+* nbplot can include multiple "parts" that can be selected via the
+  "render-parts" and "run-parts" options;
 * do not use cached output when rebuilding page to avoid errors from stale
   output;
-* fix bug including empty parens when ``nofigs`` not specified.
+* fix bug including empty parens when ``nofigs`` not specified (also fixed
+  upstream);
+* empty ``setup_module`` to avoid breakage of nose doctests;
+* fix of plot doctest.
 
 The following license covers the plot directive code:
 

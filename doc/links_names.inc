@@ -2,6 +2,7 @@
 .. vim: ft=rst
 
 .. This project
+.. _nb2plots code:
 .. _nb2plots github: http://github.com/matthew-brett/nb2plots
 .. _nb2plots pypi: http://pypi.python.org/pypi/nb2plots
 .. _nb2plots issue tracker:
@@ -26,6 +27,7 @@
 .. _nbconvert: http://nbconvert.readthedocs.org/en/latest/
 .. _ipython: http://ipython.org/
 .. _docutils: http://docutils.sourceforge.net
+.. _rst2md project: https://github.com/cgwrench/rst2md
 
 .. Python and common libraries
 .. _python: https://www.python.org
@@ -50,3 +52,5 @@
 .. |--| unicode:: U+2013   .. en dash
 .. |---| unicode:: U+2014  .. em dash, trimming surrounding whitespace
    :trim:
+.. |nbplot-documentation| replace:: :ref:`nbplots-documentation`
+.. |as-notebooks-documentation| replace:: :ref:`as-notebooks-documentation`

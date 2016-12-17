@@ -19,7 +19,7 @@ Releasing nb2plots
 * Use the opportunity to update the ``.mailmap`` file if there are any
   duplicate authors listed from ``git shortlog -ns``.
 
-* Check the copyright years in ``doc/conf.py`` and ``LICENSE``
+* Check the copyright years in ``doc/conf.py`` and ``LICENSE``;
 
 * Check the output of::
 

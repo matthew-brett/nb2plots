@@ -28,7 +28,9 @@ default, so the Nbplot directives on your page can build up variables in the
 same way that a notebook does.
 
 The notebook code cells convert to doctest blocks, so you can now check the
-correctness of the code on your page with the Sphinx doctest extension::
+correctness of the code on your page with the Sphinx doctest extension:
+
+.. code-block:: bash
 
     make doctest
 
@@ -39,6 +41,8 @@ and doctest blocks in Nbplot directives.
 Now let us say that you would like to make this page available to your users
 as Jupyter notebooks.  To do this add the following directive to the end of
 your page (or where-ever you like)::
+
+.. code-block:: rest
 
     .. as-notebooks::
 

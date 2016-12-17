@@ -1,3 +1,5 @@
+.. _as-notebooks-documentation:
+
 ################################
 Using the as-notebooks directive
 ################################
@@ -5,7 +7,9 @@ Using the as-notebooks directive
 The ``as-notebooks`` directive is a short cut for adding links to your ReST
 page pointing to Jupyter notebooks.  When Sphinx sees this directive, it
 converts the ReST page to notebooks, and add links to these notebooks in the
-built HTML.  Use like this::
+built HTML.  Use like this:
+
+.. code-block:: rest
 
     .. as-notebooks::
 

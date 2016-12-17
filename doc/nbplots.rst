@@ -1,3 +1,5 @@
+.. _nbplots-documentation:
+
 ##########################
 Using the nbplot directive
 ##########################
@@ -8,7 +10,9 @@ default is to keep the name-space from one ``nbplot`` directive to the next in
 a given page.  It also has output defaults adapted to directive contents with
 source code rather than pointing to a standalone script.
 
-For example, here is the source for an Nbplot directive::
+For example, here is the source for an Nbplot directive:
+
+.. code-block:: rest
 
     .. nbplot::
 
@@ -46,7 +50,9 @@ resolution PNG versions of the plot, and a PDF version.
 The code in Nbplot directives gets executed during the page build, so your
 build will detect any errors.   With doctest code blocks, like the above, you
 can also test the doctest output, using the Sphinx ``doctest`` builder, which
-you might be able to run with::
+you might be able to run with:
+
+.. code-block:: bash
 
     make doctest
 

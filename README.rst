@@ -2,6 +2,8 @@
 nb2plots - converting between notebooks and sphinx
 ##################################################
 
+.. shared-text-body
+
 ************
 What it does
 ************
@@ -58,8 +60,8 @@ and display of the code in several different ways.  For example, you can hide
 some code cells (Nbplot directives) if the code is not interesting to your
 point, but you still want the generated figure.  You can configure your Nbplot
 directives to run different code for different configurations.  For these
-options, see the docs.  But - what do you lose, when going from a notebook to
-a Nb2plots ReST document?
+options, see |nbplot-documentation|.  But - what do you lose, when going from
+a notebook to a Nb2plots ReST document?
 
 ***************************
 But I want my notebook too!
@@ -78,7 +80,7 @@ these notebooks::
 
     .. as-notebooks::
 
-See the documentation_ for details.
+See |as-notebooks-documentation| for details.
 
 ************
 Installation
@@ -129,7 +131,15 @@ Support
 
 Please put up issues on the `nb2plots issue tracker`_.
 
-.. _documentation: https://matthew-brett.github.com/nb2plots
+.. standalone-references
+
+.. |nbplot-documentation| replace:: `nbplots documentation`_
+.. |as-notebooks-documentation| replace:: `as-notebooks documentation`_
+.. _nbplots documentation:
+    https://matthew-brett.github.com/nb2plots/nbplots.html
+.. _as-notebooks documentation:
+    https://matthew-brett.github.com/nb2plots/as_notebooks.html
+.. _ndocumentation: https://matthew-brett.github.com/nb2plots
 .. _pandoc: http://pandoc.org
 .. _jupyter: jupyter.org
 .. _homebrew: brew.sh
