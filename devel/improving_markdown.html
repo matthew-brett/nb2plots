@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.4+75.g94f571e',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Releasing nb2plots" href="make_release.html" />
+    <link rel="prev" title="Using the as-notebooks directive" href="../as_notebooks.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="improving-the-rest-to-markdown-conversion">
+<h1>Improving the ReST to Markdown conversion<a class="headerlink" href="#improving-the-rest-to-markdown-conversion" title="Permalink to this headline">¶</a></h1>
+<p>Nb2plots includes a converter from ReST to Markdown.  As you will see in the
+<code class="docutils literal"><span class="pre">LICENSE</span></code> file, the basis for this converter comes from the <a class="reference external" href="https://github.com/cgwrench/rst2md">rst2md
+project</a> by Chris Wrench, with thanks.  At the time of writing (December
+2016) the Nb2plots converter could deal with a considerably larger range of
+Markdown than the original rst2md project.  However, the converter still does
+not deal specifically with a fairly large number of Sphinx / ReST constructs,
+so we would be very grateful for your help in improving the converter.  These
+are some hints how to go about that.</p>
+<div class="section" id="workflow-for-improving-rest-to-markdown-conversion">
+<h2>Workflow for improving ReST to Markdown conversion<a class="headerlink" href="#workflow-for-improving-rest-to-markdown-conversion" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Set yourself up with a git fork and clone of the <a class="reference external" href="http://github.com/matthew-brett/nb2plots">nb2plots code</a>.  Install
+the development code with something like:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -e .
+</pre></div>
+</div>
+<p>from the root <code class="docutils literal"><span class="pre">nb2plots</span></code> directory (the directory containing the
+<code class="docutils literal"><span class="pre">setup.py</span></code> file.</p>
+</li>
+<li><p class="first">Make sure the current tests pass with:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests nb2plots
+</pre></div>
+</div>
+</li>
+<li><p class="first">Identify a ReST construct you would like to handle, or handle better. Let&#8217;s
+say you you&#8217;ve decided to make the converter do something sensible with the
+<code class="docutils literal"><span class="pre">:PEP:</span></code> text role in ReST;</p>
+</li>
+<li><p class="first">Make a new ReST file that uses the construct, and put it in the
+<code class="docutils literal"><span class="pre">nb2plots/tests/rst_md_files</span></code> directory.  For example your file could be
+<code class="docutils literal"><span class="pre">nb2plots/tests/rst_md_files/pep.rst</span></code> with contents:</p>
+<div class="highlight-rest"><div class="highlight"><pre><span></span>Test converting the <span class="na">:pep:</span><span class="nv">`8`</span> text role to Markdown
+</pre></div>
+</div>
+<p>The file have any name, as long as it has a <code class="docutils literal"><span class="pre">.rst</span></code> extension.</p>
+</li>
+<li><p class="first">If your construct is valid in vanilla <a class="reference external" href="http://docutils.sourceforge.net">docutils</a> ReST, then run the
+<code class="docutils literal"><span class="pre">rst2md</span></code> converter over the file and see what it looks like.  In the case
+of the <code class="docutils literal"><span class="pre">pep</span></code> text role, you might see a message that the <code class="docutils literal"><span class="pre">pep</span></code> role is
+not yet supported, and the output will omit the <code class="docutils literal"><span class="pre">pep</span></code> role contents:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>rst2md nb2plots/tests/rst_md_files/pep.rst
+</pre></div>
+</div>
+</li>
+<li><p class="first">If your construct is only valid for <a class="reference external" href="http://sphinx-doc.org">Sphinx</a> ReST, then run the <code class="docutils literal"><span class="pre">sphinx2md</span></code>
+converter on it, so see what happens:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2md nb2plots/tests/rst_md_files/pep.rst
+</pre></div>
+</div>
+</li>
+<li><p class="first">Now have a look at the code in the <code class="docutils literal"><span class="pre">nb2plots.doctree2md</span></code> module.  Add new
+<code class="docutils literal"><span class="pre">visit_</span></code> / <code class="docutils literal"><span class="pre">depart_</span></code> methods or modify the existing methods to handle
+your construct better.  Try the <code class="docutils literal"><span class="pre">rst2md</span></code> and <code class="docutils literal"><span class="pre">sphinx2md</span></code> commands on the
+ReST file to see what the output looks like;</p>
+</li>
+<li><p class="first">When you are satisfied, write the current output of <code class="docutils literal"><span class="pre">rst2md</span></code> to the
+<code class="docutils literal"><span class="pre">rst_md_files</span></code> directory with a <code class="docutils literal"><span class="pre">.md</span></code> extension:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>rst2md nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.md
+</pre></div>
+</div>
+<p>If the <code class="docutils literal"><span class="pre">sphinx2md</span></code> script should give a different output, write that
+output with a <code class="docutils literal"><span class="pre">.smd</span></code> extension:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2md nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.smd
+</pre></div>
+</div>
+</li>
+<li><p class="first">Run the relevant tests:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests nb2plots/tests/test_doctree2md.py
+nosetests nb2plots/tests/test_sphinx2md.py
+</pre></div>
+</div>
+<p>These will test your new ReST file, and the various other example ReST
+files, against their expected Markdown outputs.</p>
+</li>
+<li><p class="first">Once the relevant tests are fixed, run all the tests to check that the rest
+of the code (such as notebook conversion) is still working as expected.  If
+the tests fail, but you think your output is better than the previous output
+that the tests are using, feel free to edit.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests nb2plots
+</pre></div>
+</div>
+</li>
+<li><p class="first">Make a pull request to <a class="reference external" href="http://github.com/matthew-brett/nb2plots">nb2plots github</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Improving the ReST to Markdown conversion</a><ul>
+<li><a class="reference internal" href="#workflow-for-improving-rest-to-markdown-conversion">Workflow for improving ReST to Markdown conversion</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../as_notebooks.html" title="previous chapter">Using the as-notebooks directive</a></li>
+      <li>Next: <a href="make_release.html" title="next chapter">Releasing nb2plots</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/devel/improving_markdown.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Brett.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/devel/improving_markdown.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

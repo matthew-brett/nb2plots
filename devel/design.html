@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Design of a notebook writer &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.4+75.g94f571e',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="An interesting example" href="../converted_plus_notebooks.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="design-of-a-notebook-writer">
+<h1>Design of a notebook writer<a class="headerlink" href="#design-of-a-notebook-writer" title="Permalink to this headline">¶</a></h1>
+<p>Pages that will be converted to notebooks have, somewhere in them, one of two
+intepreted text roles, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>:clearnotebook:`Download as notebook without outputs`
+:fullnotebook:`Download as notebook with outputs`
+</pre></div>
+</div>
+<p>These generate page content equivalent to <code class="docutils literal"><span class="pre">:download:`Download</span> <span class="pre">as</span> <span class="pre">notebook</span>
+<span class="pre">&lt;pagename&gt;.ipynb`</span></code>, where <code class="docutils literal"><span class="pre">&lt;pagename&gt;.rst</span></code> is the name of the ReST page
+containing the notebook role.  <code class="docutils literal"><span class="pre">:clearnotebook:</span></code> creates a notebook without
+outputs, and <code class="docutils literal"><span class="pre">:fullnotebook:</span></code> creates the notebook and executes it, writing
+the notebook with generated outputs.</p>
+<p>The text within the backticks is the link text that will appear in the build
+html, unless the text is <code class="docutils literal"><span class="pre">.</span></code> (a period).  This special case causes the link
+text to be <code class="docutils literal"><span class="pre">Download</span> <span class="pre">as</span> <span class="pre">IPython</span> <span class="pre">notebook</span></code>.</p>
+<p>It appears that docutils insists that there must be some text between the
+backticks.</p>
+<p>For both directives, you can specify the written filename of the notebook with
+the <code class="docutils literal"><span class="pre">text</span> <span class="pre">&lt;target&gt;</span></code> form of the role:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>:clearnotebook:`to get this page as an ipynb file &lt;my_nb.ipynb&gt;`
+</pre></div>
+</div>
+<p>If you want to specify the filename, you must specify link text as well.  For
+example <code class="docutils literal"><span class="pre">:clearnotebook:`&lt;my_nb.ipynb&gt;`</span></code> will result in the default
+filename, and a link text of <code class="docutils literal"><span class="pre">&lt;my_nb.ipynb&gt;</span></code>.</p>
+<p>You can have multiple notebook roles pointing to the same file (default or
+otherwise), as long as they are all of the same type (clear or full).  For
+example, you can have multiple <code class="docutils literal"><span class="pre">:clearnotebook:`.`</span></code> roles in one ReST page,
+(all pointing to <code class="docutils literal"><span class="pre">&lt;pagename&gt;.ipynb</span></code>, but you cannot have a
+<code class="docutils literal"><span class="pre">:fullnotebook:`.`</span></code> role in that page, because that would mean that the
+clear and full notebook roles were trying to point to the same file.</p>
+<div class="section" id="mechanics">
+<h2>Mechanics<a class="headerlink" href="#mechanics" title="Permalink to this headline">¶</a></h2>
+<p>On page parse (<code class="docutils literal"><span class="pre">doctree-resolved</span></code> event), register that the page containing
+the notebook role should generate notebook, and whether this should be &#8220;full&#8221;
+or &#8220;clear&#8221;.  Store in <code class="docutils literal"><span class="pre">app.env</span></code>, with link to</p>
+<p>Either collect the doctrees in the <code class="docutils literal"><span class="pre">doctree-resolved</span></code> event, or collect the
+docnames there, and then generate the notebooks in <code class="docutils literal"><span class="pre">html-collect-pages</span></code>
+event.</p>
+<p>Add notebook vistor functions via <code class="docutils literal"><span class="pre">app.add_node(clearnotebook,</span>
+<span class="pre">html=(visit_notebook_node,</span> <span class="pre">depart_notebook_node)</span></code> in <code class="docutils literal"><span class="pre">setup</span></code> function.</p>
+<p>Maybe make a new <code class="docutils literal"><span class="pre">Writer</span></code> class to write the notebook from the doctree.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Design of a notebook writer</a><ul>
+<li><a class="reference internal" href="#mechanics">Mechanics</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../converted_plus_notebooks.html" title="previous chapter">An interesting example</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/devel/design.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Brett.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/devel/design.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

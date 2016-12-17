@@ -1,0 +1,311 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using the nbplot directive &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.4+75.g94f571e',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using the mpl-interactive directive" href="mpl_interactive.html" />
+    <link rel="prev" title="Scripts in nb2plots" href="scripts.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="using-the-nbplot-directive">
+<span id="nbplots-documentation"></span><h1>Using the nbplot directive<a class="headerlink" href="#using-the-nbplot-directive" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">nbplot</span></code> directive is very similar to the <a class="reference external" href="http://matplotlib.org/sampledoc/extensions.html">matplotlib plot directive</a>,
+and started life as a fork of that code.  It differs mainly in that its
+default is to keep the name-space from one <code class="docutils literal"><span class="pre">nbplot</span></code> directive to the next in
+a given page.  It also has output defaults adapted to directive contents with
+source code rather than pointing to a standalone script.</p>
+<p>For example, here is the source for an Nbplot directive:</p>
+<div class="highlight-rest"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">nbplot</span><span class="p">::</span>
+
+    &gt;&gt;&gt; a = 1
+    &gt;&gt;&gt; a
+    1
+</pre></div>
+</div>
+<p>This renders as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>All Nbplot directives in a page share a namespace with the first (by default).
+Here is another Nbplot directive:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<p>Nbplot directives can also make – plots:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="go">[...]</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//nbplots-3.png">png</a>, <a class="reference external" href=".//nbplots-3.hires.png">hires.png</a>, <a class="reference external" href=".//nbplots-3.pdf">pdf</a>)</p>
+<div class="figure">
+<img alt="_images/nbplots-3.png" src="_images/nbplots-3.png" />
+</div>
+<p>Notice that the HTML version of the page contains links to high and low
+resolution PNG versions of the plot, and a PDF version.</p>
+<p>The code in Nbplot directives gets executed during the page build, so your
+build will detect any errors.   With doctest code blocks, like the above, you
+can also test the doctest output, using the Sphinx <code class="docutils literal"><span class="pre">doctest</span></code> builder, which
+you might be able to run with:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>make doctest
+</pre></div>
+</div>
+<p>See the <code class="docutils literal"><span class="pre">run-parts</span></code> and <code class="docutils literal"><span class="pre">render-parts</span></code> options to run and render different
+code according to your local configuration.</p>
+<div class="section" id="module-nb2plots.nbplots">
+<span id="id1"></span><span id="nbplot-directive"></span><h2>nbplot directive<a class="headerlink" href="#module-nb2plots.nbplots" title="Permalink to this headline">¶</a></h2>
+<p>A directive for including a matplotlib plot in a Sphinx document.</p>
+<p>This directive is based on the <code class="docutils literal"><span class="pre">plot</span></code> directive of matplotlib, with thanks.</p>
+<p>By default, in HTML output, <cite>nbplot</cite> will include a .png file with a
+link to a high-res .png and .pdf.  In LaTeX output, it will include a
+.pdf.</p>
+<p>The source code for the plot is <strong>inline content</strong> to the directive:.  It can
+be with or without <em>doctest</em> syntax.  Here&#8217;s an example without doctest
+syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">nbplot</span><span class="p">::</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;_static/stinkbug.png&#39;</span><span class="p">)</span>
+    <span class="n">imgplot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here&#8217;s an example with doctest syntax:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">nbplot</span><span class="p">::</span>
+
+    <span class="n">A</span> <span class="n">plotting</span> <span class="n">example</span><span class="p">:</span>
+    <span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="o">&gt;&gt;&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">])</span>  <span class="c1">#doctest: +ELLIPSIS</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="section" id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal"><span class="pre">nbplot</span></code> directive supports the following options:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>format</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;python&#8217;, &#8216;doctest&#8217;}</span><dd>Specify the format of the input.  If not specified, nbplot guesses the
+format from the content.</dd>
+<dt>include-source</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>Whether to display the source code. The default can be changed
+using the <cite>nbplot_include_source</cite> variable in conf.py</dd>
+<dt>encoding</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>If this source file is in a non-UTF8 or non-ASCII encoding,
+the encoding must be specified using the <cite>:encoding:</cite> option.
+The encoding will not be inferred using the <code class="docutils literal"><span class="pre">-*-</span> <span class="pre">coding</span> <span class="pre">-*-</span></code>
+metacomment.</dd>
+<dt>keepfigs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>If specified, do not close figures from previous plot command. This
+allows you to build up a plot in stages, with the current nbplot
+command building on the figure generated by previous nbplot commands.</dd>
+<dt>nofigs</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>If specified, the code block will be run, but no figures will be
+inserted.  This is sometimes necessary when your code generates a plot,
+but you do not want to include it.  If the code does not generate a
+plot, this option is not necessary.</dd>
+<dt>raises</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>String giving error class.  The code runner will assert this error was
+raised by the enclosed code, and suppress stderr.</dd>
+<dt>render-parts</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd><p class="first">The contents of the directive may be divided into &#8220;parts&#8221; at lines
+containing <code class="docutils literal"><span class="pre">..</span> <span class="pre">part</span></code> with a blank line before and after.  This option
+gives a Python expression returning an integer or tuple giving the
+indices of the <em>parts</em> that should be used for the built output of the
+code block.  These to-be-built parts can be different from the parts
+used to generate the figures associated with the block, defined in the
+<code class="docutils literal"><span class="pre">run-parts</span></code> option below.  The typical use is for building when
+running the <code class="docutils literal"><span class="pre">render-parts</span></code> would be too slow, or the building system
+does not have the requirements to run the code in <code class="docutils literal"><span class="pre">render-parts</span></code>.
+The contents of this option is a Python expression returning an integer
+or a tuple, where an integer is the index of the part to render, and a
+tuple is a tuple of such integers. The expression operates in a
+namespace defined by the contents of the <code class="docutils literal"><span class="pre">nbplot_flags</span></code> config
+variable (a dict) and any extra namespace defined above this directive
+with <code class="xref py py-class docutils literal"><span class="pre">NBPlotFlags</span></code> directives.</p>
+<p>For the selected parts, any generated doctest blocks in the code get
+wrapped in a special doctree node for a skipped doctest, and therefore
+do not get picked up by the sphinx doctest extension.  The nbplots
+extension tells the other builders to build the skipped doctest as if
+it were a standard doctest.</p>
+<p>Examples:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">render</span><span class="o">-</span><span class="n">parts</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">have_matlab</span> <span class="k">else</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</dd>
+<dt>run-parts</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd><p class="first">See <code class="docutils literal"><span class="pre">render-parts</span></code> above.  Python expression that returns integer or
+tuple giving indices for parts that should be executed when generating
+the figures.  Any doctests in these parts also get wrapped in standard
+doctest blocks, and so will be picked up by the sphinx doctest builder.</p>
+<p>Examples:</p>
+<blockquote class="last">
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">run-parts:</th><td class="field-body">0 if slow else 1</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+<p>The namespace of the nbplot command is reset to empty for each document.  The
+code in each nbplot directive instance in a given document uses the namespace
+generated by previous nbplot directive instances in the same document.</p>
+<p>Additionally, this directive supports all of the options of the
+<cite>image</cite> directive, except for <cite>target</cite> (since plot will add its own
+target).  These include <cite>alt</cite>, <cite>height</cite>, <cite>width</cite>, <cite>scale</cite>, <cite>align</cite> and
+<cite>class</cite>.</p>
+</div>
+<div class="section" id="configuration-options">
+<h3>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h3>
+<p>The nbplot directive has the following configuration options:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>nbplot_include_source</dt>
+<dd>Default value for the include-source option</dd>
+<dt>nbplot_html_show_source_link</dt>
+<dd>Whether to show a link to the source in HTML.</dd>
+<dt>nbplot_pre_code</dt>
+<dd>Code that should be executed before each plot.</dd>
+<dt>nbplot_formats</dt>
+<dd><p class="first">File formats to generate. List of tuples or strings:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">dpi</span><span class="p">),</span> <span class="n">suffix</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<p class="last">that determine the file format and the DPI. For entries whose
+DPI was omitted, sensible defaults are chosen. When passing from
+the command line through sphinx_build the list should be passed as
+suffix:dpi,suffix:dpi, ....</p>
+</dd>
+<dt>nbplot_html_show_formats</dt>
+<dd>Whether to show links to the files in HTML.</dd>
+<dt>nbplot_rcparams</dt>
+<dd>A dictionary containing any non-standard rcParams that should
+be applied at the beginning of each document.</dd>
+<dt>nbplot_working_directory</dt>
+<dd>By default, the working directory will be changed to the directory of
+the example, so the code can get at its data files, if any.  Also its
+path will be added to <cite>sys.path</cite> so it can import any helper modules
+sitting beside it.  This configuration option can be used to specify
+a central directory (also added to <cite>sys.path</cite>) where data files and
+helper modules for all code are located.  If the directory is relative,
+directory taken to be relative to root directory of the project (rather
+than source directory).</dd>
+<dt>nbplot_template</dt>
+<dd>Provide a customized template for preparing restructured text.</dd>
+</dl>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Using the nbplot directive</a><ul>
+<li><a class="reference internal" href="#module-nb2plots.nbplots">nbplot directive</a><ul>
+<li><a class="reference internal" href="#options">Options</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration options</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="scripts.html" title="previous chapter">Scripts in nb2plots</a></li>
+      <li>Next: <a href="mpl_interactive.html" title="next chapter">Using the mpl-interactive directive</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/nbplots.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Brett.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/nbplots.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

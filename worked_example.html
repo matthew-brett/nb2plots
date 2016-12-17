@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Worked example &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.4+75.g94f571e',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Scripts in nb2plots" href="scripts.html" />
+    <link rel="prev" title="Basics" href="introduction.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="worked-example">
+<h1>Worked example<a class="headerlink" href="#worked-example" title="Permalink to this headline">¶</a></h1>
+<p>Let&#8217;s say I have a notebook <a class="reference external" href="example_notebook.html">example notebook</a>.  You
+can download this notebook from <a class="reference download internal" href="_downloads/example_notebook.ipynb" download=""><code class="xref download docutils literal"><span class="pre">example_notebook.ipynb</span></code></a>.</p>
+<p>I want to make this notebook into a ReST page to include in my Sphinx
+project.  First I convert the notebook with the <code class="docutils literal"><span class="pre">nb2plots</span></code> script:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">nb2plots</span> <span class="n">example_notebook</span><span class="o">.</span><span class="n">ipynb</span> <span class="o">&gt;</span> <span class="n">converted_notebook</span><span class="o">.</span><span class="n">rst</span>
+</pre></div>
+</div>
+<p>This results in the ReST page <a class="reference external" href="_sources/converted_example.rst.txt">converted_example.rst</a>, which builds as HTML to
+<a class="reference internal" href="converted_example.html"><span class="doc">An interesting example</span></a>.</p>
+<p>If you look at the <a class="reference external" href="_sources/converted_example.rst.txt">source of the converted notebook</a> you will see two custom Nb2plots
+directives:</p>
+<ul class="simple">
+<li><a class="reference internal" href="nbplots.html#nbplot-directive"><span class="std std-ref">nbplot</span></a> – housing the content from the code
+cells in the original notebook;</li>
+<li><a class="reference internal" href="mpl_interactive.html#mpl-interactive-directive"><span class="std std-ref">mpl-interactive</span></a> – noting that the user
+may want to use the <code class="docutils literal"><span class="pre">%matplotlib</span></code> magic for interactive plots.</li>
+</ul>
+<p>Notice that each Nbplot directive on a single page uses the same namespace, by
+default, so the Nbplot directives on your page can build up variables in the
+same way that a notebook does.</p>
+<p>The notebook code cells convert to doctest blocks, so you can now check the
+correctness of the code on your page with the Sphinx doctest extension:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>make doctest
+</pre></div>
+</div>
+<p>This example page converts well, but, in practice, you may well want to edit
+the ReST document to clean up some differences between the notebook code cells
+and doctest blocks in Nbplot directives.</p>
+<p>Now let us say that you would like to make this page available to your users
+as Jupyter notebooks.  To do this add the following directive to the end of
+your page (or where-ever you like):</p>
+<div class="highlight-rest"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">as-notebooks</span><span class="p">::</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="as_notebooks.html#as-notebooks-directive"><span class="std std-ref">as-notebooks directive</span></a> for more detail.</p>
+<p>When you do this, you get a built HTML page <a class="reference internal" href="converted_plus_notebooks.html"><span class="doc">like this</span></a>.  Note the two links to notebooks at the end of
+the page.  The first link is to a notebook that has not been executed, and has
+no outputs.  The second is to a version of the same notebook that has been
+executed, and has the code output cells.  See the
+<a class="reference internal" href="as_notebooks.html#as-notebooks-directive"><span class="std std-ref">as-notebooks directive</span></a> documentation for options to control the
+notebook links.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="introduction.html" title="previous chapter">Basics</a></li>
+      <li>Next: <a href="scripts.html" title="next chapter">Scripts in nb2plots</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/worked_example.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Brett.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/worked_example.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
