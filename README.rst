@@ -8,8 +8,13 @@ nb2plots - converting between notebooks and sphinx
 What it does
 ************
 
-``Nb2plots`` converts Jupyter_ notebooks to ReST_ files for Sphinx_, and back
+``nb2plots`` converts Jupyter_ notebooks to ReST_ files for Sphinx_, and back
 again.
+
+Nb2plots assumes that the ReST document will become the source for your Sphinx
+web pages, but also for future versions of the notebook.  The notebook may
+serve as a draft for the polished ReST page, and an output format from the
+Sphinx build.  Why? Read on.
 
 ****************************************
 Why convert Jupyter notebooks to Sphinx?
@@ -124,6 +129,14 @@ source distribution.
 code automatically under Python versions 2.7, and 3.3 through 3.5.
 
 The latest released version is at https://pypi.python.org/pypi/nb2plots
+
+*****
+Tests
+*****
+
+Install ``nb2plots`` and the nose_ testing framework, then::
+
+    nosetests nb2plots
 
 *******
 Support
