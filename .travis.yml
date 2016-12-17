@@ -15,7 +15,7 @@ env:
     global:
         - DEPENDS="ipython[notebook] sphinx matplotlib six"
         - PKG_NAME=nb2plots
-        - INSTALL_TYPE="setup"
+        - INSTALL_TYPE="pip"
         # URL for extra wheel repo
         - EXTRA_WHEELS=https://nipy.bic.berkeley.edu/manylinux
 
@@ -40,6 +40,9 @@ matrix:
           - DEPENDS="ipython[notebook] sphinx==1.4.3 matplotlib"
     - python: 2.7
       env:
+        - INSTALL_TYPE=setup
+    - python: 2.7
+      env:
         - INSTALL_TYPE=sdist
     - python: 2.7
       env:
@@ -48,6 +51,9 @@ matrix:
       env:
         - INSTALL_TYPE=requirements
         - DEPENDS=
+    - python: 3.5
+      env:
+        - BUILD_DOC=1
 
 before_install:
     - source tools/travis_tools.sh
@@ -57,13 +63,15 @@ before_install:
     - python --version  # just to check
     - retry pip install nose mock # always
     - retry pip install -f $EXTRA_WHEELS $DEPENDS
-    - if [ "${COVERAGE}" == "1" ]; then
+    - if [ -n "$COVERAGE" ]; then
       pip install coverage;
       pip install codecov;
       fi
 
 install:
     - |
+      if [ "$INSTALL_TYPE" == "pip" ]; then
+          pip install .
       if [ "$INSTALL_TYPE" == "setup" ]; then
           python setup.py install
       elif [ "$INSTALL_TYPE" == "sdist" ]; then
@@ -80,17 +88,26 @@ install:
       fi
 
 script:
-    # Change into an innocuous directory and find tests from installation
-    - mkdir for_testing
-    - cd for_testing
-    - if [ "${COVERAGE}" == "1" ]; then
-      cp ../.coveragerc .;
-      COVER_ARGS="--with-coverage --cover-package $PKG_NAME";
+    - |
+      if [ -n "$BUILD_DOC" ]; then
+        # Build documentation
+        pip install -r doc-requirements.txt
+        cd doc
+        make html
+        make doctest
+      else
+        # Change into an innocuous directory and find tests from installation
+        mkdir for_testing
+        cd for_testing
+        if [ -n "$COVERAGE" ]; then
+          cp ../.coveragerc .;
+          COVER_ARGS="--with-coverage --cover-package $PKG_NAME";
+        fi
+        if [ -n "$DOCTESTS" ]; then
+          DOCTEST_ARGS="--with-doctest";
+        fi
+        nosetests $COVER_ARGS $DOCTEST_ARGS $PKG_NAME
       fi
-    - if [ "${DOCTESTS}" == "1" ]; then
-      DOCTEST_ARGS="--with-doctest";
-      fi
-    - nosetests $COVER_ARGS $DOCTEST_ARGS $PKG_NAME
 
 after_success:
-    - if [ "${COVERAGE}" == "1" ]; then codecov; fi
+    - if [ -n "$COVERAGE" ]; then codecov; fi
