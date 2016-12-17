@@ -5,9 +5,9 @@ from glob import glob
 import re
 
 from nb2plots import to_notebook as tn
-from nb2plots.to_notebook import sphinx2ipynb
+from nb2plots.converters import to_notebook
 from nb2plots.ipython_shim import nbf
-from nb2plots.sphinxutils import build_rst, doctree2pxml
+from nb2plots.converters import to_pxml
 
 from nose.tools import assert_equal, assert_true
 
@@ -49,7 +49,7 @@ def assert_nb_equiv(ipynb, expected):
 
 
 def assert_conv_equal(rst_str, expected):
-    assert_nb_equiv(sphinx2ipynb(rst_str), expected)
+    assert_nb_equiv(to_notebook.from_rst(rst_str), expected)
 
 
 def test_example_files():
@@ -63,7 +63,7 @@ def test_example_files():
 
 def test_notebook_basic():
     # Test conversion of basic ReST to ipynb JSON
-    ipynb = sphinx2ipynb(r"""
+    ipynb = to_notebook.from_rst(r"""
 Title
 =====
 
@@ -138,7 +138,7 @@ More text.
 
 def test_default_mathdollar():
     # Test mathdollar extension present by default.
-    ipynb = sphinx2ipynb(r'Some text with $a = 1$ math.')
+    ipynb = to_notebook.from_rst(r'Some text with $a = 1$ math.')
     expected = r"""{
  "cells": [
   {
@@ -157,8 +157,8 @@ def test_default_mathdollar():
 
 
 def assert_rst_pxml(pxml_regex, rst_source):
-    doctree = build_rst(rst_source)
-    assert_true(re.match(pxml_regex, doctree2pxml(doctree)))
+    pxml = to_pxml.from_rst(rst_source)
+    assert_true(re.match(pxml_regex, pxml))
 
 
 def test_nb_role_doctrees():
@@ -172,9 +172,9 @@ def test_nb_role_doctrees():
          then text."""
 
     def assert_rst_pxml(pxml_params, rst_source):
-        doctree = build_rst(rst_source)
+        pxml = to_pxml.from_rst(rst_source)
         pxml_regex = expected_re_fmt.format(**pxml_params)
-        assert_true(re.match(pxml_regex, doctree2pxml(doctree)))
+        assert_true(re.match(pxml_regex, pxml))
 
     assert_rst_pxml(
         dict(evaluate='False',

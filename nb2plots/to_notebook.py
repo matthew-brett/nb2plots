@@ -1,6 +1,5 @@
 """ Sphinx extension to convert RST pages to notebooks """
 
-import sys
 import re
 from os.path import join as pjoin
 from copy import deepcopy
@@ -15,39 +14,10 @@ from sphinx.errors import ExtensionError
 # Use notebook format version 4
 from .ipython_shim import nbf, nbconvert as nbc
 
-from .doctree2nb import doctree2ipynb, Translator
+from .doctree2nb import Translator
+from .converters import to_notebook
 
-from nb2plots.sphinxutils import build_rst
 from nb2plots.nbplots import drop_visit
-
-
-def sphinx2ipynb(rst_text,
-                conf_txt=None,
-                status=sys.stdout,
-                warningiserror=True):
-    """ Build Sphinx ReST text `rst_text` into Notebook JSON
-
-    Parameters
-    ----------
-    rst_text : str
-        string containing ReST to build.
-    conf_txt : None or str, optional
-        text for configuration ``conf.py`` file.  None gives a default conf
-        file.
-    status : file-like object or None
-        File-like object to which to write build status messages, or None for
-        no build status messages.
-    warningiserror : {True, False}, optional
-        if True, raise an error for warning during the Sphinx build.
-
-    Returns
-    -------
-    ipynb_json : str
-        JSON string representing notebook from `rst_text`.
-    """
-    doctree = build_rst(rst_text, conf_txt, status=status,
-                        warningiserror=warningiserror)
-    return doctree2ipynb(doctree)
 
 
 class ToNotebookError(ExtensionError):
@@ -180,7 +150,7 @@ def write_notebooks(app, exception):
         return
     for docname, to_build in env.notebooks.items():
         doctree = app.env.get_doctree(docname)
-        clear_nb = nbf.reads(doctree2ipynb(doctree))
+        clear_nb = nbf.reads(to_notebook.from_doctree(doctree))
         for rel_fn in to_build.get('clear', []):
             out_fn = _relfn2outpath(rel_fn, app)
             write_notebook(clear_nb, out_fn)

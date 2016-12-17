@@ -4,7 +4,7 @@ import re
 
 from docutils.core import publish_from_doctree
 
-from nb2plots.sphinxutils import build_rst
+from nb2plots.converters import to_pxml
 
 from nose.tools import assert_true
 
@@ -16,8 +16,7 @@ Text here
 .. mpl-interactive::
 
 More text here."""
-    doctree = build_rst(page)
-    pxml = publish_from_doctree(doctree)
+    pxml = to_pxml.from_rst(page)
     assert_true(re.match("""\
 <document source=".*?">
     <paragraph>
@@ -34,7 +33,7 @@ More text here."""
                 inline
             .
     <paragraph>
-        More text here.""", pxml.decode('latin1')))
+        More text here.""", pxml))
     page = """\
 Text here
 
@@ -43,8 +42,7 @@ Text here
     Any ReST you *like*.
 
 More text here."""
-    doctree = build_rst(page)
-    pxml = publish_from_doctree(doctree)
+    pxml = to_pxml.from_rst(page)
     assert_true(re.match("""\
 <document source=".*?">
     <paragraph>
@@ -56,4 +54,4 @@ More text here."""
                 like
             .
     <paragraph>
-        More text here.""", pxml.decode('latin1')))
+        More text here.""", pxml))

@@ -45,54 +45,42 @@ def parse_doctest(doctest_txt):
     return '\n'.join(parts)
 
 
-def doctree2ipynb(doctree):
-    """ Convert doctree `doctree` to Jupyter notebook JSON
-
-    Parameters
-    ----------
-    doctree : node
-        document node.
-
-    Returns
-    ------
-    ipynb_json : str
-        JSON string representation of Jupyter notebook.
-    """
-    writer = Writer()
-    destination = d2m.UnicodeOutput()
-    return writer.write(doctree, destination)
-
-
 class Translator(d2m.Translator):
 
     def __init__(self, document):
         d2m.Translator.__init__(self, document)
-        self._notebook = nbf.new_notebook()
         self._in_nbplot = False
+        self._init_output()
+
+    def _init_output(self):
+        self._notebook = nbf.new_notebook()
 
     def reset(self):
         d2m.Translator.reset(self)
         self._in_nbplot = False
 
-    def flush_md(self):
-        md_txt = d2m.Translator.astext(self).strip()
-        if md_txt:
-            self._notebook['cells'].append(nbf.new_markdown_cell(md_txt))
+    def flush_text(self):
+        txt = d2m.Translator.astext(self).strip()
+        if txt:
+            self._add_text_block(txt)
         self.reset()
+
+    def _add_text_block(self, txt):
+        self._notebook['cells'].append(nbf.new_markdown_cell(txt))
 
     def astext(self):
         """ Return the document as a string """
-        self.flush_md()
+        self.flush_text()
         return nbf.writes(self._notebook)
 
-    def add_code_cell(self, text):
-        self.flush_md()
+    def add_code_block(self, text):
+        self.flush_text()
         self._notebook['cells'].append(nbf.new_code_cell(text))
 
     def visit_doctest_block(self, node):
         doctest_txt = node.astext().strip()
         if doctest_txt:
-            self.add_code_cell(parse_doctest(doctest_txt))
+            self.add_code_block(parse_doctest(doctest_txt))
         raise nodes.SkipNode
 
     def visit_only(self, node):
@@ -116,11 +104,11 @@ class Translator(d2m.Translator):
         """ A literal block may be in an nbplot container """
         if not self._in_nbplot:
             return d2m.Translator.visit_literal_block(self, node)
-        self.add_code_cell(node.astext())
+        self.add_code_block(node.astext())
         raise nodes.SkipNode
 
     def visit_mpl_hint(self, node):
-        self.add_code_cell('%matplotlib inline')
+        self.add_code_block('%matplotlib inline')
         raise nodes.SkipNode
 
 

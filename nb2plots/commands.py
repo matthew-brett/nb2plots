@@ -18,14 +18,14 @@ def get_parser(description):
     return parser
 
 
-def do_main(description, writer):
+def do_main(description, converter):
     """ Get main clause for sphinx2something utilities
     """
     parser = get_parser(description)
     args = parser.parse_args()
     with open(args.rst_file, 'rt') as fobj:
         contents = fobj.read()
-    output = writer(contents,
-                    status=sys.stderr,
-                    warningiserror=args.warn_is_error)
+    output = converter.from_rst(contents,
+                                status=sys.stderr,
+                                warningiserror=args.warn_is_error)
     bin_stdout.write(output.encode('utf-8'))

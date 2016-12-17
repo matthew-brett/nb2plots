@@ -1,6 +1,6 @@
 """ Test conversion of Sphinx format ReST to Markdown
 
-Test running writer over example files and chosen snippets
+Test running writer over example files and chosen snippets.
 """
 from __future__ import (division, print_function, absolute_import,
                         unicode_literals)
@@ -8,7 +8,7 @@ from __future__ import (division, print_function, absolute_import,
 from os.path import join as pjoin, exists
 from glob import glob
 
-from ..sphinx2md import sphinx2md
+from ..converters import to_markdown
 
 from nose.tools import assert_equal
 
@@ -16,7 +16,7 @@ from .convutils import convert_assert, fcontents, DATA_PATH
 
 
 def assert_conv_equal(rst_str, md_expected):
-    convert_assert(rst_str, sphinx2md, md_expected, None)
+    convert_assert(rst_str, to_markdown.from_rst, md_expected, None)
 
 
 def test_example_files():
@@ -34,6 +34,6 @@ def test_example_files():
 
 def test_default_mathdollar():
     # Test mathdollar extension present by default.
-    md = sphinx2md(r'Some text with $a = 1$ math.')
+    md = to_markdown.from_rst(r'Some text with $a = 1$ math.')
     expected = "Some text with $a = 1$ math.\n"
     assert_equal(md, expected)

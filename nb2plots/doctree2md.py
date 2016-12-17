@@ -7,7 +7,6 @@ from __future__ import unicode_literals
 __docformat__ = 'reStructuredText'
 
 from docutils import frontend, nodes, writers, languages
-from docutils.io import Output
 from collections import OrderedDict
 
 
@@ -437,15 +436,3 @@ class Translator(nodes.NodeVisitor):
                 ' element not yet supported in Markdown.')
             self._warned.add(node_type)
         raise nodes.SkipNode
-
-
-class UnicodeOutput(Output):
-    """ Don't do anything to the string; just return it.
-    """
-
-    default_destination_path = '<string>'
-
-    def write(self, data):
-        """ Store `data` in `self.destination`, and return it."""
-        self.destination = data
-        return data

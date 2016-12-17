@@ -1,10 +1,9 @@
-""" Utilties for running sphinx tasks in-process
+""" Utilities for running sphinx tasks in-process
 """
 
 import sys
 import os
 from os.path import join as pjoin, isdir
-from importlib import import_module
 import shutil
 from contextlib import contextmanager
 from copy import copy
@@ -12,9 +11,9 @@ from tempfile import mkdtemp
 import pickle
 
 from docutils import nodes
+from docutils.io import Output
 
 from docutils.parsers.rst import directives, roles
-from docutils.core import publish_from_doctree
 
 from sphinx.application import Sphinx
 
@@ -66,28 +65,6 @@ class TestApp(Sphinx):
             return super(TestApp, self).build(*args, **kwargs)
 
 
-def can_import(module_str):
-    try:
-        import_module(module_str)
-    except ImportError:
-        return False
-    return True
-
-
-DEFAULT_EXTENSIONS = [ext_name for ext_name in
-                      ["nb2plots",
-                       'sphinx.ext.autodoc',  # to silence math_dollar warning
-                       'sphinx.ext.mathjax',  # to enable math output
-                       'texext.math_dollar']  # to enable inline dollar syntax
-                      if can_import(ext_name)]
-
-
-DEFAULT_CONF =  """\
-extensions = [{}]
-""".format(',\n'.join('"{}"'.format(ext_name)
-                      for ext_name in DEFAULT_EXTENSIONS))
-
-
 class TempApp(TestApp):
     """ An application pointing to its own temporary directory.
 
@@ -96,20 +73,18 @@ class TempApp(TestApp):
     Parameters
     ----------
     rst_text : str
-        string containing ReST to build.
-    conf_text : None or str, optional
-        text for configuration ``conf.py`` file.  Default is None, equivalent
-        to a minimum conf file loading nbplots and to_notebook extensions.
+        String containing ReST to build.
+    conf_text : str, optional
+        Text for configuration ``conf.py`` file.
     status : file-like object or None
         File-like object to which to write build status messages, or None for
         no build status messages.
     warningiserror : {True, False}, optional
-        if True, raise an error for warning during the Sphinx build.
+        If True, raise an error for warning during the Sphinx build.
     """
 
-    def __init__(self, rst_text, conf_text=DEFAULT_CONF, buildername='html',
+    def __init__(self, rst_text, conf_text='', buildername='html',
                  status=sys.stdout, warningiserror=True):
-        conf_text = DEFAULT_CONF if conf_text is None else conf_text
         self.tmp_dir = tmp_dir = mkdtemp()
         with open(pjoin(tmp_dir, 'conf.py'), 'wt') as fobj:
             fobj.write(conf_text)
@@ -128,52 +103,6 @@ class TempApp(TestApp):
 
     def __del__(self):
         shutil.rmtree(self.tmp_dir)
-
-
-def build_rst(rst_text, conf_text=None, status=sys.stdout,
-              warningiserror=True):
-    """ Build ReST text in string `rst_text` into doctree.
-
-    Parameters
-    ----------
-    rst_text : str
-        string containing ReST to build.
-    conf_text : None or str, optional
-        text for configuration ``conf.py`` file.  Default is None, equivalent
-        to a minimum conf file loading nbplots and to_notebook extensions.
-    status : file-like object or None
-        File-like object to which to write build status messages, or None for
-        no build status messages.
-    warningiserror : {True, False}, optional
-        if True, raise an error for warning during the Sphinx build.
-
-    Returns
-    -------
-    doctree : node
-        doccument node.
-    """
-    app = TempApp(rst_text, conf_text, status=status,
-                  warningiserror=warningiserror)
-    app.build(False, [])
-    doctree = app.env.get_doctree('contents')
-    return doctree
-
-
-def doctree2pxml(doctree):
-    """ Return `doctree` as PseudoXML
-
-    Parameters
-    ----------
-    doctree : node
-        doccument node.
-
-    Returns
-    -------
-    pxml : str
-        PseudoXML rendering of `doctree`
-    """
-    return publish_from_doctree(doctree).decode('latin1')
-
 
 
 class PageBuilder(object):
@@ -355,3 +284,91 @@ class ModifiedPageBuilder(PageBuilder):
             shutil.copyfile(file_like, out_fname)
         with open(pjoin(cls.page_source, 'index.rst'), 'a') as fobj:
             fobj.write("\n\n.. toctree::\n\n    {0}\n\n".format(out_name))
+
+
+class UnicodeOutput(Output):
+    """ Don't do anything to the string; just return it.
+    """
+
+    default_destination_path = '<string>'
+
+    def write(self, data):
+        """ Store `data` in `self.destination`, and return it."""
+        self.destination = data
+        return data
+
+
+class Converter(object):
+    """ Class to convert from ReST or doctree to output format
+    """
+
+    default_conf = ''
+
+    def __init__(self, writer_class, conf_txt=None):
+        self.writer_class = writer_class
+        self.conf_txt = conf_txt if not conf_txt is None else self.default_conf
+
+    def build_rst(self, rst_text, status=sys.stdout, warningiserror=True):
+        """ Build ReST text in string `rst_text` into doctree.
+
+        Parameters
+        ----------
+        rst_text : str
+            string containing ReST to build.
+        status : file-like object or None
+            File-like object to which to write build status messages, or None
+            for no build status messages.
+        warningiserror : {True, False}, optional
+            if True, raise an error for warning during the Sphinx build.
+
+        Returns
+        -------
+        doctree : node
+            document node.
+        """
+        app = TempApp(rst_text, self.conf_txt, status=status,
+                      warningiserror=warningiserror)
+        app.build(False, [])
+        return app.env.get_doctree('contents')
+
+    def from_doctree(self, doctree):
+        """ Convert doctree `doctree` to output format
+
+        Parameters
+        ----------
+        doctree : node
+            Document node.
+
+        Returns
+        ------
+        output : str
+            Representation in output format
+        """
+        return self.writer_class().write(doctree, UnicodeOutput())
+
+    def from_rst(self, rst_text,
+                 status=sys.stdout,
+                 warningiserror=True):
+        """ Build Sphinx formatted ReST text `rst_text` into output format
+
+        Parameters
+        ----------
+        rst_text : str
+            string containing ReST to build.
+        conf_txt : None or str, optional
+            text for configuration ``conf.py`` file.  None gives a default conf
+            file.
+        status : file-like object or None
+            File-like object to which to write build status messages, or None
+            for no build status messages.
+        warningiserror : {True, False}, optional
+            if True, raise an error for warning during the Sphinx build.
+
+        Returns
+        -------
+        output : str
+            Text in output format
+        """
+        doctree = self.build_rst(rst_text, status=status,
+                                 warningiserror=warningiserror)
+        return self.writer_class().write(doctree, UnicodeOutput())
