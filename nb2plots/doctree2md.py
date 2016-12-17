@@ -433,8 +433,8 @@ class Translator(nodes.NodeVisitor):
         # We really don't know this node type, warn once per node type
         node_type = node.__class__.__name__
         if node_type not in self._warned:
-            self.document.reporter.warning('The ' + node_type + \
-                ' element is not supported.')
+            self.document.reporter.warning('The ' + node_type +
+                ' element not yet supported in Markdown.')
             self._warned.add(node_type)
         raise nodes.SkipNode
 
