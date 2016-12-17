@@ -25,7 +25,7 @@ Releasing nb2plots
 
     rst2html.py README.rst > ~/tmp/readme.html
 
-  because this will be the output used by pypi_
+  because this will be the output used by PyPi_
 
 * Check `nb2plots travis-ci`_.
 
@@ -62,8 +62,4 @@ Releasing nb2plots
     git push
     git push --tags
 
-.. _nb2plots travis-ci: https://travis-ci.org/matthew-brett/nb2plots
-.. _nb2plots isses: https://github.com/matthew-brett/nb2plots/issues
-.. _versioneer: https://github.com/warner/python-versioneer
-.. _setuptools intro:
-   http://packages.python.org/an_example_pypi_project/setuptools.html
+.. include:: ../links_names.inc

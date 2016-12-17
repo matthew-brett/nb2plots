@@ -1,0 +1,4 @@
+# Requirements for building docs
+-r requirements.txt
+ghp-import
+numpydoc

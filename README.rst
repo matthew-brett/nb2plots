@@ -6,16 +6,31 @@ nb2plots - converting between notebooks and sphinx
 What it does
 ************
 
-nb2plots currently only converts IPython notebooks to ReST_ files for Sphinx_.
+``Nb2plots`` converts Jupyter_ notebooks to ReST_ files for Sphinx_, and back
+again.
 
-Use with::
+****************************************
+Why convert Jupyter notebooks to Sphinx?
+****************************************
+
+Jupyter notebooks are just what the doctor ordered when hacking up a quick
+tutorial, or preparing a software demo.  The problems start when you want to
+do not-trivial edits to the notebooks, or you need features that notebooks
+don't have, such as flexible cross-referencing, extensible markup, and so on.
+Notebooks are also painful to use with version control.  These times make you
+wish your notebook was in a standard extensible text format, such as ReST_.
+
+You could convert your notebook to ReST using the standard `nbconvert`_
+command, but this gives rather ugly ReST, and you lose all the nice code
+execution and figure generation that the notebook is good at.
+
+Enter Nb2plots.  The ``nb2plots`` command converts notebooks to specially
+formatted ReST pages. Use with::
 
     nb2plots notebook.ipynb > with_plots.rst
 
-This converts the IPython notebook to Restructured text using the normal
-nbconvert_ machinery, with the additional feature that code cells get
-converted to a custom ``nbplot`` plot directives based on the `matplotlib plot
-directive`_.
+Nb2plots converts your notebook to not-very-ugly ReST, where the code cells
+become ``nbplot`` directives in your ReST file.
 
 Specifically, a notebook code cell like this::
 
@@ -27,13 +42,65 @@ becomes (in the ReST document)::
 
         >>> a = 1
 
-This allows you to make the output ReST file testable using the Sphinx doctest
-builder, and the plots can be generated at Sphinx page build time.
+The ``nbplot`` directives run the contained code when Sphinx builds your ReST
+files, and embed the results of any plots that your code makes.  Actually,
+``nbplot`` is an extended and edited version of the `matplotlib plot
+directive`_.  Building your pages runs all the code and regenerates the
+figures, and you get much of the reproducible goodness of the notebook
+experience.
 
-In order to make this ``nbplot`` directive work for your sphinx builds, you
-should add the following to your ``conf.py`` file::
+You can also run the standard Sphinx ``doctest`` extension over your pages to
+check the doctest output of the code cells.
 
-    extensions = ["nb2plots.nbplots"]
+The ReST version of your notebook has many advantages - it is easier to edit
+in your favorite text editor, and you can extend and configure the execution
+and display of the code in several different ways.  For example, you can hide
+some code cells (Nbplot directives) if the code is not interesting to your
+point, but you still want the generated figure.  You can configure your Nbplot
+directives to run different code for different configurations.  For these
+options, see the docs.  But - what do you lose, when going from a notebook to
+a Nb2plots ReST document?
+
+***************************
+But I want my notebook too!
+***************************
+
+You may also want a notebook version of your document.  Perhaps the page build
+is generating some tricky errors or warnings, and you want to experiment with
+the code in the page interactively.  Perhaps your users are used to notebooks,
+and prefer the code in that format.
+
+Nb2plots also contains Sphinx extensions that cause the Sphinx build to
+regenerate Jupyter notebooks from the ReST source.  When you add the Nb2plots
+ReST directive ``as-notebooks`` to your ReST page, it will cause the Sphinx
+build to create notebook versions of your page, and adds download links to
+these notebooks::
+
+    .. as-notebooks::
+
+See the documentation_ for details.
+
+************
+Installation
+************
+
+::
+
+    pip install nb2plots
+
+You will need Pandoc_ installed and available as the ``pandoc`` command.
+
+To install Pandoc on OSX, we recommend homebrew_::
+
+    brew install pandoc
+
+*************
+Configuration
+*************
+
+Add the following to your Sphinx ``conf.py`` file::
+
+    extensions = ["nb2plots"]
 
 The ``nbplot`` directive is very similar to the ``plot`` directive of
 matplotlib, and started life as a fork of that code.  It differs mainly in
@@ -41,16 +108,6 @@ that its default is to keep the name-space from one ``nbplot`` directive to the
 next in a given page, and has output defaults adapted to directive contents
 with source code rather than pointing to a standalone script.  See the
 docstring of ``nb2plots/nbplots.py`` for details.
-
-************
-Dependencies
-************
-
-You will need Pandoc_ installed and available as the ``pandoc`` command.
-
-For OSX, we recommend homebrew_ for installing Pandoc::
-
-    brew install pandoc
 
 ****
 Code
@@ -62,7 +119,7 @@ Released under the BSD two-clause license - see the file ``LICENSE`` in the
 source distribution.
 
 `travis-ci <https://travis-ci.org/matthew-brett/nb2plots>`_ kindly tests the
-code automatically under Python versions 2.6 through 2.7, and 3.2 through 3.5.
+code automatically under Python versions 2.7, and 3.3 through 3.5.
 
 The latest released version is at https://pypi.python.org/pypi/nb2plots
 
@@ -72,7 +129,9 @@ Support
 
 Please put up issues on the `nb2plots issue tracker`_.
 
+.. _documentation: https://matthew-brett.github.com/nb2plots
 .. _pandoc: http://pandoc.org
+.. _jupyter: jupyter.org
 .. _homebrew: brew.sh
 .. _sphinx: http://sphinx-doc.org
 .. _rest: http://docutils.sourceforge.net/rst.html

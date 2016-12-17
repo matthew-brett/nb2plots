@@ -1,5 +1,4 @@
-""" Directive to handle %matplotlib [inline] in Sphinx, Notebooks
-
+""" Directive to handle ``%matplotlib [inline]`` in Sphinx, Notebooks
 
 The directive is a marker to tell the Notebook converter to put a ``%matplotlib
 inline`` code cell at this position in the text.  Use thusly::
