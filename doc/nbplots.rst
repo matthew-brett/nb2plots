@@ -43,6 +43,7 @@ Nbplot directives can also make |--| plots:
 
     >>> import matplotlib.pyplot as plt
     >>> plt.plot(range(10))
+    [...]
 
 Notice that the HTML version of the page contains links to high and low
 resolution PNG versions of the plot, and a PDF version.
