@@ -73,9 +73,9 @@ class Translator(d2m.Translator):
         self.flush_text()
         return nbf.writes(self._notebook)
 
-    def add_code_block(self, text):
+    def add_code_block(self, txt):
         self.flush_text()
-        self._notebook['cells'].append(nbf.new_code_cell(text))
+        self._notebook['cells'].append(nbf.new_code_cell(txt))
 
     def visit_doctest_block(self, node):
         doctest_txt = node.astext().strip()

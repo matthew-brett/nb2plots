@@ -62,4 +62,15 @@ def test_sphinx2nb():
         expected = fcontents(nb_fname, 't')
         cmd = ['sphinx2nb', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_nb_equiv(stdout.decode('latin1'), expected)
+        assert_nb_equiv(stdout.decode('utf-8'), expected)
+
+
+@script_test
+def test_sphinx2py():
+    # test sphinx2py script over all .rst files checking against .ipynb files
+    for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
+        py_fname = rst_fname[:-3] + 'py'
+        expected = fcontents(py_fname, 'b')
+        cmd = ['sphinx2py', rst_fname]
+        code, stdout, stderr = run_command(cmd)
+        assert_equal(stdout, expected)

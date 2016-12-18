@@ -6,7 +6,7 @@ from importlib import import_module
 from docutils.writers import pseudoxml
 
 from .sphinxutils import Converter
-from . import doctree2md, doctree2nb
+from . import doctree2md, doctree2nb, doctree2py
 
 
 def can_import(module_str):
@@ -39,3 +39,4 @@ class NbConverter(Converter):
 to_pxml = NbConverter(pseudoxml.Writer)
 to_markdown = NbConverter(doctree2md.Writer)
 to_notebook = NbConverter(doctree2nb.Writer)
+to_py = NbConverter(doctree2py.Writer)
