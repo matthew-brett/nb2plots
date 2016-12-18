@@ -1,6 +1,5 @@
 """ Sphinx extension to convert RST pages to notebooks """
 
-import re
 from os.path import join as pjoin
 from copy import deepcopy
 
@@ -21,11 +20,7 @@ from nb2plots.nbplots import drop_visit
 
 
 class ToNotebookError(ExtensionError):
-    """ Error for notebook sphinx extension """
-
-
-def _normalize_whitespace(text):
-    return re.sub(r'\s+', '', text)
+    """ Error for notebook Sphinx extension """
 
 
 class notebook_reference(nodes.reference):
@@ -34,7 +29,7 @@ class notebook_reference(nodes.reference):
 
 def clearnotebook(name, rawtext, text, lineno, inliner, options={},
                   content=[]):
-    """ Role for building and linking to IPython notebooks
+    """ Role for building and linking to Jupyter notebooks
 
     Parameters
     ----------
