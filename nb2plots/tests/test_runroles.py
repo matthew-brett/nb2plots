@@ -4,7 +4,7 @@ from os.path import join as pjoin
 from glob import glob
 import re
 
-from nb2plots import to_notebook as tn
+from nb2plots import runroles as rr
 from nb2plots.converters import to_notebook
 from nb2plots.ipython_shim import nbf
 from nb2plots.converters import to_pxml
@@ -16,15 +16,15 @@ from nb2plots.tests import mockapp
 from .convutils import fcontents, DATA_PATH
 
 
-def test_to_notebook_setup(*args):
+def test_runroles_setup(*args):
     # Test extension setup works as expected
     app = mockapp.get_app()
-    tn.setup(app)
-    connects = [('doctree-resolved', tn.collect_notebooks),
-                ('build-finished', tn.write_notebooks)]
-    roles = [('clearnotebook', tn.clearnotebook),
-             ('fullnotebook', tn.fullnotebook)]
-    translators = [('ipynb', tn.Translator)]
+    rr.setup(app)
+    connects = [('doctree-resolved', rr.collect_notebooks),
+                ('build-finished', rr.write_notebooks)]
+    roles = [('clearnotebook', rr.clearnotebook),
+             ('fullnotebook', rr.fullnotebook)]
+    translators = [('ipynb', rr.Translator)]
     for method_name, args, kwargs in app.method_calls:
         if (method_name == 'connect' and args[0:2] in connects):
             connects.remove(args[0:2])
