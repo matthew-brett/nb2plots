@@ -27,7 +27,7 @@ def test_basic():
     assert_rst_cells_equal('Some text', [n_md_c('Some text')])
 
 
-def test_notebook_reference():
+def test_runrole_reference():
     # Ignore notebook reference in source ReST
     assert_rst_cells_equal('Some text :clearnotebook:`.`',
                            [n_md_c('Some text')])

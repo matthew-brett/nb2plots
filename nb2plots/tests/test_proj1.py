@@ -36,13 +36,13 @@ class TestProj1(Proj1Builder):
             doctree_str,
             '<title>A section</title>\n'
             '<paragraph>Some text.</paragraph>\n'
-            '<paragraph><notebook_reference evaluate="False" '
+            '<paragraph><runrole_reference evaluate="False" '
             'refdoc="a_page" reftarget="a_page.ipynb" reftype="clearnotebook">'
-            'notebook here</notebook_reference></paragraph>\n'
+            'notebook here</runrole_reference></paragraph>\n'
             '<paragraph>More text.</paragraph>\n'
-            '<paragraph><notebook_reference evaluate="True" '
+            '<paragraph><runrole_reference evaluate="True" '
             'refdoc="a_page" reftarget="another.ipynb" reftype="fullnotebook">'
-            'full</notebook_reference></paragraph>')
+            'full</runrole_reference></paragraph>')
         assert_true(exists(pjoin(self.build_path, 'html', 'a_page.ipynb')))
 
 

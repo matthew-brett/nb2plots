@@ -5,6 +5,8 @@ from glob import glob
 import re
 
 from nb2plots import runroles as rr
+from nb2plots import doctree2nb
+from nb2plots import doctree2py
 from nb2plots.converters import to_notebook
 from nb2plots.ipython_shim import nbf
 from nb2plots.converters import to_pxml
@@ -24,7 +26,8 @@ def test_runroles_setup(*args):
                 ('build-finished', rr.write_notebooks)]
     roles = [('clearnotebook', rr.clearnotebook),
              ('fullnotebook', rr.fullnotebook)]
-    translators = [('ipynb', rr.Translator)]
+    translators = [('ipynb', doctree2nb.Translator),
+                   ('python', doctree2py.Translator)]
     for method_name, args, kwargs in app.method_calls:
         if (method_name == 'connect' and args[0:2] in connects):
             connects.remove(args[0:2])
@@ -167,7 +170,7 @@ def test_nb_role_doctrees():
 <document source=".*?">
     <paragraph>
         Text then 
-        <notebook_reference evaluate="{evaluate}" refdoc="contents" reftarget="{nb_base}.ipynb" reftype="{nb_type}notebook">
+        <runrole_reference evaluate="{evaluate}" refdoc="contents" reftarget="{nb_base}.ipynb" reftype="{nb_type}notebook">
             {nb_text}
          then text."""
 

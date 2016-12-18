@@ -13,18 +13,18 @@ from sphinx.errors import ExtensionError
 # Use notebook format version 4
 from .ipython_shim import nbf, nbconvert as nbc
 
-from .doctree2nb import Translator
+from . import doctree2nb, doctree2py
 from .converters import to_notebook
 
 from nb2plots.nbplots import drop_visit
 
 
-class ToNotebookError(ExtensionError):
-    """ Error for notebook Sphinx extension """
+class RunRoleError(ExtensionError):
+    """ Error for runnable role Sphinx extensions """
 
 
-class notebook_reference(nodes.reference):
-    """Node for notebook references, similar to pending_xref."""
+class runrole_reference(nodes.reference):
+    """Node for references to built runnable, similar to pending_xref."""
 
 
 def clearnotebook(name, rawtext, text, lineno, inliner, options={},
@@ -68,7 +68,7 @@ def clearnotebook(name, rawtext, text, lineno, inliner, options={},
     has_nb_fname, title, nb_fname = split_explicit_title(text)
     if not has_nb_fname:
         nb_fname = env.docname + '.ipynb'
-    refnode = notebook_reference(rawtext, title, reftype=name)
+    refnode = runrole_reference(rawtext, title, reftype=name)
     # We may need the line number for warnings
     set_role_source_info(inliner, lineno, refnode)
     refnode['reftarget'] = nb_fname
@@ -91,7 +91,7 @@ def fullnotebook(name, rawtext, text, lineno, inliner, options={}, content=[]):
 def collect_notebooks(app, doctree, fromdocname):
     env = app.env
     out_notebooks = {}
-    for nb_ref in doctree.traverse(notebook_reference):
+    for nb_ref in doctree.traverse(runrole_reference):
         # Calculate relative filename
         rel_fn, _  = env.relfn2path(nb_ref['reftarget'], fromdocname)
         # Check for duplicates
@@ -99,8 +99,8 @@ def collect_notebooks(app, doctree, fromdocname):
         if rel_fn not in out_notebooks:
             out_notebooks[rel_fn] = evaluate
         elif out_notebooks[rel_fn] != evaluate:
-            raise ToNotebookError('Notebook filename {0} cannot be both '
-                                  'clear and full'.format(rel_fn))
+            raise RunRoleError('Notebook filename {0} cannot be both '
+                               'clear and full'.format(rel_fn))
         nb_ref['filename'] = rel_fn
     if len(out_notebooks) == 0:
         return
@@ -158,14 +158,14 @@ def write_notebooks(app, exception):
     del app.env.notebooks
 
 
-def visit_notebook_node(self, node):
+def visit_runrole(self, node):
     self.body.append(
         '<a class="reference download internal" href="{0}">'.format(
             node['filename']))
     self.context.append('</a>')
 
 
-def depart_notebook_node(self, node):
+def depart_runrole(self, node):
     self.body.append(self.context.pop())
 
 
@@ -174,12 +174,13 @@ def setup(app):
     app.add_role('fullnotebook', fullnotebook)
     app.connect('doctree-resolved', collect_notebooks)
     app.connect('build-finished', write_notebooks)
-    app.add_node(notebook_reference,
-                 html=(visit_notebook_node, depart_notebook_node),
+    app.add_node(runrole_reference,
+                 html=(visit_runrole, depart_runrole),
                  text=(drop_visit, None),
                  latex=(drop_visit, None))
-    # Register translator to allow other extensions to extend ipynb visit,
-    # depart methods with app.add_node as we have just done for the html
-    # translator in the lines above.  See:
+    # Register translators to allow other extensions to extend ipynb and python
+    # code visit, depart methods with app.add_node as we have just done for the
+    # html translator in the lines above.  See:
     # http://www.sphinx-doc.org/en/1.4.8/extdev/tutorial.html#the-setup-function
-    app.set_translator('ipynb', Translator)
+    app.set_translator('ipynb', doctree2nb.Translator)
+    app.set_translator('python', doctree2py.Translator)

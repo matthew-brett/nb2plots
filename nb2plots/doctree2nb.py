@@ -97,7 +97,7 @@ class Translator(d2m.Translator):
     def visit_nbplot_not_rendered(self, node):
         raise nodes.SkipNode
 
-    def visit_notebook_reference(self, node):
+    def visit_runrole_reference(self, node):
         raise nodes.SkipNode
 
     def visit_literal_block(self, node):
