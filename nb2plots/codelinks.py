@@ -1,31 +1,30 @@
-""" Directive to insert links to current document as notebooks
+""" Directive to insert links to current document as runnable code.
 
 As a bare directive, with no options, inserts links to the current document as
-a clear notebook (no outputs) and a full notebook (outputs inserted by
-executing the built notebook)::
+a Python code file; a clear notebook (no outputs) and a full notebook (outputs
+inserted by executing the built notebook)::
 
-    .. as-notebooks:
+    .. code-links:
 
-You can select one or both of the clear or full notebooks with the ``type``
-option::
+You can select one or more of these links with a list as an argument to the
+directive, where "python", "clear" and "full" refer to a Python code file,
+clear notebook file and a full notebook file, respectively::
 
-    .. as-notebooks:
-        :type: clear
+    .. code-links: python
 
-    .. as-notebooks:
-        :type: full
+    .. code-links: python full
 
-    .. as-notebooks:
-        :type: both
+    .. code-links: clear full
 
-``both`` is the default.
+``python, clear, full`` is the default.
 """
 
 from docutils.statemachine import StringList
-from docutils.parsers.rst import directives
 from docutils import nodes
 
 from sphinx.util.compat import Directive
+
+from .runroles import NAME2ROLE
 
 
 def setup_module(module):
@@ -33,46 +32,51 @@ def setup_module(module):
     pass
 
 
-class AsNotebooks(Directive):
-    """ Add links to built notebook(s) to output page.
+class CodeLinks(Directive):
+    """ Add links to built runnable code from contained page.
     """
 
     has_content = False
     required_arguments = 0
-    optional_arguments = 0
+    optional_arguments = 3
 
-    option_spec = {'type': directives.unchanged}
-
-    nb_text_fmt = ('* :{0}notebook:`Download this page as a Jupyter '
-                   'notebook ({1} outputs) <{2}_{0}.ipynb>`')
+    _type2params = dict(python=dict(role_name='codefile', suffix=''),
+                        clear=dict(role_name='clearnotebook', suffix='_clear'),
+                        full=dict(role_name='fullnotebook', suffix='_full'))
 
     def _role_lines(self):
         """ Text lines for notebook roles of types requested in options.
         """
+        code_types = (self.arguments if len(self.arguments)
+                      else ['python', 'clear', 'full'])
         env = self.state.document.settings.env
-        nb_spec = self.options.get('type', 'both')
-        nb_types = ('clear', 'full') if nb_spec == 'both' else (nb_spec,)
         lines = []
-        for nb_type in nb_types:
-            lines.append(self.nb_text_fmt.format(
-                nb_type,
-                'with' if nb_type == 'full' else 'no',
-                env.docname))
+        for code_type in code_types:
+            params = self._type2params[code_type]
+            role_name = params['role_name']
+            suffix = params['suffix']
+            role = NAME2ROLE[role_name]
+            lines.append(
+                '* :{role_name}:`{descr} <{docname}{suffix}{ext}>`'.format(
+                    role_name=role_name,
+                    descr=role.default_text,
+                    docname=env.docname,
+                    suffix=suffix,
+                    ext=role.default_extension))
         return lines
 
     def run(self):
         lines = ['.. only:: html', '']
-        lines += ['   ' + line for line in self._role_lines()]
+        body_lines = self._role_lines()
+        for i, line in enumerate(body_lines):
+            suffix = '.' if i == len(body_lines) - 1 else ';'
+            lines.append('    {}{}'.format(line, suffix))
         node = nodes.container('\n'.join(lines))
         self.state.nested_parse(StringList(lines),
-                                       self.content_offset,
+                                self.content_offset,
                                 node)
         return [node]
 
 
 def setup(app):
-    setup.app = app
-    setup.config = app.config
-    setup.confdir = app.confdir
-
-    app.add_directive('as-notebooks', AsNotebooks)
+    app.add_directive('code-links', CodeLinks)

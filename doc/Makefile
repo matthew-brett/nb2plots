@@ -233,7 +233,7 @@ example: example_notebook.ipynb
 		$(BUILDDIR)/html/example_notebook.html
 	nb2plots example_notebook.ipynb > converted_example.rst
 	cp converted_example.rst converted_plus_notebooks.rst
-	echo '.. as-notebooks::' >> converted_plus_notebooks.rst
+	echo '.. code-links::' >> converted_plus_notebooks.rst
 
 github: html
 	ghp-import -n $(BUILDDIR)/html/

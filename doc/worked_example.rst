@@ -39,21 +39,21 @@ the ReST document to clean up some differences between the notebook code cells
 and doctest blocks in Nbplot directives.
 
 Now let us say that you would like to make this page available to your users
-as Jupyter notebooks.  To do this add the following directive to the end of
-your page (or where-ever you like):
+as Jupyter notebooks and / or a Python code file.  To do this, add the
+following directive to the end of your page (or wherever you like):
 
 .. code-block:: rest
 
-    .. as-notebooks::
+    .. code-links::
 
-See the :ref:`as-notebooks-directive` for more detail.
+See the :ref:`code-links-directive` for more detail.
 
 When you do this, you get a built HTML page :doc:`like this
-<converted_plus_notebooks>`.  Note the two links to notebooks at the end of
-the page.  The first link is to a notebook that has not been executed, and has
-no outputs.  The second is to a version of the same notebook that has been
-executed, and has the code output cells.  See the
-:ref:`as-notebooks-directive` documentation for options to control the
-notebook links.
+<converted_plus_notebooks>`.  Note the three links to the Python code file and
+notebooks at the end of the page.  The first link is to the Python code file.
+The second is to a notebook that has not been executed, and has no outputs.
+The third is to a version of the same notebook that has been executed, and has
+the code output cells.  See the :ref:`code-links-directive` documentation for
+options to select which of these links to add.
 
 .. include:: links_names.inc

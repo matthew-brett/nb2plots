@@ -18,9 +18,7 @@ def test_runroles_setup(*args):
     rr.setup(app)
     connects = [('doctree-resolved', rr.collect_runfiles),
                 ('build-finished', rr.write_runfiles)]
-    roles = [('codefile', rr.codefile),
-             ('clearnotebook', rr.clearnotebook),
-             ('fullnotebook', rr.fullnotebook)]
+    roles = list(rr.NAME2ROLE.items())
     translators = [('ipynb', doctree2nb.Translator),
                    ('python', doctree2py.Translator)]
     for method_name, args, kwargs in app.method_calls:
@@ -63,12 +61,13 @@ def test_run_role_doctrees():
     assert_rst_pxml(
         dict(code_type='clear notebook',
              base='contents',
-             descr='Download this page as a Jupyter notebook \(no output\)'),
+             descr='Download this page as a Jupyter notebook \(no outputs\)'),
         "Text then :clearnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='full notebook',
              base='contents',
-             descr='Download this page as a Jupyter notebook \(with output\)'),
+             descr=('Download this page as a Jupyter notebook '
+                    '\(with outputs\)')),
         "Text then :fullnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='python',

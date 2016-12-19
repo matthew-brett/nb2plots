@@ -22,7 +22,7 @@ In more depth:
 
     nbplots
     mpl_interactive
-    as_notebooks
+    code_links
 
 Developer docs:
 

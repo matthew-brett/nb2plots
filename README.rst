@@ -68,24 +68,24 @@ directives to run different code for different configurations.  For these
 options, see |nbplot-documentation|.  But - what do you lose, when going from
 a notebook to a Nb2plots ReST document?
 
-***************************
-But I want my notebook too!
-***************************
+**************************************
+I want my notebook or Python code too!
+**************************************
 
-You may also want a notebook version of your document.  Perhaps the page build
-is generating some tricky errors or warnings, and you want to experiment with
-the code in the page interactively.  Perhaps your users are used to notebooks,
-and prefer the code in that format.
+You may also want a version of your document the your users can execute.
+Perhaps the page build is generating some tricky errors or warnings, and you
+want to experiment with the code in the page interactively.  Perhaps your
+users are used to notebooks, and prefer the code in that format.
 
 Nb2plots also contains Sphinx extensions that cause the Sphinx build to
-regenerate Jupyter notebooks from the ReST source.  When you add the Nb2plots
-ReST directive ``as-notebooks`` to your ReST page, it will cause the Sphinx
-build to create notebook versions of your page, and adds download links to
-these notebooks::
+regenerate Python code files and Jupyter notebooks from the ReST source.  When
+you add the Nb2plots ReST directive ``code-links`` to your ReST page, it will
+cause the Sphinx build to create a Python code file and notebook versions of
+your page, and adds download links to these versions::
 
-    .. as-notebooks::
+    .. code-links::
 
-See |as-notebooks-documentation| for details.
+See |code-links-documentation| for details.
 
 ************
 Installation
@@ -134,7 +134,12 @@ The latest released version is at https://pypi.python.org/pypi/nb2plots
 Tests
 *****
 
-Install ``nb2plots`` and the nose_ testing framework, then::
+* Install ``nb2plots``
+* Install the nose_ testing framework and the ``mock`` module::
+
+    pip install nose mock
+
+* Run the tests with::
 
     nosetests nb2plots
 
@@ -147,11 +152,11 @@ Please put up issues on the `nb2plots issue tracker`_.
 .. standalone-references
 
 .. |nbplot-documentation| replace:: `nbplots documentation`_
-.. |as-notebooks-documentation| replace:: `as-notebooks documentation`_
+.. |code-links-documentation| replace:: `code-links documentation`_
 .. _nbplots documentation:
     https://matthew-brett.github.com/nb2plots/nbplots.html
-.. _as-notebooks documentation:
-    https://matthew-brett.github.com/nb2plots/as_notebooks.html
+.. _code-links documentation:
+    https://matthew-brett.github.com/nb2plots/code_links.html
 .. _ndocumentation: https://matthew-brett.github.com/nb2plots
 .. _pandoc: http://pandoc.org
 .. _jupyter: jupyter.org
@@ -161,3 +166,6 @@ Please put up issues on the `nb2plots issue tracker`_.
 .. _nb2plots issue tracker: https://github.com/matthew-brett/nb2plots/issues
 .. _matplotlib plot directive: http://matplotlib.org/sampledoc/extensions.html
 .. _nbconvert: http://nbconvert.readthedocs.org/en/latest/
+.. _nose: http://readthedocs.org/docs/nose/en/latest
+.. _nose: http://readthedocs.org/docs/nose/en/latest
+.. _mock: https://github.com/testing-cabal/mock

@@ -119,7 +119,7 @@ class PyRunRole(object):
 class ClearNotebookRunRole(PyRunRole):
     """ Role builder for not-evaluated notebook """
 
-    default_text = 'Download this page as a Jupyter notebook (no output)'
+    default_text = 'Download this page as a Jupyter notebook (no outputs)'
     default_extension = '.ipynb'
     code_type = 'clear notebook'
     converter = to_notebook
@@ -128,7 +128,7 @@ class ClearNotebookRunRole(PyRunRole):
 class FullNotebookRunRole(ClearNotebookRunRole):
     """ Role builder for evaluated notebook """
 
-    default_text = 'Download this page as a Jupyter notebook (with output)'
+    default_text = 'Download this page as a Jupyter notebook (with outputs)'
     code_type = 'full notebook'
 
     def __init__(self, clear_role):
@@ -141,18 +141,17 @@ class FullNotebookRunRole(ClearNotebookRunRole):
         return nbf.writes(full_nb)
 
 
-codefile = PyRunRole()
-clearnotebook = ClearNotebookRunRole()
-fullnotebook=FullNotebookRunRole(clearnotebook)
+_clearnotebook = ClearNotebookRunRole()
+NAME2ROLE = dict(codefile=PyRunRole(),
+                 clearnotebook=_clearnotebook,
+                 fullnotebook=FullNotebookRunRole(_clearnotebook))
 
-_type2role = {role.code_type: role for role in (codefile,
-                                                clearnotebook,
-                                                fullnotebook)}
+_TYPE2ROLE = {role.code_type: role for role in NAME2ROLE.values()}
 
 
 def _empty_rundict():
     return {code_type: dict(to_build=[], built=None)
-            for code_type in _type2role}
+            for code_type in _TYPE2ROLE}
 
 
 def do_builder_init(app):
@@ -202,11 +201,11 @@ def write_runfiles(app, exception):
     env = app.env
     for docname, type_params in env.runrole.items():
         for code_type, build_params in type_params.items():
-            role = _type2role[code_type]
+            role = _TYPE2ROLE[code_type]
             for rel_fname in build_params['to_build']:
                 out_fname = _relfn2outpath(rel_fname, app)
                 role.write(docname, env, out_fname)
-        for role in _type2role.values():
+        for role in _TYPE2ROLE.values():
             role.clear_cache(docname, env)
 
 
@@ -234,9 +233,8 @@ def fill_notebook(nb):
 
 def setup(app):
     # Add runrole roles
-    app.add_role('codefile', codefile)
-    app.add_role('clearnotebook', clearnotebook)
-    app.add_role('fullnotebook', fullnotebook)
+    for name, role in NAME2ROLE.items():
+        app.add_role(name, role)
     # Create dictionaries in builder environment
     app.connect(str('builder-inited'), do_builder_init)
     # Delete caches when document re-initialized

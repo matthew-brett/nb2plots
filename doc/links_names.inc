@@ -36,6 +36,7 @@
 .. _setuptools: http://pypi.python.org/pypi/setuptools
 .. _matplotlib: http://matplotlib.org/
 .. _nose: http://readthedocs.org/docs/nose/en/latest
+.. _mock: https://github.com/testing-cabal/mock
 .. _pip: http://pypi.python.org/pypi/pip
 .. _PEP8:
    https://www.python.org/dev/peps/pep-0008/
@@ -53,4 +54,4 @@
 .. |---| unicode:: U+2014  .. em dash, trimming surrounding whitespace
    :trim:
 .. |nbplot-documentation| replace:: :ref:`nbplots-documentation`
-.. |as-notebooks-documentation| replace:: :ref:`as-notebooks-documentation`
+.. |code-links-documentation| replace:: :ref:`code-links-documentation`
