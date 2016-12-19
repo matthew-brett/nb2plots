@@ -7,7 +7,7 @@ del get_versions
 from . import nbplots
 from . import runroles
 from . import mpl_interactive
-from . import as_notebooks
+from . import codelinks
 
 
 def setup_package():
@@ -19,4 +19,4 @@ def setup(app):
     nbplots.setup(app)
     runroles.setup(app)
     mpl_interactive.setup(app)
-    as_notebooks.setup(app)
+    codelinks.setup(app)
