@@ -30,6 +30,7 @@ Developer docs:
     :maxdepth: 2
 
     devel/improving_markdown
+    devel/sphinx_example_project
     devel/make_release
 
 .. toctree::

@@ -8,7 +8,7 @@ inserted by executing the built notebook)::
 
 You can select one or more of these links with a list as an argument to the
 directive, where "python", "clear" and "full" refer to a Python code file,
-clear notebook file and a full notebook file, respectively::
+clear notebook file and a full notebook file, respectively. For example::
 
     .. code-links: python
 
@@ -16,7 +16,7 @@ clear notebook file and a full notebook file, respectively::
 
     .. code-links: clear full
 
-``python, clear, full`` is the default.
+``python clear full`` is the default.
 """
 
 from docutils.statemachine import StringList

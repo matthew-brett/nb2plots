@@ -3,7 +3,7 @@ Worked example
 ##############
 
 Let's say I have a notebook `example notebook <example_notebook.html>`_.  You
-can download this notebook from :download:`example_notebook.ipynb`.
+can download the notebook from :download:`example_notebook.ipynb`.
 
 I want to make this notebook into a ReST page to include in my Sphinx
 project.  First I convert the notebook with the ``nb2plots`` script::
@@ -27,8 +27,8 @@ Notice that each Nbplot directive on a single page uses the same namespace, by
 default, so the Nbplot directives on your page can build up variables in the
 same way that a notebook does.
 
-The notebook code cells convert to doctest blocks, so you can now check the
-correctness of the code on your page with the Sphinx doctest extension:
+The notebook code cells convert to doctest blocks, so I can check the
+correctness of the code on my page with the Sphinx doctest extension:
 
 .. code-block:: bash
 
@@ -38,9 +38,9 @@ This example page converts well, but, in practice, you may well want to edit
 the ReST document to clean up some differences between the notebook code cells
 and doctest blocks in Nbplot directives.
 
-Now let us say that you would like to make this page available to your users
-as Jupyter notebooks and / or a Python code file.  To do this, add the
-following directive to the end of your page (or wherever you like):
+Now let's say that I would like to make this page available to my users as
+Jupyter notebooks and / or a Python code file.  To do this, I add the
+following directive to the end of my page (or wherever I like):
 
 .. code-block:: rest
 
@@ -48,7 +48,7 @@ following directive to the end of your page (or wherever you like):
 
 See the :ref:`code-links-directive` for more detail.
 
-When you do this, you get a built HTML page :doc:`like this
+When I do this, I get a built HTML page :doc:`like this
 <converted_plus_notebooks>`.  Note the three links to the Python code file and
 notebooks at the end of the page.  The first link is to the Python code file.
 The second is to a notebook that has not been executed, and has no outputs.
