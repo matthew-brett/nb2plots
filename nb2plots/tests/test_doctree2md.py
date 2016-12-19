@@ -39,7 +39,8 @@ def test_example_files():
         rst_contents = fcontents(rst_fname)
         md_fname = rst_fname[:-3] + 'md'
         md_contents = fcontents(md_fname)
-        assert_conv_equal(rst_contents, md_contents)
+        if md_contents.strip() != b'skip':
+            assert_conv_equal(rst_contents, md_contents)
 
 
 def test_indent_level():

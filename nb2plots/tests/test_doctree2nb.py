@@ -3,7 +3,6 @@
 from os.path import join as pjoin
 from glob import glob
 
-from nb2plots.doctree2nb import parse_doctest
 from nb2plots.converters import to_notebook
 from nb2plots.ipython_shim import nbf
 
@@ -115,17 +114,6 @@ Text 2
       n_md_c('Some thoughts I had'),
       n_c_c('a = 1'),
       n_md_c('Text 2')])
-
-
-def test_doctest_parser():
-    assert_equal(parse_doctest('>>> # comment'), '# comment')
-    assert_equal(parse_doctest('>>> a = 10'), 'a = 10')
-    assert_equal(parse_doctest('   >>> a = 10'), 'a = 10')
-    assert_equal(parse_doctest('   >>> a = 10\n   >>> b = 20'),
-                 'a = 10\nb = 20')
-    assert_equal(parse_doctest(
-        '   >>> for i in (1, 2):\n   ...     print(i)'),
-        'for i in (1, 2):\n    print(i)')
 
 
 def assert_nb_equiv(ipynb, expected):

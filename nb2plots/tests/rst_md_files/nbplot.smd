@@ -1,0 +1,21 @@
+## Nbplot file
+
+Introducing...
+
+```python
+>>> a = 1
+>>> a
+1
+```
+
+... the `nbplot`.
+
+```python
+>>> b = 1
+>>> a
+1
+```
+
+If running in the IPython console, consider running `%matplotlib` to enable
+interactive plots.  If running in the Jupyter Notebook, use `%matplotlib
+inline`.

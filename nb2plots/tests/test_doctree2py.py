@@ -8,9 +8,24 @@ from __future__ import (division, print_function, absolute_import,
 from os.path import join as pjoin
 from glob import glob
 
+from nb2plots.doctree2py import parse_doctest
+
 from ..converters import to_py
 
 from .convutils import convert_assert, fcontents, DATA_PATH
+
+from nose.tools import assert_equal
+
+
+def test_doctest_parser():
+    assert_equal(parse_doctest('>>> # comment'), '# comment')
+    assert_equal(parse_doctest('>>> a = 10'), 'a = 10')
+    assert_equal(parse_doctest('   >>> a = 10'), 'a = 10')
+    assert_equal(parse_doctest('   >>> a = 10\n   >>> b = 20'),
+                 'a = 10\nb = 20')
+    assert_equal(parse_doctest(
+        '   >>> for i in (1, 2):\n   ...     print(i)'),
+        'for i in (1, 2):\n    print(i)')
 
 
 def assert_conv_equal(rst_str, md_expected):

@@ -36,7 +36,8 @@ def test_rst2md():
         code, stdout, stderr = run_command(cmd)
         with open(md_fname, 'rb') as fobj:
             expected_md = fobj.read()
-        assert_equal(stdout, expected_md)
+        if expected_md.strip() != b'skip':
+            assert_equal(stdout, expected_md)
 
 
 @script_test

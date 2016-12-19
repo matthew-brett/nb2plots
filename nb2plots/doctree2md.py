@@ -4,6 +4,8 @@
 """
 from __future__ import unicode_literals
 
+from textwrap import dedent
+
 __docformat__ = 'reStructuredText'
 
 from docutils import frontend, nodes, writers, languages
@@ -162,7 +164,9 @@ PASS_THRU_ELEMENTS = ('document',
                       'field_list',
                       'field_list_item',
                       'field',
-                      'field_name'
+                      'field_name',
+                      'mpl_hint',
+                      'nbplot_rendered',
                      )
 
 
@@ -420,6 +424,14 @@ class Translator(nodes.NodeVisitor):
 
     def depart_reference(self, node):
         pass
+
+    def visit_nbplot_not_rendered(self, node):
+        raise nodes.SkipNode
+
+    def visit_only(self, node):
+        if node['expr'] == 'markdown':
+            self.add(dedent(node.astext()) + '\n')
+        raise nodes.SkipNode
 
     def unknown_visit(self, node):
         """ Warn once per instance for unsupported nodes
