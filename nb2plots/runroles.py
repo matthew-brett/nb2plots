@@ -2,9 +2,9 @@
 
 from os.path import join as pjoin
 from copy import deepcopy
+from collections import defaultdict
 
 from docutils import nodes, utils
-from docutils.parsers.rst import directives
 from docutils.parsers.rst.roles import set_classes
 
 from sphinx.util.nodes import split_explicit_title, set_role_source_info
@@ -14,7 +14,7 @@ from sphinx.errors import ExtensionError
 from .ipython_shim import nbf, nbconvert as nbc
 
 from . import doctree2nb, doctree2py
-from .converters import to_notebook
+from .converters import to_notebook, to_py
 
 from nb2plots.nbplots import drop_visit
 
@@ -27,16 +27,20 @@ class runrole_reference(nodes.reference):
     """Node for references to built runnable, similar to pending_xref."""
 
 
-class ClearNotebookRunRole(object):
-    """ Role builder for not-evaluated notebook """
+class PyRunRole(object):
+    """ Role builder for Python code file """
 
-    evaluate = False
-    default_text = 'Download this page as a Jupyter notebook'
-    default_extension = '.ipynb'
+    default_text = 'Download this page as a Python code file'
+    default_extension = '.py'
+    code_type = 'python'
+    converter = to_py
+    encoding = 'utf-8'
+
+    _cache = {}
 
     def __call__(self, name, rawtext, text, lineno, inliner, options={},
-                    content=[]):
-        """ Role for building and linking to built code files
+                 content=[]):
+        """ Register this document for later building as runnable code file.
 
         Parameters
         ----------
@@ -79,89 +83,131 @@ class ClearNotebookRunRole(object):
         refnode['reftarget'] = fname
         # we also need the source document
         refnode['refdoc'] = env.docname
-        refnode['evaluate'] = self.evaluate
         # result_nodes allow further modification of return values
+        refnode['code_type'] = self.code_type
         return [refnode], []
+
+    def write(self, docname, env, out_fname):
+        built = self.get_built(docname, env)
+        with open(out_fname, 'wb') as fobj:
+            fobj.write(built.encode(self.encoding))
+
+    def get_built(self, docname, env):
+        """ Build, cache output file
+
+        Parameters
+        ----------
+        docname : str
+            Document name.
+        env : object
+            Sphinx build environment.
+        """
+        own_params = env.runrole[docname][self.code_type]
+        if own_params['built'] is None:
+            own_params['built'] = self._build(docname, env)
+        return own_params['built']
+
+    def _build(self, docname, env):
+        """ Return string containing built version of `doctree` """
+        doctree = env.get_doctree(docname)
+        return self.converter.from_doctree(doctree)
+
+    def clear_cache(self, docname, env):
+        env.runrole[docname][self.code_type]['built'] = None
+
+
+class ClearNotebookRunRole(PyRunRole):
+    """ Role builder for not-evaluated notebook """
+
+    default_text = 'Download this page as a Jupyter notebook (no output)'
+    default_extension = '.ipynb'
+    code_type = 'clear notebook'
+    converter = to_notebook
 
 
 class FullNotebookRunRole(ClearNotebookRunRole):
     """ Role builder for evaluated notebook """
 
-    evaluate = True
+    default_text = 'Download this page as a Jupyter notebook (with output)'
+    code_type = 'full notebook'
+
+    def __init__(self, clear_role):
+        self.clear_role = clear_role
+
+    def _build(self, docname, env):
+        """ Return byte string containing built version of `doctree` """
+        empty_json = self.clear_role.get_built(docname, env)
+        full_nb = fill_notebook(nbf.reads(empty_json))
+        return nbf.writes(full_nb)
 
 
+codefile = PyRunRole()
 clearnotebook = ClearNotebookRunRole()
-fullnotebook = FullNotebookRunRole()
+fullnotebook=FullNotebookRunRole(clearnotebook)
+
+_type2role = {role.code_type: role for role in (codefile,
+                                                clearnotebook,
+                                                fullnotebook)}
 
 
-def collect_notebooks(app, doctree, fromdocname):
+def _empty_rundict():
+    return {code_type: dict(to_build=[], built=None)
+            for code_type in _type2role}
+
+
+def do_builder_init(app):
+    """ Initialize builder with runrole caches
+    """
     env = app.env
-    out_notebooks = {}
-    for nb_ref in doctree.traverse(runrole_reference):
+    env.runrole = defaultdict(_empty_rundict)
+
+
+def do_purge_doc(app, env, docname):
+    """ Clear caches of runrole builds and finds
+    """
+    env.runrole[docname] = _empty_rundict()
+
+
+def collect_runfiles(app, doctree, fromdocname):
+    env = app.env
+    out_files = {}
+    for ref in doctree.traverse(runrole_reference):
         # Calculate relative filename
-        rel_fn, _  = env.relfn2path(nb_ref['reftarget'], fromdocname)
+        rel_fn, _ = env.relfn2path(ref['reftarget'], fromdocname)
         # Check for duplicates
-        evaluate = nb_ref['evaluate']
-        if rel_fn not in out_notebooks:
-            out_notebooks[rel_fn] = evaluate
-        elif out_notebooks[rel_fn] != evaluate:
-            raise RunRoleError('Notebook filename {0} cannot be both '
-                               'clear and full'.format(rel_fn))
-        nb_ref['filename'] = rel_fn
-    if len(out_notebooks) == 0:
+        code_type = ref['code_type']
+        if rel_fn not in out_files:
+            out_files[rel_fn] = code_type
+        elif out_files[rel_fn] != code_type:
+            raise RunRoleError(
+                'Trying to register filename {0} as {1}, '
+                'but it is already registered as {2}'.format(
+                    rel_fn, code_type, out_files[rel_fn]))
+        ref['filename'] = rel_fn
+    if len(out_files) == 0:
         return
-    to_build = dict(clear=[], full=[])
-    for rel_fn, evaluate in out_notebooks.items():
-        key = 'full' if evaluate else 'clear'
-        to_build[key].append(rel_fn)
-    if not hasattr(env, 'notebooks'):
-        env.notebooks = {}
-    env.notebooks[fromdocname] = to_build
-
-
-def fill_notebook(nb):
-    """ Execute notebook `nb` and return notebook with built outputs
-    """
-    preprocessor = nbc.preprocessors.execute.ExecutePreprocessor()
-    preprocessor.enabled = True
-    res = nbc.exporter.ResourcesDict()
-    res['metadata'] = nbc.exporter.ResourcesDict()
-    output_nb, _ = preprocessor(deepcopy(nb), res)
-    return output_nb
-
-
-def write_notebook(nb, filename):
-    """ Write notebook `nb` to filename `filename`
-    """
-    nb_str = nbf.writes(nb)
-    with open(filename, 'wt') as fobj:
-        fobj.write(nb_str)
+    own_params = env.runrole[fromdocname]
+    for rel_fn, code_type in out_files.items():
+        own_params[code_type]['to_build'].append(rel_fn)
 
 
 def _relfn2outpath(rel_path, app):
     return pjoin(app.outdir, rel_path)
 
 
-def write_notebooks(app, exception):
-    """ Write notebooks when build has finished """
+def write_runfiles(app, exception):
+    """ Write notebooks / code files when build has finished """
     if exception is not None:
         return
     env = app.env
-    if not hasattr(env, 'notebooks'):
-        return
-    for docname, to_build in env.notebooks.items():
-        doctree = app.env.get_doctree(docname)
-        clear_nb = nbf.reads(to_notebook.from_doctree(doctree))
-        for rel_fn in to_build.get('clear', []):
-            out_fn = _relfn2outpath(rel_fn, app)
-            write_notebook(clear_nb, out_fn)
-        if not 'full' in to_build:
-            continue
-        full_nb = fill_notebook(clear_nb)
-        for rel_fn in to_build['full']:
-            out_fn = _relfn2outpath(rel_fn, app)
-            write_notebook(full_nb, out_fn)
-    del app.env.notebooks
+    for docname, type_params in env.runrole.items():
+        for code_type, build_params in type_params.items():
+            role = _type2role[code_type]
+            for rel_fname in build_params['to_build']:
+                out_fname = _relfn2outpath(rel_fname, app)
+                role.write(docname, env, out_fname)
+        for role in _type2role.values():
+            role.clear_cache(docname, env)
 
 
 def visit_runrole(self, node):
@@ -175,11 +221,30 @@ def depart_runrole(self, node):
     self.body.append(self.context.pop())
 
 
+def fill_notebook(nb):
+    """ Execute notebook `nb` and return notebook with built outputs
+    """
+    preprocessor = nbc.preprocessors.execute.ExecutePreprocessor()
+    preprocessor.enabled = True
+    res = nbc.exporter.ResourcesDict()
+    res['metadata'] = nbc.exporter.ResourcesDict()
+    output_nb, _ = preprocessor(deepcopy(nb), res)
+    return output_nb
+
+
 def setup(app):
+    # Add runrole roles
+    app.add_role('codefile', codefile)
     app.add_role('clearnotebook', clearnotebook)
     app.add_role('fullnotebook', fullnotebook)
-    app.connect('doctree-resolved', collect_notebooks)
-    app.connect('build-finished', write_notebooks)
+    # Create dictionaries in builder environment
+    app.connect(str('builder-inited'), do_builder_init)
+    # Delete caches when document re-initialized
+    app.connect('env-purge-doc', do_purge_doc)
+    # Collect and check all runrole nodes when doctree done
+    app.connect('doctree-resolved', collect_runfiles)
+    # Write output files at end of build
+    app.connect('build-finished', write_runfiles)
     app.add_node(runrole_reference,
                  html=(visit_runrole, depart_runrole),
                  text=(drop_visit, None),
@@ -188,5 +253,5 @@ def setup(app):
     # code visit, depart methods with app.add_node as we have just done for the
     # html translator in the lines above.  See:
     # http://www.sphinx-doc.org/en/1.4.8/extdev/tutorial.html#the-setup-function
-    app.set_translator('ipynb', doctree2nb.Translator)
     app.set_translator('python', doctree2py.Translator)
+    app.set_translator('ipynb', doctree2nb.Translator)

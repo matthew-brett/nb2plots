@@ -23,11 +23,11 @@ More text here."""
             <bullet_list bullet="\*">
                 <list_item>
                     <paragraph>
-                        <runrole_reference evaluate="False" refdoc="contents" reftarget="contents_clear.ipynb" reftype="clearnotebook">
+                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents_clear.ipynb" reftype="clearnotebook">
                             Download this page as a Jupyter notebook \(no outputs\)
                 <list_item>
                     <paragraph>
-                        <runrole_reference evaluate="True" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
+                        <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
                             Download this page as a Jupyter notebook \(with outputs\)
     <paragraph>
         More text here.""")
@@ -60,7 +60,7 @@ More text here."""
             <bullet_list bullet="\*">
                 <list_item>
                     <paragraph>
-                        <runrole_reference evaluate="False" refdoc="contents" reftarget="contents_clear.ipynb" reftype="clearnotebook">
+                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents_clear.ipynb" reftype="clearnotebook">
                             Download this page as a Jupyter notebook \(no outputs\)
     <paragraph>
         More text here.""" , pxml))
@@ -81,7 +81,7 @@ More text here."""
             <bullet_list bullet="\*">
                 <list_item>
                     <paragraph>
-                        <runrole_reference evaluate="True" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
+                        <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
                             Download this page as a Jupyter notebook \(with outputs\)
     <paragraph>
         More text here.""", pxml))

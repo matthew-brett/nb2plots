@@ -9,3 +9,7 @@ Some text.
 More text.
 
 :fullnotebook:`full <another.ipynb>`
+
+Text is endless.
+
+:codefile:`code here`

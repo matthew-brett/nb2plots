@@ -10,7 +10,7 @@ from nb2plots.sphinxutils import SourcesBuilder
 
 from nose.tools import (assert_true, assert_false, assert_equal, assert_raises)
 
-from .test_runroles import assert_nb_equiv
+from .test_doctree2nb import assert_nb_equiv
 
 HERE = dirname(__file__)
 

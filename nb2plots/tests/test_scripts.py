@@ -13,7 +13,7 @@ from nose.tools import assert_equal
 
 from .scriptrunner import ScriptRunner
 from .convutils import fcontents, DATA_PATH
-from .test_runroles import assert_nb_equiv
+from .test_doctree2nb import assert_nb_equiv
 
 
 runner = ScriptRunner()
