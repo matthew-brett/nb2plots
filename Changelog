@@ -2,6 +2,34 @@
 nb2plots Changelog
 ##################
 
+###
+0.5
+###
+
+New feature release.
+
+* add ability to convert ReST to Markdown, Python .py files, clear and full
+  Jupyter notebooks;
+* add ``mpl-interactive`` directive to signal presence of ``%matplotlib``
+  commands in notebook and ReST;
+* add ``code-links`` directive to add links to versions of ReST file as
+  Python ``.py`` file, clear and full notebooks;
+* add ability to configure alternative versions of nbplot directives according
+  to build-time configuration;
+* add directive to allow page-specific configuration for the directive
+  alternative machinery;
+* add more general Sphinx testing machinery;
+* commit to setuptools;
+* improve conversion of matplotlib objects from output cells to doctest output
+  in ReST page;
+* start basic documentation;
+* minor API breakage - do not split nbplot code blocks at ``plt.show()``.  I
+  discovered this horrible hack left over from the matplotlib plot directive
+  when refactoring, and removed it to make refactoring easier;
+* minor API breakage - do not write individual nbplot directives as ``.py``
+  files; they don't make much sense for nbplot use, and the code was not
+  linking to these files in any case;
+
 ***
 0.4
 ***
