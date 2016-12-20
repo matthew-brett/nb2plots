@@ -428,6 +428,10 @@ class Translator(nodes.NodeVisitor):
     def visit_nbplot_not_rendered(self, node):
         raise nodes.SkipNode
 
+    def visit_index(self, node):
+        # Drop index entries
+        raise nodes.SkipNode
+
     def visit_only(self, node):
         if node['expr'] == 'markdown':
             self.add(dedent(node.astext()) + '\n')
