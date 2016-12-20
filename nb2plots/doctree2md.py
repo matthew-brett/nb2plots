@@ -432,6 +432,11 @@ class Translator(nodes.NodeVisitor):
         # Drop index entries
         raise nodes.SkipNode
 
+    def visit_substitution_definition(self, node):
+        # Drop substitution definitions - the doctree already contains the text
+        # with substitutions applied.
+        raise nodes.SkipNode
+
     def visit_only(self, node):
         if node['expr'] == 'markdown':
             self.add(dedent(node.astext()) + '\n')
