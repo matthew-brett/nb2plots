@@ -32,13 +32,12 @@
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'numpydoc',
-    'nb2plots',
-    'texext.math_dollar',
     'sphinx.ext.doctest',
     'sphinx.ext.mathjax',
     'sphinx.ext.githubpages',
+    'texext.math_dollar',
+    'numpydoc',
+    'nb2plots',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
