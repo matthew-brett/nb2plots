@@ -28,7 +28,7 @@ More text here."""
                         ;
                 <list_item>
                     <paragraph>
-                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents_clear.ipynb" reftype="clearnotebook">
+                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents.ipynb" reftype="clearnotebook">
                             Download this page as a Jupyter notebook \(no outputs\)
                         ;
                 <list_item>
@@ -65,7 +65,7 @@ More text here."""
             <bullet_list bullet="\*">
                 <list_item>
                     <paragraph>
-                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents_clear.ipynb" reftype="clearnotebook">
+                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents.ipynb" reftype="clearnotebook">
                             Download this page as a Jupyter notebook \(no outputs\)
                         .
     <paragraph>

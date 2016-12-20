@@ -41,7 +41,7 @@ class CodeLinks(Directive):
     optional_arguments = 3
 
     _type2params = dict(python=dict(role_name='codefile', suffix=''),
-                        clear=dict(role_name='clearnotebook', suffix='_clear'),
+                        clear=dict(role_name='clearnotebook', suffix=''),
                         full=dict(role_name='fullnotebook', suffix='_full'))
 
     def _role_lines(self):
