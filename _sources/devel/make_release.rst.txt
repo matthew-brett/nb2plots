@@ -41,7 +41,8 @@ Releasing nb2plots
     username:your.pypi.username
     password:your-password
 
-    [server-login]
+    [warehouse]
+    repository: https://upload.pypi.io/legacy/
     username:your.pypi.username
     password:your-password
 
@@ -50,16 +51,28 @@ Releasing nb2plots
 
     git tag -s 0.3
 
-* Now you can upload the source release to PyPi.  See
-  `setuptools intro`_::
+* Clean::
 
+    make distclean
+    # Check no files outside version control that you want to keep
+    git status
+    # Nuke
     git clean -fxd
-    python setup.py register
-    python setup.py sdist --formats=gztar,zip upload --sign
+
+* When ready::
+
+    python setup.py sdist --formats=zip
+    # -s flag to sign the release
+    twine upload -r warehouse -s dist/nb2plots*zip
 
 * Upload the release commit and tag to github::
 
     git push
     git push --tags
+
+* Push the docs to github pages with::
+
+    cd doc
+    make github
 
 .. include:: ../links_names.inc

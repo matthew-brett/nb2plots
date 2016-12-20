@@ -55,7 +55,7 @@ Workflow for improving ReST to Markdown conversion
     rst2md nb2plots/tests/rst_md_files/pep.rst
 
 * If your construct is only valid for Sphinx_ ReST, then run the ``sphinx2md``
-  converter on it, so see what happens:
+  converter on it, and see what happens:
 
   .. code-block:: bash
 
@@ -66,19 +66,48 @@ Workflow for improving ReST to Markdown conversion
   your construct better.  Try the ``rst2md`` and ``sphinx2md`` commands on the
   ReST file to see what the output looks like;
 
-* When you are satisfied, write the current output of ``rst2md`` to the
-  ``rst_md_files`` directory with a ``.md`` extension:
+* If your Markdown is valid docutils ReST, write the current output of
+  ``rst2md`` to the ``rst_md_files`` directory with a ``.md`` extension:
 
   .. code-block:: bash
 
     rst2md nb2plots/tests/rst_md_files/pep.rst > nb2plots/tests/rst_md_files/pep.md
 
-  If the ``sphinx2md`` script should give a different output, write that
-  output with a ``.smd`` extension:
+  If your Markdown is not valid docutils ReST, you can skip the ``rst2md``
+  test by writing an output file containing the work "skip":
+
+  .. code-block:: bash
+
+    echo "skip" > nb2plots/tests/rst_md_files/pep.md
+
+  If the ``sphinx2md`` script should give a different output from the
+  ``rst2md`` docutils converter, write that output with a ``.smd`` extension:
 
   .. code-block:: bash
 
     sphinx2md nb2plots/tests/rst_md_files/pep.rst > nb2plots/tests/rst_md_files/pep.smd
+
+  These tests also test the output of the original ReST page (here ``pep.rst``
+  to Jupyter notebooks, and Python ``.py`` files.   Check these conversions
+  with the matching scripts:
+
+  .. code-block:: bash
+
+    sphinx2py nb2plots/tests/rst_md_files/pep.rst
+
+  .. code-block:: bash
+
+    sphinx2nb nb2plots/tests/rst_md_files/pep.rst
+
+  When you are satisfied, build the test files to check against:
+
+  .. code-block:: bash
+
+    sphinx2py nb2plots/tests/rst_md_files/pep.rst > nb2plots/tests/rst_md_files/pep.py
+
+  .. code-block:: bash
+
+    sphinx2nb nb2plots/tests/rst_md_files/pep.rst > nb2plots/tests/rst_md_files/pep.ipynb
 
 * Run the relevant tests:
 
@@ -86,9 +115,11 @@ Workflow for improving ReST to Markdown conversion
 
       nosetests nb2plots/tests/test_doctree2md.py
       nosetests nb2plots/tests/test_sphinx2md.py
+      nosetests nb2plots/tests/test_doctree2py.py
+      nosetests nb2plots/tests/test_doctree2nb.py
 
   These will test your new ReST file, and the various other example ReST
-  files, against their expected Markdown outputs.
+  files, against their expected Markdown, code and notebook outputs.
 
 * Once the relevant tests are fixed, run all the tests to check that the rest
   of the code (such as notebook conversion) is still working as expected.  If

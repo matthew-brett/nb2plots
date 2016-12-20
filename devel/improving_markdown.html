@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.5 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.4+75.g94f571e',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Releasing nb2plots" href="make_release.html" />
-    <link rel="prev" title="Using the as-notebooks directive" href="../as_notebooks.html" />
+    <link rel="next" title="Test Sphinx builds on an example project" href="sphinx_example_project.html" />
+    <link rel="prev" title="Using the code-links directive" href="../code_links.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -91,7 +91,7 @@ not yet supported, and the output will omit the <code class="docutils literal"><
 </div>
 </li>
 <li><p class="first">If your construct is only valid for <a class="reference external" href="http://sphinx-doc.org">Sphinx</a> ReST, then run the <code class="docutils literal"><span class="pre">sphinx2md</span></code>
-converter on it, so see what happens:</p>
+converter on it, and see what happens:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2md nb2plots/tests/rst_md_files/pep.rst
 </pre></div>
 </div>
@@ -101,24 +101,47 @@ converter on it, so see what happens:</p>
 your construct better.  Try the <code class="docutils literal"><span class="pre">rst2md</span></code> and <code class="docutils literal"><span class="pre">sphinx2md</span></code> commands on the
 ReST file to see what the output looks like;</p>
 </li>
-<li><p class="first">When you are satisfied, write the current output of <code class="docutils literal"><span class="pre">rst2md</span></code> to the
-<code class="docutils literal"><span class="pre">rst_md_files</span></code> directory with a <code class="docutils literal"><span class="pre">.md</span></code> extension:</p>
+<li><p class="first">If your Markdown is valid docutils ReST, write the current output of
+<code class="docutils literal"><span class="pre">rst2md</span></code> to the <code class="docutils literal"><span class="pre">rst_md_files</span></code> directory with a <code class="docutils literal"><span class="pre">.md</span></code> extension:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>rst2md nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.md
 </pre></div>
 </div>
-<p>If the <code class="docutils literal"><span class="pre">sphinx2md</span></code> script should give a different output, write that
-output with a <code class="docutils literal"><span class="pre">.smd</span></code> extension:</p>
+<p>If your Markdown is not valid docutils ReST, you can skip the <code class="docutils literal"><span class="pre">rst2md</span></code>
+test by writing an output file containing the work &#8220;skip&#8221;:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;skip&quot;</span> &gt; nb2plots/tests/rst_md_files/pep.md
+</pre></div>
+</div>
+<p>If the <code class="docutils literal"><span class="pre">sphinx2md</span></code> script should give a different output from the
+<code class="docutils literal"><span class="pre">rst2md</span></code> docutils converter, write that output with a <code class="docutils literal"><span class="pre">.smd</span></code> extension:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2md nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.smd
+</pre></div>
+</div>
+<p>These tests also test the output of the original ReST page (here <code class="docutils literal"><span class="pre">pep.rst</span></code>
+to Jupyter notebooks, and Python <code class="docutils literal"><span class="pre">.py</span></code> files.   Check these conversions
+with the matching scripts:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2py nb2plots/tests/rst_md_files/pep.rst
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2nb nb2plots/tests/rst_md_files/pep.rst
+</pre></div>
+</div>
+<p>When you are satisfied, build the test files to check against:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2py nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.py
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2nb nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.ipynb
 </pre></div>
 </div>
 </li>
 <li><p class="first">Run the relevant tests:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests nb2plots/tests/test_doctree2md.py
 nosetests nb2plots/tests/test_sphinx2md.py
+nosetests nb2plots/tests/test_doctree2py.py
+nosetests nb2plots/tests/test_doctree2nb.py
 </pre></div>
 </div>
 <p>These will test your new ReST file, and the various other example ReST
-files, against their expected Markdown outputs.</p>
+files, against their expected Markdown, code and notebook outputs.</p>
 </li>
 <li><p class="first">Once the relevant tests are fixed, run all the tests to check that the rest
 of the code (such as notebook conversion) is still working as expected.  If
@@ -151,8 +174,8 @@ that the tests are using, feel free to edit.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../as_notebooks.html" title="previous chapter">Using the as-notebooks directive</a></li>
-      <li>Next: <a href="make_release.html" title="next chapter">Releasing nb2plots</a></li>
+      <li>Previous: <a href="../code_links.html" title="previous chapter">Using the code-links directive</a></li>
+      <li>Next: <a href="sphinx_example_project.html" title="next chapter">Test Sphinx builds on an example project</a></li>
   </ul></li>
 </ul>
 </div>

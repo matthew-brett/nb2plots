@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Scripts in nb2plots &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    <title>Scripts in nb2plots &#8212; nb2plots 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+75.g94f571e',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -50,6 +50,10 @@
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">nb2plots</span></code> – converts Jupyter notebooks to a ReST page with
 <a class="reference internal" href="nbplots.html"><span class="doc">nbplot directives</span></a> for the code cells;</li>
+<li><code class="docutils literal"><span class="pre">sphinx2py</span></code> – converts a ReST page that may have nbplot directives or
+doctest blocks into a Python <code class="docutils literal"><span class="pre">.py</span></code> code file, where everything other than
+the nbplot directives and doctest blocks become comments in Markdown text
+format;</li>
 <li><code class="docutils literal"><span class="pre">sphinx2nb</span></code> – converts a ReST page that may have nbplot directives or
 doctest blocks into a Jupyter notebook, where the nbplot directives and
 doctest blocks become code cells;</li>

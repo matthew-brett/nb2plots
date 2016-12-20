@@ -22,7 +22,7 @@ In more depth:
 
     nbplots
     mpl_interactive
-    as_notebooks
+    code_links
 
 Developer docs:
 
@@ -30,6 +30,7 @@ Developer docs:
     :maxdepth: 2
 
     devel/improving_markdown
+    devel/sphinx_example_project
     devel/make_release
 
 .. toctree::

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Basics &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    <title>Basics &#8212; nb2plots 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+75.g94f571e',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -100,21 +100,21 @@ directives to run different code for different configurations.  For these
 options, see <a class="reference internal" href="nbplots.html#nbplots-documentation"><span class="std std-ref">Using the nbplot directive</span></a>.  But - what do you lose, when going from
 a notebook to a Nb2plots ReST document?</p>
 </div>
-<div class="section" id="but-i-want-my-notebook-too">
-<h2>But I want my notebook too!<a class="headerlink" href="#but-i-want-my-notebook-too" title="Permalink to this headline">¶</a></h2>
-<p>You may also want a notebook version of your document.  Perhaps the page build
-is generating some tricky errors or warnings, and you want to experiment with
-the code in the page interactively.  Perhaps your users are used to notebooks,
-and prefer the code in that format.</p>
+<div class="section" id="i-want-my-notebook-or-python-code-too">
+<h2>I want my notebook or Python code too!<a class="headerlink" href="#i-want-my-notebook-or-python-code-too" title="Permalink to this headline">¶</a></h2>
+<p>You may also want a version of your document that your users can execute.
+Perhaps the page build is generating some tricky errors or warnings, and you
+want to experiment with the code in the page interactively.  Perhaps your
+users are used to notebooks, and prefer the code in that format.</p>
 <p>Nb2plots also contains Sphinx extensions that cause the Sphinx build to
-regenerate Jupyter notebooks from the ReST source.  When you add the Nb2plots
-ReST directive <code class="docutils literal"><span class="pre">as-notebooks</span></code> to your ReST page, it will cause the Sphinx
-build to create notebook versions of your page, and adds download links to
-these notebooks:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="k">as</span><span class="o">-</span><span class="n">notebooks</span><span class="p">::</span>
+generate Python code files and Jupyter notebooks from the ReST source.  When
+you add the Nb2plots ReST directive <code class="docutils literal"><span class="pre">code-links</span></code> to your ReST page, it will
+cause the Sphinx build to create a Python code file and notebook versions of
+your page, and adds download links to these versions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">::</span>
 </pre></div>
 </div>
-<p>See <a class="reference internal" href="as_notebooks.html#as-notebooks-documentation"><span class="std std-ref">Using the as-notebooks directive</span></a> for details.</p>
+<p>See <a class="reference internal" href="code_links.html#code-links-documentation"><span class="std std-ref">Using the code-links directive</span></a> for details.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -151,10 +151,20 @@ code automatically under Python versions 2.7, and 3.3 through 3.5.</p>
 </div>
 <div class="section" id="tests">
 <h2>Tests<a class="headerlink" href="#tests" title="Permalink to this headline">¶</a></h2>
-<p>Install <code class="docutils literal"><span class="pre">nb2plots</span></code> and the <a class="reference external" href="http://readthedocs.org/docs/nose/en/latest">nose</a> testing framework, then:</p>
+<ul>
+<li><p class="first">Install <code class="docutils literal"><span class="pre">nb2plots</span></code></p>
+</li>
+<li><p class="first">Install the <a class="reference external" href="http://readthedocs.org/docs/nose/en/latest">nose</a> testing framework and the <code class="docutils literal"><span class="pre">mock</span></code> module:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">nose</span> <span class="n">mock</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Run the tests with:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">nosetests</span> <span class="n">nb2plots</span>
 </pre></div>
 </div>
+</li>
+</ul>
 </div>
 <div class="section" id="support">
 <h2>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h2>
@@ -173,7 +183,7 @@ code automatically under Python versions 2.7, and 3.3 through 3.5.</p>
 <li><a class="reference internal" href="#">Basics</a><ul>
 <li><a class="reference internal" href="#what-it-does">What it does</a></li>
 <li><a class="reference internal" href="#why-convert-jupyter-notebooks-to-sphinx">Why convert Jupyter notebooks to Sphinx?</a></li>
-<li><a class="reference internal" href="#but-i-want-my-notebook-too">But I want my notebook too!</a></li>
+<li><a class="reference internal" href="#i-want-my-notebook-or-python-code-too">I want my notebook or Python code too!</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>

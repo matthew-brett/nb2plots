@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Using the as-notebooks directive &#8212; nb2plots 0.4+75.g94f571e documentation</title>
+    <title>Using the code-links directive &#8212; nb2plots 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.4+75.g94f571e',
+        VERSION:     '0.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -44,44 +44,44 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="using-the-as-notebooks-directive">
-<span id="as-notebooks-documentation"></span><h1>Using the as-notebooks directive<a class="headerlink" href="#using-the-as-notebooks-directive" title="Permalink to this headline">¶</a></h1>
-<p>The <code class="docutils literal"><span class="pre">as-notebooks</span></code> directive is a short cut for adding links to your ReST
-page pointing to Jupyter notebooks.  When Sphinx sees this directive, it
-converts the ReST page to notebooks, and add links to these notebooks in the
-built HTML.  Use like this:</p>
-<div class="highlight-rest"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">as-notebooks</span><span class="p">::</span>
+  <div class="section" id="using-the-code-links-directive">
+<span id="code-links-documentation"></span><h1>Using the code-links directive<a class="headerlink" href="#using-the-code-links-directive" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal"><span class="pre">code-links</span></code> directive is a short cut for adding links to your ReST page
+pointing to Python code files and Jupyter notebooks.  When Sphinx sees this
+directive, it converts the ReST page to a Python code file and notebooks, and
+add links to these files in the built HTML.  Use like this:</p>
+<div class="highlight-rest"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">code-links</span><span class="p">::</span>
 </pre></div>
 </div>
-<p>Here is an example, generating very boring notebooks:</p>
+<p>Here is an example, generating very boring code and notebooks:</p>
 <div class="docutils container">
 <ul class="simple">
-<li><a class="reference download internal" href="as_notebooks_clear.ipynb">Download this page as a Jupyter notebook (no outputs)</a></li>
-<li><a class="reference download internal" href="as_notebooks_full.ipynb">Download this page as a Jupyter notebook (with outputs)</a></li>
+<li><a class="reference download internal" href="code_links.py">Download this page as a Python code file</a>;</li>
+<li><a class="reference download internal" href="code_links.ipynb">Download this page as a Jupyter notebook (no outputs)</a>;</li>
+<li><a class="reference download internal" href="code_links_full.ipynb">Download this page as a Jupyter notebook (with outputs)</a>.</li>
 </ul>
 </div>
-<div class="section" id="module-nb2plots.as_notebooks">
-<span id="id1"></span><span id="as-notebooks-directive"></span><h2>as-notebooks directive<a class="headerlink" href="#module-nb2plots.as_notebooks" title="Permalink to this headline">¶</a></h2>
-<p>Directive to insert links to current document as notebooks</p>
-<p>As a bare directive, with no options, inserts links to the current document as
-a clear notebook (no outputs) and a full notebook (outputs inserted by
-executing the built notebook):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="k">as</span><span class="o">-</span><span class="n">notebooks</span><span class="p">:</span>
-</pre></div>
-</div>
-<p>You can select one or both of the clear or full notebooks with the <code class="docutils literal"><span class="pre">type</span></code>
-option:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="k">as</span><span class="o">-</span><span class="n">notebooks</span><span class="p">:</span>
-    <span class="p">:</span><span class="nb">type</span><span class="p">:</span> <span class="n">clear</span>
+<div class="section" id="module-nb2plots.codelinks">
+<span id="id1"></span><span id="code-links-directive"></span><h2>code-links directive<a class="headerlink" href="#module-nb2plots.codelinks" title="Permalink to this headline">¶</a></h2>
+<p>Directive to insert links to current document as runnable code.
 
-<span class="o">..</span> <span class="k">as</span><span class="o">-</span><span class="n">notebooks</span><span class="p">:</span>
-    <span class="p">:</span><span class="nb">type</span><span class="p">:</span> <span class="n">full</span>
+As a bare directive, with no options, inserts links to the current document as
+a Python code file; a clear notebook (no outputs) and a full notebook (outputs
+inserted by executing the built notebook)::
 
-<span class="o">..</span> <span class="k">as</span><span class="o">-</span><span class="n">notebooks</span><span class="p">:</span>
-    <span class="p">:</span><span class="nb">type</span><span class="p">:</span> <span class="n">both</span>
-</pre></div>
-</div>
-<p><code class="docutils literal"><span class="pre">both</span></code> is the default.</p>
+    .. code-links:
+
+You can select one or more of these links with a list as an argument to the
+directive, where &#8220;python&#8221;, &#8220;clear&#8221; and &#8220;full&#8221; refer to a Python code file,
+clear notebook file and a full notebook file, respectively. For example::
+
+    .. code-links: python
+
+    .. code-links: python full
+
+    .. code-links: clear full
+
+<code class="docutils literal"><span class="pre">python</span> <span class="pre">clear</span> <span class="pre">full</span></code> is the default.</p>
 </div>
 </div>
 
@@ -93,8 +93,8 @@ option:</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Using the as-notebooks directive</a><ul>
-<li><a class="reference internal" href="#module-nb2plots.as_notebooks">as-notebooks directive</a></li>
+<li><a class="reference internal" href="#">Using the code-links directive</a><ul>
+<li><a class="reference internal" href="#module-nb2plots.codelinks">code-links directive</a></li>
 </ul>
 </li>
 </ul>
@@ -110,7 +110,7 @@ option:</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/as_notebooks.rst.txt"
+      <li><a href="_sources/code_links.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -136,7 +136,7 @@ option:</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="_sources/as_notebooks.rst.txt"
+      <a href="_sources/code_links.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

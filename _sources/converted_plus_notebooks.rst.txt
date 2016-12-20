@@ -26,4 +26,4 @@ Even more interesting than that:
 
 
 
-.. as-notebooks::
+.. code-links::
