@@ -33,12 +33,16 @@ def test_rst2md():
     # test rst2md script over all .rst files checking against .md files
     for rst_fname in glob(pjoin(DATA_PATH, '*.rst')):
         md_fname = rst_fname[:-3] + 'md'
-        cmd = ['rst2md', rst_fname]
-        code, stdout, stderr = run_command(cmd)
         with open(md_fname, 'rb') as fobj:
             expected_md = fobj.read()
-        if expected_md.strip() != b'skip':
-            assert_equal(stdout, expected_md)
+        # Skip files containing text "skip".  These are files for which the
+        # source ReST is not valid in plain docutils, such as those containing
+        # Sphinx directives and roles.
+        if expected_md.strip() == b'skip':
+            continue
+        cmd = ['rst2md', rst_fname]
+        code, stdout, stderr = run_command(cmd)
+        assert_equal(stdout, expected_md)
 
 
 @script_test
