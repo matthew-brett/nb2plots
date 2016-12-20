@@ -93,6 +93,8 @@ script:
         # Build documentation
         pip install -r doc-requirements.txt
         cd doc
+        # Make warnings function as errors on Sphinx build
+        export SPHINXOPTS='-W'
         make html
         make doctest
       else
