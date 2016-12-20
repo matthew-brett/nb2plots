@@ -1,0 +1,17 @@
+#!python
+""" Convert single Sphinx ReST document to Pseudo XML
+
+Example:
+
+    sphinx2pxml example.rst
+
+Write Pseudo XML to stdout as UTF-8.
+"""
+# vim: ft=python
+
+from nb2plots.converters import to_pxml
+from nb2plots.commands import do_main
+
+
+if __name__ == '__main__':
+    do_main("Convert Sphinx ReST file to Pseudo XML", to_pxml)

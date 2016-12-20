@@ -8,8 +8,9 @@ from __future__ import division, print_function, absolute_import
 
 from os.path import (join as pjoin, exists)
 from glob import glob
+import re
 
-from nose.tools import assert_equal
+from nose.tools import assert_equal, assert_true
 
 from .scriptrunner import ScriptRunner
 from .convutils import fcontents, DATA_PATH
@@ -75,3 +76,21 @@ def test_sphinx2py():
         cmd = ['sphinx2py', rst_fname]
         code, stdout, stderr = run_command(cmd)
         assert_equal(stdout, expected)
+
+
+@script_test
+def test_sphinx2pxml():
+    rst_fname = pjoin(DATA_PATH, 'sect_text.rst')
+    cmd = ['sphinx2pxml', rst_fname]
+    code, stdout, stderr = run_command(cmd)
+    pattern = r"""<document source=".*?">
+    <section ids="a-section" names="a\\ section">
+        <title>
+            A section
+        <paragraph>
+            Some 
+            <emphasis>
+                text
+            ."""
+    output = stdout.decode('utf-8')
+    assert_true(re.match(pattern, output))

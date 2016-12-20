@@ -15,6 +15,8 @@ Nbplots installs the following command-line scripts:
   doctest blocks become code cells;
 * ``sphinx2md`` |--| converts a ReST page into a Markdown page, where the
   conversion assumes the Sphinx versions of directives and roles;
+* ``sphinx2pxml`` |--| converts a ReST page into a Sphinx pseudo XML page,
+  where the conversion assumes the Sphinx versions of directives and roles;
 * ``rst2md`` |--| converts a ReST page into a Markdown page, where the
   conversion assumes the `docutils`_ versions of directives and roles;
 
