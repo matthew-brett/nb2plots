@@ -111,12 +111,7 @@ Add the following to your Sphinx ``conf.py`` file::
 
     extensions = ["nb2plots"]
 
-The ``nbplot`` directive is very similar to the ``plot`` directive of
-matplotlib, and started life as a fork of that code.  It differs mainly in
-that its default is to keep the name-space from one ``nbplot`` directive to the
-next in a given page, and has output defaults adapted to directive contents
-with source code rather than pointing to a standalone script.  See the
-docstring of ``nb2plots/nbplots.py`` for details.
+See |nbplot-documentation| for the various ``conf.py`` configuration settings.
 
 ****
 Code
