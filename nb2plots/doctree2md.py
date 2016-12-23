@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 """Simple Markdown writer for reStructuredText.
 
+See:
+
+* https://daringfireball.net/projects/markdown/syntax
+* https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf
 """
 from __future__ import unicode_literals
 
+import re
 from textwrap import dedent
 
 __docformat__ = 'reStructuredText'
@@ -144,6 +149,9 @@ def add_pass_thru(pass_thrus):
     return dec
 
 
+# Characters that should be escaped in Markdown
+ESCAPE_RE = re.compile(r'([\\*`])')
+
 # Doctree elements for which Markdown element is <prefix><content><suffix>
 PREF_SUFF_ELEMENTS = {
     'emphasis': ('*', '*'),   # Could also use ('_', '_')
@@ -215,6 +223,9 @@ class Translator(nodes.NodeVisitor):
         # Flag indicating we are processing docinfo items
         self._in_docinfo = False
 
+        # Flag for whether to escape characters
+        self._escape_text = True
+
     def astext(self):
         """Return the final formatted document as a string."""
         parts = [''.join(lines).strip() for lines in self._lists.values()]
@@ -275,8 +286,14 @@ class Translator(nodes.NodeVisitor):
         level = self.indent_levels.pop()
         level.write()
 
+    def escape_chars(self, txt):
+        # Escape (some) characters with special meaning for Markdown
+        return ESCAPE_RE.sub(r'\\\1', txt)
+
     def visit_Text(self, node):
         text = node.astext()
+        if self._escape_text:
+            text = self.escape_chars(text)
         self.add(text)
 
     def depart_Text(self, node):
@@ -318,9 +335,11 @@ class Translator(nodes.NodeVisitor):
 
     def visit_math_block(self, node):
         # docutils math block
+        self._escape_text = False
         self.add('$$\n')
 
     def depart_math_block(self, node):
+        self._escape_text = True
         self.ensure_eol()
         self.add('$$\n\n')
 
@@ -335,21 +354,26 @@ class Translator(nodes.NodeVisitor):
             self.add('${}$'.format(node['latex']))
             raise nodes.SkipNode
         # docutils math node
+        self._escape_text = False
         self.add('$')
 
     def depart_math(self, node):
         # sphinx node skipped in visit, only docutils gets here
+        self._escape_text = True
         self.add('$')
 
     def visit_literal_block(self, node):
+        self._escape_text = False
         code_type = node['classes'][1] if 'code' in node['classes'] else ''
         self.add('```' + code_type + '\n')
 
     def depart_literal_block(self, node):
+        self._escape_text = True
         self.ensure_eol()
         self.add('```\n\n')
 
     def visit_doctest_block(self, node):
+        self._escape_text = False
         self.add('```python\n')
 
     depart_doctest_block = depart_literal_block
