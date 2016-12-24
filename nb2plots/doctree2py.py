@@ -66,7 +66,8 @@ class Translator(d2m.Translator):
         self.reset()
 
     def _add_text_block(self, txt):
-        self._out_lines += ['# ' + line for line in txt.splitlines()]
+        self._out_lines += ['# ' + line if line.strip() else '#'
+                            for line in txt.splitlines()]
         self._out_lines.append('')
 
     def add_code_block(self, txt):

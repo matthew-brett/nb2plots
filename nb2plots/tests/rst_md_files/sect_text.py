@@ -1,3 +1,3 @@
 # ## A section
-# 
+#
 # Some *text*.
