@@ -86,7 +86,7 @@ setup(name='nb2plots',
       package_data = {'nb2plots': [
           'tests/data/*.rst',
           'tests/rst_md_files/*',
-          'tests/data/*.ipynb',
+          'tests/data/*',
           'tests/proj1/*.rst',
           'tests/proj1/*.py',
           'tests/proj1/_static/*',
