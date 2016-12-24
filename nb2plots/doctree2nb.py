@@ -13,10 +13,6 @@ class Translator(d2py.Translator):
     def _init_output(self):
         self._notebook = nbf.new_notebook()
 
-    def reset(self):
-        d2py.Translator.reset(self)
-        self._in_nbplot = False
-
     def _add_text_block(self, txt):
         self._notebook['cells'].append(nbf.new_markdown_cell(txt))
 
@@ -38,6 +34,4 @@ class Writer(d2py.Writer):
     supported = ('jupyter',)
     """Formats this writer supports."""
 
-    def __init__(self):
-        d2py.Writer.__init__(self)
-        self.translator_class = Translator
+    translator_class = Translator

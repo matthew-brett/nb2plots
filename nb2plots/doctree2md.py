@@ -17,37 +17,6 @@ from docutils import frontend, nodes, writers, languages
 from collections import OrderedDict
 
 
-class Writer(writers.Writer):
-
-    supported = ('markdown',)
-    """Formats this writer supports."""
-
-    output = None
-    """Final translated form of `document`."""
-
-    # Add configuration settings for additional Markdown flavours here.
-    settings_spec = (
-        'Markdown-Specific Options',
-        None,
-        (('Extended Markdown syntax.',
-          ['--extended-markdown'],
-          {'default': 0, 'action': 'store_true',
-           'validator': frontend.validate_boolean}),
-         ('Strict Markdown syntax. Default: true',
-          ['--strict-markdown'],
-          {'default': 1, 'action': 'store_true',
-           'validator': frontend.validate_boolean}),))
-
-    def __init__(self):
-        writers.Writer.__init__(self)
-        self.translator_class = Translator
-
-    def translate(self):
-        visitor = self.translator_class(self.document)
-        self.document.walkabout(visitor)
-        self.output = visitor.astext()
-
-
 class IndentLevel(object):
     """ Class to hold text being written for a certain indentation level
 
@@ -175,6 +144,8 @@ PASS_THRU_ELEMENTS = ('document',
                       'field_name',
                       'mpl_hint',
                       'nbplot_rendered',
+                      'pending_xref',
+                      'download_reference'
                      )
 
 
@@ -300,7 +271,9 @@ class Translator(nodes.NodeVisitor):
         pass
 
     def visit_comment(self, node):
-        self.add('<!-- ' + node.astext() + ' -->\n')
+        txt = node.astext()
+        if txt.strip():
+            self.add('<!-- ' + node.astext() + ' -->\n')
         raise nodes.SkipNode
 
     def visit_docinfo(self, node):
@@ -466,6 +439,9 @@ class Translator(nodes.NodeVisitor):
             self.add(dedent(node.astext()) + '\n')
         raise nodes.SkipNode
 
+    def visit_runrole_reference(self, node):
+        raise nodes.SkipNode
+
     def unknown_visit(self, node):
         """ Warn once per instance for unsupported nodes
 
@@ -481,3 +457,36 @@ class Translator(nodes.NodeVisitor):
                 ' element not yet supported in Markdown.')
             self._warned.add(node_type)
         raise nodes.SkipNode
+
+
+class Writer(writers.Writer):
+
+    supported = ('markdown',)
+    """Formats this writer supports."""
+
+    output = None
+    """Final translated form of `document`."""
+
+    # Add configuration settings for additional Markdown flavours here.
+    settings_spec = (
+        'Markdown-Specific Options',
+        None,
+        (('Extended Markdown syntax.',
+          ['--extended-markdown'],
+          {'default': 0, 'action': 'store_true',
+           'validator': frontend.validate_boolean}),
+         ('Strict Markdown syntax. Default: true',
+          ['--strict-markdown'],
+          {'default': 1, 'action': 'store_true',
+           'validator': frontend.validate_boolean}),))
+
+    translator_class = Translator
+
+    def __init__(self, builder=None):
+        writers.Writer.__init__(self)
+        self.builder = builder
+
+    def translate(self):
+        visitor = self.translator_class(self.document)
+        self.document.walkabout(visitor)
+        self.output = visitor.astext()

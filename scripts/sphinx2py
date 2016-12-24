@@ -9,9 +9,8 @@ Write .py file text to stdout as UTF-8.
 """
 # vim: ft=python
 
-from nb2plots.converters import to_py
 from nb2plots.commands import do_main
 
 
 if __name__ == '__main__':
-    do_main("Convert Sphinx ReST file to Python code", to_py)
+    do_main("Convert Sphinx ReST file to Python code", 'python')

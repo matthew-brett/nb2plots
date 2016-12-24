@@ -103,12 +103,11 @@ class Translator(d2m.Translator):
 
 
 class Writer(d2m.Writer):
+
     supported = ('python',)
     """Formats this writer supports."""
 
     output = None
     """Final translated form of `document`."""
 
-    def __init__(self):
-        d2m.Writer.__init__(self)
-        self.translator_class = Translator
+    translator_class = Translator

@@ -23,7 +23,9 @@ def cells2json(cells):
 
 
 def assert_rst_cells_equal(rst_text, cells):
-    assert_equal(to_notebook.from_rst(rst_text), cells2json(cells))
+    actual = to_notebook.from_rst(rst_text)
+    expected = cells2json(cells)
+    assert_equal(actual, expected)
 
 
 def test_basic():
@@ -59,7 +61,7 @@ Before
     More text
 
 After""".format(builder_name),
-            [n_md_c('Before\n\nMore text\nAfter')])
+            [n_md_c('Before\n\nMore text\n\nAfter')])
 
 
 def test_doctests():

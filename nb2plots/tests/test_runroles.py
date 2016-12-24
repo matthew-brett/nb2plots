@@ -34,13 +34,13 @@ def test_runroles_setup(*args):
     assert_equal(len(translators), 0, 'Translators failed')
 
 
-def test_run_role_doctrees():
+def test_runrole_doctrees():
     # Test that run roles generate expected doctrees
     expected_re_fmt = """\
 <document source=".*?">
     <paragraph>
         Text then 
-        <runrole_reference code_type="{code_type}" refdoc="contents" reftarget="{base}.{ext}" reftype="{role_type}">
+        <runrole_reference code_type="{code_type}" filename="{base}.{ext}" refdoc="contents" reftarget="{base}.{ext}" reftype="{role_type}">
             {descr}
          then text."""
 

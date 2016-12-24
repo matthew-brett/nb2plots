@@ -9,9 +9,8 @@ Write Markdown to stdout as UTF-8.
 """
 # vim: ft=python
 
-from nb2plots.converters import to_markdown
 from nb2plots.commands import do_main
 
 
 if __name__ == '__main__':
-    do_main("Convert Sphinx ReST file to Markdown", to_markdown)
+    do_main("Convert Sphinx ReST file to Markdown", 'markdown')

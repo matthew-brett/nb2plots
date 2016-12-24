@@ -4,6 +4,8 @@
 import sys
 from argparse import ArgumentParser
 
+from .converters import NbConverter
+
 # Bytes stream for writing to stdout
 bin_stdout = sys.stdout.buffer if sys.version_info[0] > 2 else sys.stdout
 
@@ -18,14 +20,15 @@ def get_parser(description):
     return parser
 
 
-def do_main(description, converter):
+def do_main(description, buildername):
     """ Get main clause for sphinx2something utilities
     """
     parser = get_parser(description)
     args = parser.parse_args()
     with open(args.rst_file, 'rt') as fobj:
         contents = fobj.read()
-    output = converter.from_rst(contents,
-                                status=sys.stderr,
-                                warningiserror=args.warn_is_error)
+    converter = NbConverter(buildername,
+                            status=sys.stderr,
+                            warningiserror=args.warn_is_error)
+    output = converter.from_rst(contents)
     bin_stdout.write(output.encode('utf-8'))

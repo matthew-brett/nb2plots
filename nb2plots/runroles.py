@@ -108,9 +108,11 @@ class PyRunRole(object):
         return own_params['built']
 
     def _build(self, docname, env):
-        """ Return string containing built version of `doctree` """
-        doctree = env.get_doctree(docname)
-        return self.converter.from_doctree(doctree)
+        """ Return string containing built / resolved version of `doctree`
+        """
+        converter = self.converter
+        doctree = env.get_and_resolve_doctree(docname, converter.builder)
+        return converter.from_doctree(doctree)
 
     def clear_cache(self, docname, env):
         env.runrole[docname][self.code_type]['built'] = None

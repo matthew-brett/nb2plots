@@ -8,6 +8,10 @@ from nose.tools import assert_true
 
 
 def test_codelinks():
+
+    def as_pxml(rst_text):
+        return to_pxml.from_rst(rst_text, resolve=False)
+
     page = """\
 Text here
 
@@ -38,7 +42,7 @@ More text here."""
                         .
     <paragraph>
         More text here.""")
-    pxml = to_pxml.from_rst(page)
+    pxml = as_pxml(page)
     assert_true(both_re.match(pxml))
     # Default is 'both'
     page = """\
@@ -47,7 +51,7 @@ Text here
 .. code-links:: python clear full
 
 More text here."""
-    pxml = to_pxml.from_rst(page)
+    pxml = as_pxml(page)
     assert_true(both_re.match(pxml))
     page = """\
 Text here
@@ -55,7 +59,7 @@ Text here
 .. code-links:: clear
 
 More text here."""
-    pxml = to_pxml.from_rst(page)
+    pxml = as_pxml(page)
     assert_true(re.match("""\
 <document source=".*?">
     <paragraph>
@@ -76,7 +80,7 @@ Text here
 .. code-links:: full
 
 More text here."""
-    pxml = to_pxml.from_rst(page)
+    pxml = as_pxml(page)
     assert_true(re.match("""\
 <document source=".*?">
     <paragraph>
@@ -97,7 +101,7 @@ Text here
 .. code-links:: full python
 
 More text here."""
-    pxml = to_pxml.from_rst(page)
+    pxml = as_pxml(page)
     assert_true(re.match("""\
 <document source=".*?">
     <paragraph>
