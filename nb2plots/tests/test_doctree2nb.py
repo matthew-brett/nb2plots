@@ -44,9 +44,9 @@ def test_only():
 """
 Before
 
-.. only:: {}
+.. only:: {0}
 
-    <h1>Something</h1>
+    Specific to builder {0}
 
 After""".format(builder_name),
             [n_md_c('Before\n\nAfter')])
