@@ -7,6 +7,7 @@ from nb2plots.from_notebook import convert_nb_fname
 from nb2plots.converters import to_py, to_notebook
 
 from .convutils import fcontents
+from .test_doctree2nb import assert_nb_equiv
 
 from nose.tools import assert_equal
 
@@ -26,5 +27,6 @@ def test_regression():
     assert_equal(py_file.encode('utf8'),
                  fcontents(pjoin(DATA, 'converted_plus_notebooks.py')))
     ipy_file = to_notebook.from_rst(rst)
-    assert_equal(ipy_file.encode('utf8'),
-                 fcontents(pjoin(DATA, 'converted_plus_notebooks.ipynb')))
+    assert_nb_equiv(ipy_file,
+                 fcontents(pjoin(DATA, 'converted_plus_notebooks.ipynb'))
+                    .decode('utf8'))
