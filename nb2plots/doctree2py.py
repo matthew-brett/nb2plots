@@ -47,8 +47,8 @@ def parse_doctest(doctest_txt):
 
 class Translator(d2m.Translator):
 
-    def __init__(self, document):
-        d2m.Translator.__init__(self, document)
+    def __init__(self, document, builder=None):
+        d2m.Translator.__init__(self, document, builder)
         self._in_nbplot = False
         self._init_output()
 

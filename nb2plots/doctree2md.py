@@ -145,7 +145,6 @@ PASS_THRU_ELEMENTS = ('document',
                       'mpl_hint',
                       'nbplot_rendered',
                       'pending_xref',
-                      'download_reference'
                      )
 
 
@@ -155,11 +154,16 @@ class Translator(nodes.NodeVisitor):
 
     std_indent = '    '
 
-    def __init__(self, document):
+    def __init__(self, document, builder=None):
         nodes.NodeVisitor.__init__(self, document)
+        self.builder = builder
         self.settings = settings = document.settings
         lcode = settings.language_code
         self.language = languages.get_language(lcode, document.reporter)
+        # Not-None here indicates Markdown should use HTTP for internal and
+        # download links.
+        self.markdown_http_base = (builder.markdown_http_base if builder
+                                   else None)
         # Warn only once per writer about unsupported elements
         self._warned = set()
         # Lookup table to get section list from name
@@ -414,9 +418,15 @@ class Translator(nodes.NodeVisitor):
         raise nodes.SkipNode
 
     def visit_reference(self, node):
-        if 'refuri' not in node:
+        # If no target given, pass through.
+        url = node.get('refuri')
+        if url in (None, ''):
             return
-        self.add('[{0}]({1})'.format(node.astext(), node['refuri']))
+        # If HTTP page build URL known, make link relative to that.
+        if node.get('internal') and self.markdown_http_base:
+            # URL is relative to the current docname
+            url = '{}/{}'.format(self.markdown_http_base, url)
+        self.add('[{0}]({1})'.format(node.astext(), url))
         raise nodes.SkipNode
 
     def depart_reference(self, node):
@@ -441,6 +451,20 @@ class Translator(nodes.NodeVisitor):
 
     def visit_runrole_reference(self, node):
         raise nodes.SkipNode
+
+    def visit_download_reference(self, node):
+        # If not resolving internal links, or there is no filename specified,
+        # pass through.
+        filename = node.get('filename')
+        if None in (self.markdown_http_base, filename):
+            return
+        target_url = '{}/_downloads/{}'.format(self.markdown_http_base,
+                                               filename)
+        self.add('[{}]({})'.format(node.astext(), target_url))
+        raise nodes.SkipNode
+
+    def depart_download_reference(self, node):
+        pass
 
     def unknown_visit(self, node):
         """ Warn once per instance for unsupported nodes
@@ -487,6 +511,6 @@ class Writer(writers.Writer):
         self.builder = builder
 
     def translate(self):
-        visitor = self.translator_class(self.document)
+        visitor = self.translator_class(self.document, self.builder)
         self.document.walkabout(visitor)
         self.output = visitor.astext()
