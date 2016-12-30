@@ -15,3 +15,9 @@ Interspersed with text.
 >>> b
 [1, 2, 3]
 ```
+
+Explaining here.
+
+```python
+>>> # Here is a comment line that goes beyond the normal 80 character line wrap to test (non) wrapping
+```
