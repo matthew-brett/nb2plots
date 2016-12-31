@@ -3,7 +3,7 @@
 
 import sys
 import os
-from os.path import join as pjoin, isdir
+from os.path import join as pjoin, isdir, split as psplit
 import shutil
 from contextlib import contextmanager
 from copy import copy
@@ -206,6 +206,10 @@ class SourcesBuilder(PageBuilder):
     """ Build pages with text in class attribute ``rst_sources``.
     """
 
+    # rst_sources is a dict with key, value pairs, where the keys are the page
+    # names, with directory names separated by / regardless of platform we're
+    # running on.  ``.rst`` extension assumed (do not add it).  The values are
+    # strings giving the page contents.
     rst_sources = dict()
     conf_source = ''
 
@@ -214,7 +218,13 @@ class SourcesBuilder(PageBuilder):
         with open(pjoin(cls.page_source, 'conf.py'), 'wt') as fobj:
             fobj.write(cls.conf_source)
         for page_root, page_content in cls.rst_sources.items():
-            page_path = pjoin(cls.page_source, page_root + '.rst')
+            # page root may contain directories
+            page_root = page_root.replace('/', os.path.sep)
+            page_dir, page_base = psplit(page_root)
+            page_dir = pjoin(cls.page_source, page_dir)
+            if not isdir(page_dir):
+                os.makedirs(page_dir)
+            page_path = pjoin(page_dir, page_base + '.rst')
             with open(page_path, 'wt') as fobj:
                 fobj.write(page_content)
         # Add pages to toctree to avoid sphinx warning -> error

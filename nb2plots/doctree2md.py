@@ -10,6 +10,7 @@ from __future__ import unicode_literals
 
 import re
 from textwrap import dedent
+import posixpath
 
 __docformat__ = 'reStructuredText'
 
@@ -145,6 +146,7 @@ PASS_THRU_ELEMENTS = ('document',
                       'mpl_hint',
                       'nbplot_rendered',
                       'pending_xref',
+                      'compound',
                      )
 
 
@@ -417,15 +419,32 @@ class Translator(nodes.NodeVisitor):
         self.add('\n---\n\n')
         raise nodes.SkipNode
 
-    def visit_reference(self, node):
-        # If no target given, pass through.
+    def _refuri2http(self, node):
+        # Replace 'refuri' in reference with HTTP address, if possible
+        # None for no possible address
         url = node.get('refuri')
-        if url in (None, ''):
-            return
+        if not node.get('internal'):
+            return url
         # If HTTP page build URL known, make link relative to that.
-        if node.get('internal') and self.markdown_http_base:
-            # URL is relative to the current docname
-            url = '{}/{}'.format(self.markdown_http_base, url)
+        if not self.markdown_http_base:
+            return None
+        this_doc = self.builder.current_docname
+        if url in (None, ''):  # Reference to this doc
+            url = self.builder.get_target_uri(this_doc)
+        else:  # URL is relative to the current docname.
+            this_dir = posixpath.dirname(this_doc)
+            if this_dir:
+                url = posixpath.normpath('{}/{}'.format(this_dir, url))
+        url = '{}/{}'.format(self.markdown_http_base, url)
+        if 'refid' in node:
+            url += '#' + node['refid']
+        return url
+
+    def visit_reference(self, node):
+        # If no target possible, pass through.
+        url = self._refuri2http(node)
+        if url is None:
+            return
         self.add('[{0}]({1})'.format(node.astext(), url))
         raise nodes.SkipNode
 
@@ -465,6 +484,10 @@ class Translator(nodes.NodeVisitor):
 
     def depart_download_reference(self, node):
         pass
+
+    visit_compact_paragraph = visit_paragraph
+
+    depart_compact_paragraph = depart_paragraph
 
     def unknown_visit(self, node):
         """ Warn once per instance for unsupported nodes
