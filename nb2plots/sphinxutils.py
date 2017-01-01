@@ -16,10 +16,12 @@ from docutils.io import Output
 from docutils.parsers.rst import directives, roles
 
 from sphinx.application import Sphinx
+from sphinx.domains.std import StandardDomain
 
 fresh_roles = copy(roles._roles)
 fresh_directives = copy(directives._directives)
 fresh_visitor_dict = nodes.GenericNodeVisitor.__dict__.copy()
+fresh_std_domain_init_labels = StandardDomain.initial_data['labels'].copy()
 
 
 def reset_class(cls, original_dict):
@@ -38,27 +40,33 @@ class TestApp(Sphinx):
             super(TestApp, self).__init__(*args, **kwargs)
 
     def _set_cache(self):
-        self._docutils_cache = dict(
+        self._global_cache = dict(
             directives=copy(fresh_directives),
             roles=copy(fresh_roles),
-            visitor_dict = fresh_visitor_dict)
+            visitor_dict = copy(fresh_visitor_dict),
+            std_domain_init_labels = copy(fresh_std_domain_init_labels))
+
 
     @contextmanager
     def own_namespace(self):
         """ Set docutils namespace for builds """
-        cache = self._docutils_cache
+        cache = self._global_cache
         _directives = directives._directives
         _roles = roles._roles
         _visitor_dict = nodes.GenericNodeVisitor.__dict__.copy()
+        _std_domain_init_labels = StandardDomain.initial_data['labels']
         directives._directives = cache['directives']
         roles._roles = cache['roles']
         reset_class(nodes.GenericNodeVisitor, cache['visitor_dict'])
+        StandardDomain.initial_data['labels'] = cache['std_domain_init_labels']
         try:
             yield
         finally:
+            # Reset docutils, Sphinx global state
             directives._directives = _directives
             roles._roles = _roles
             reset_class(nodes.GenericNodeVisitor, _visitor_dict)
+            StandardDomain.initial_data['labels'] = _std_domain_init_labels
 
     def build(self, *args, **kwargs):
         with self.own_namespace():
