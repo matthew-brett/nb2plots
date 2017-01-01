@@ -334,25 +334,16 @@ class Converter(object):
         self.conf_txt = conf_txt if not conf_txt is None else self.default_conf
         self.status = status
         self.warningiserror = warningiserror
-        self._builder = None
 
-    def make_app(self, rst_text):
+    def _make_app(self, rst_text):
         """ Make, return Sphinx application instance for input ReST text.
         """
-        app = TempApp(rst_text,
-                      self.conf_txt, status=self.status,
-                      warningiserror=self.warningiserror,
-                      buildername=self.buildername)
-        self._builder = app.builder
-        return app
+        return TempApp(rst_text,
+                       self.conf_txt, status=self.status,
+                       warningiserror=self.warningiserror,
+                       buildername=self.buildername)
 
-    @property
-    def builder(self):
-        if self._builder is None:
-            self.make_app('')
-        return self._builder
-
-    def build_rst(self, rst_text, resolve=True):
+    def _build_rst(self, rst_text, resolve=True):
         """ Build ReST text in string `rst_text` into doctree.
 
         Parameters
@@ -366,32 +357,38 @@ class Converter(object):
         -------
         doctree : node
             document node.
+        app : object
+            Sphinx application object
         """
-        app = self.make_app(rst_text)
+        app = self._make_app(rst_text)
         out_fname = pjoin(app.tmp_dir, 'contents.rst')
         with open(out_fname, 'wt') as fobj:
             fobj.write(rst_text)
         # Force build of everything
         app.build(True, [])
         if resolve:
-            return app.env.get_and_resolve_doctree('contents', app.builder)
-        return app.env.get_doctree('contents')
+            dt = app.env.get_and_resolve_doctree('contents', app.builder)
+        else:
+            dt = app.env.get_doctree('contents')
+        return dt, app
 
-    def from_doctree(self, doctree):
+    def from_doctree(self, doctree, builder):
         """ Convert doctree `doctree` to output format
 
         Parameters
         ----------
         doctree : node
             Document node.
+        builder : object
+            Sphinx builder object.
 
         Returns
         ------
         output : str
             Representation in output format
         """
-        self.builder.prepare_writing(['contents'])
-        return self.builder.writer.write(doctree, UnicodeOutput())
+        builder.prepare_writing(['contents'])
+        return builder.writer.write(doctree, UnicodeOutput())
 
     def from_rst(self, rst_text, resolve=True):
         """ Build Sphinx formatted ReST text `rst_text` into output format
@@ -408,4 +405,5 @@ class Converter(object):
         output : str
             Text in output format
         """
-        return self.from_doctree(self.build_rst(rst_text, resolve))
+        doctree, app = self._build_rst(rst_text, resolve)
+        return self.from_doctree(doctree, app.builder)

@@ -14,7 +14,9 @@ from sphinx.errors import ExtensionError
 from .ipython_shim import nbf, nbconvert as nbc
 
 from . import doctree2nb, doctree2py
-from .converters import to_notebook, to_py
+from .sphinx2foos import PythonBuilder, NotebookBuilder
+from .sphinxutils import UnicodeOutput
+
 
 from nb2plots.nbplots import drop_visit
 
@@ -33,7 +35,7 @@ class PyRunRole(object):
     default_text = 'Download this page as a Python code file'
     default_extension = '.py'
     code_type = 'python'
-    converter = to_py
+    builder_class = PythonBuilder
     encoding = 'utf-8'
 
     _cache = {}
@@ -87,32 +89,33 @@ class PyRunRole(object):
         refnode['code_type'] = self.code_type
         return [refnode], []
 
-    def write(self, docname, env, out_fname):
-        built = self.get_built(docname, env)
+    def write(self, docname, app, out_fname):
+        built = self.get_built(docname, app)
         with open(out_fname, 'wb') as fobj:
             fobj.write(built.encode(self.encoding))
 
-    def get_built(self, docname, env):
+    def get_built(self, docname, app):
         """ Build, cache output file
 
         Parameters
         ----------
         docname : str
             Document name.
-        env : object
-            Sphinx build environment.
+        app : object
+            Sphinx application in charge of build
         """
-        own_params = env.runrole[docname][self.code_type]
+        own_params = app.env.runrole[docname][self.code_type]
         if own_params['built'] is None:
-            own_params['built'] = self._build(docname, env)
+            own_params['built'] = self._build(docname, app)
         return own_params['built']
 
-    def _build(self, docname, env):
+    def _build(self, docname, app):
         """ Return string containing built / resolved version of `doctree`
         """
-        converter = self.converter
-        doctree = env.get_and_resolve_doctree(docname, converter.builder)
-        return converter.from_doctree(doctree)
+        builder = self.builder_class(app)
+        doctree = app.env.get_and_resolve_doctree(docname, builder)
+        builder.prepare_writing(['contents'])
+        return builder.writer.write(doctree, UnicodeOutput())
 
     def clear_cache(self, docname, env):
         env.runrole[docname][self.code_type]['built'] = None
@@ -124,7 +127,7 @@ class ClearNotebookRunRole(PyRunRole):
     default_text = 'Download this page as a Jupyter notebook (no outputs)'
     default_extension = '.ipynb'
     code_type = 'clear notebook'
-    converter = to_notebook
+    builder_class = NotebookBuilder
 
 
 class FullNotebookRunRole(ClearNotebookRunRole):
@@ -206,7 +209,7 @@ def write_runfiles(app, exception):
             role = _TYPE2ROLE[code_type]
             for rel_fname in build_params['to_build']:
                 out_fname = _relfn2outpath(rel_fname, app)
-                role.write(docname, env, out_fname)
+                role.write(docname, app, out_fname)
         for role in _TYPE2ROLE.values():
             role.clear_cache(docname, env)
 
