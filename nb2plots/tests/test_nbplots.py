@@ -457,6 +457,7 @@ r"""<document _plot_counter="1" source=".*?a_page.rst">
         <nbplot_rendered>
             <doctest_block.*>
                 >>> a = 1
+        <nbplot_epilogue>
             <.*>
         <paragraph>
             See\s
@@ -632,6 +633,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
             <doctest_block xml:space="preserve">
                 >>> # always
                 >>> a = 'default'
+        <nbplot_epilogue>
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">
@@ -640,6 +642,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
         <nbplot_rendered>
             <doctest_block xml:space="preserve">
                 >>> a = 'skip is False'
+        <nbplot_epilogue>
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">
@@ -650,6 +653,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
                 >>> b = 'skip appears to be False'
                 >>> a == 'skip is False'
                 True
+        <nbplot_epilogue>
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">
@@ -698,6 +702,7 @@ class TestWithSkipStructure(TestWithSkip):
             <doctest_block xml:space="preserve">
                 >>> # always
                 >>> a = 'default'
+        <nbplot_epilogue>
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">
@@ -706,6 +711,7 @@ class TestWithSkipStructure(TestWithSkip):
         <nbplot_rendered>
             <doctest_block xml:space="preserve">
                 >>> a = 'skip is True'
+        <nbplot_epilogue>
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">
@@ -716,6 +722,7 @@ class TestWithSkipStructure(TestWithSkip):
                 >>> b = 'skip appears to be True'
                 >>> a == 'skip is True'
                 True
+        <nbplot_epilogue>
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">
@@ -726,6 +733,7 @@ class TestWithSkipStructure(TestWithSkip):
                 >>> # doctest only run when skip flag False, always rendered
                 >>> b == 'skip appears to be False'
                 True
+        <nbplot_epilogue>
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">

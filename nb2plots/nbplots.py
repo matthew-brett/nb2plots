@@ -255,6 +255,10 @@ class nbplot_rendered(nodes.container, nodes.Targetable):
     """
 
 
+class nbplot_epilogue(nodes.container, nodes.Targetable):
+    """ Container for figures etc following nbplot """
+
+
 class nbplot_not_rendered(nodes.container):
     """ Container for not-rendered nbplot contents
     """
@@ -290,6 +294,7 @@ class NBPlotDirective(Directive):
 
     # Node classes for rendered, not rendered nbplot contents
     nbplot_rendered_node = nbplot_rendered
+    nbplot_epilogue = nbplot_epilogue
     nbplot_not_rendered_node = nbplot_not_rendered
 
     # Class for skipped doctest
@@ -469,7 +474,6 @@ class NBPlotDirective(Directive):
         # is the code in doctest format?
         is_doctest = self._contains_doctest(to_render)
 
-        total_lines = []
         if is_doctest:
             lines = [''] + [row.rstrip() for row in to_render.split('\n')]
         else:
@@ -513,17 +517,17 @@ class NBPlotDirective(Directive):
             only_texinfo=only_texinfo,
             options=opts,
             images=images_to_show,
-            source_code=source_code,
             html_show_formats=config.nbplot_html_show_formats and n_to_show)
 
-        total_lines.extend(result.split("\n"))
-        total_lines.extend("\n")
-
-        rendered_nodes = self.rst2nodes(total_lines, self.nbplot_rendered_node)
+        rendered_nodes = self.rst2nodes(source_code.splitlines(),
+                                        self.nbplot_rendered_node)
+        epilogue = self.rst2nodes(result.splitlines(),
+                                  self.nbplot_epilogue)
+        ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
         if to_render == to_run:
             # Run code the same as rendered code, all done
-            return rendered_nodes + errors
+            return ret
         # Label doctest blocks in rendered output as skipped
         self._skip_doctests(rendered_nodes[0])
         # Add not-rendered tree, if there are doctests in run code
@@ -531,7 +535,7 @@ class NBPlotDirective(Directive):
                  if self._contains_doctest(to_run) else [])
         not_rendered_nodes = self.rst2nodes(lines,
                                             self.nbplot_not_rendered_node)
-        return rendered_nodes + errors + not_rendered_nodes
+        return ret + not_rendered_nodes
 
 #------------------------------------------------------------------------------
 # Doctest handling
@@ -583,8 +587,6 @@ def remove_coding(text):
 
 
 TEMPLATE = """
-{{ source_code }}
-
 {{ only_html }}
 
    {% if source_link or (html_show_formats and not multi_image) %}
@@ -971,14 +973,17 @@ def setup(app):
     setup.config = app.config
     setup.confdir = app.confdir
 
-    # Pass through rendered nbplot container
-    app.add_node(nbplot_rendered,
-                 **{builder: (null_visit, null_depart)
-                    for builder in ('html', 'latex', 'text')})
+    standard_builders = ('html', 'latex', 'text', 'texinfo')
+
+    # Pass through containers used as markers for nbplot contents
+    for node_class in (nbplot_rendered, nbplot_epilogue):
+        app.add_node(node_class,
+                     **{builder: (null_visit, null_depart)
+                        for builder in standard_builders})
     # Render skipped doctest block as doctest block
     app.add_node(skipped_doctest_block,
                  **{builder: (skipped_visit, skipped_depart)
-                    for builder in ('html', 'latex', 'text')})
+                    for builder in standard_builders})
     # Drop not-rendered nodes completely from content output
     app.add_node(nbplot_not_rendered,
                  **{builder: (drop_visit, None)

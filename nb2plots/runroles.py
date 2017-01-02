@@ -114,7 +114,9 @@ class PyRunRole(object):
         """
         builder = self.builder_class(app)
         doctree = app.env.get_and_resolve_doctree(docname, builder)
-        builder.prepare_writing(['contents'])
+        builder.prepare_writing([docname])
+        # Set current docname for writer to work out link targets
+        builder.current_docname = docname
         return builder.writer.write(doctree, UnicodeOutput())
 
     def clear_cache(self, docname, env):

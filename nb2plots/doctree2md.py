@@ -451,7 +451,13 @@ class Translator(nodes.NodeVisitor):
     def depart_reference(self, node):
         pass
 
+    def visit_nbplot_epilogue(self, node):
+        raise nodes.SkipNode
+
     def visit_nbplot_not_rendered(self, node):
+        raise nodes.SkipNode
+
+    def visit_code_links(self, node):
         raise nodes.SkipNode
 
     def visit_index(self, node):

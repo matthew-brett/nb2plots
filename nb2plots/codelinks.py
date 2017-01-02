@@ -32,6 +32,10 @@ def setup_module(module):
     pass
 
 
+class code_links(nodes.container):
+    """ Node to contain code links """
+
+
 class CodeLinks(Directive):
     """ Add links to built runnable code from contained page.
     """
@@ -43,6 +47,8 @@ class CodeLinks(Directive):
     _type2params = dict(python=dict(role_name='codefile', suffix=''),
                         clear=dict(role_name='clearnotebook', suffix=''),
                         full=dict(role_name='fullnotebook', suffix='_full'))
+
+    code_links_node = code_links
 
     def _role_lines(self):
         """ Text lines for notebook roles of types requested in options.
@@ -66,12 +72,12 @@ class CodeLinks(Directive):
         return lines
 
     def run(self):
-        lines = ['.. only:: html', '']
+        lines = []
         body_lines = self._role_lines()
         for i, line in enumerate(body_lines):
             suffix = '.' if i == len(body_lines) - 1 else ';'
-            lines.append('    {}{}'.format(line, suffix))
-        node = nodes.container('\n'.join(lines))
+            lines.append('{}{}'.format(line, suffix))
+        node = self.code_links_node('\n'.join(lines))
         self.state.nested_parse(StringList(lines),
                                 self.content_offset,
                                 node)
@@ -80,3 +86,9 @@ class CodeLinks(Directive):
 
 def setup(app):
     app.add_directive('code-links', CodeLinks)
+
+    # Pass through containers used as markers for code links
+    null = lambda self, node : None
+    app.add_node(CodeLinks.code_links_node,
+                 **{builder: (null, null)
+                    for builder in ('html', 'latex', 'text', 'texinfo')})

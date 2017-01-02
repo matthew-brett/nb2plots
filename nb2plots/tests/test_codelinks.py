@@ -22,24 +22,23 @@ More text here."""
 <document source=".*?">
     <paragraph>
         Text here
-    <container>
-        <only expr="html">
-            <bullet_list bullet="\*">
-                <list_item>
-                    <paragraph>
-                        <runrole_reference code_type="python" refdoc="contents" reftarget="contents.py" reftype="codefile">
-                            Download this page as a Python code file
-                        ;
-                <list_item>
-                    <paragraph>
-                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents.ipynb" reftype="clearnotebook">
-                            Download this page as a Jupyter notebook \(no outputs\)
-                        ;
-                <list_item>
-                    <paragraph>
-                        <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
-                            Download this page as a Jupyter notebook \(with outputs\)
-                        .
+    <code_links>
+        <bullet_list bullet="\*">
+            <list_item>
+                <paragraph>
+                    <runrole_reference code_type="python" refdoc="contents" reftarget="contents.py" reftype="codefile">
+                        Download this page as a Python code file
+                    ;
+            <list_item>
+                <paragraph>
+                    <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents.ipynb" reftype="clearnotebook">
+                        Download this page as a Jupyter notebook \(no outputs\)
+                    ;
+            <list_item>
+                <paragraph>
+                    <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
+                        Download this page as a Jupyter notebook \(with outputs\)
+                    .
     <paragraph>
         More text here.""")
     pxml = as_pxml(page)
@@ -64,14 +63,13 @@ More text here."""
 <document source=".*?">
     <paragraph>
         Text here
-    <container>
-        <only expr="html">
-            <bullet_list bullet="\*">
-                <list_item>
-                    <paragraph>
-                        <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents.ipynb" reftype="clearnotebook">
-                            Download this page as a Jupyter notebook \(no outputs\)
-                        .
+    <code_links>
+        <bullet_list bullet="\*">
+            <list_item>
+                <paragraph>
+                    <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="contents.ipynb" reftype="clearnotebook">
+                        Download this page as a Jupyter notebook \(no outputs\)
+                    .
     <paragraph>
         More text here.""" , pxml))
     page = """\
@@ -85,14 +83,13 @@ More text here."""
 <document source=".*?">
     <paragraph>
         Text here
-    <container>
-        <only expr="html">
-            <bullet_list bullet="\*">
-                <list_item>
-                    <paragraph>
-                        <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
-                            Download this page as a Jupyter notebook \(with outputs\)
-                        .
+    <code_links>
+        <bullet_list bullet="\*">
+            <list_item>
+                <paragraph>
+                    <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
+                        Download this page as a Jupyter notebook \(with outputs\)
+                    .
     <paragraph>
         More text here.""", pxml))
     page = """\
@@ -106,18 +103,17 @@ More text here."""
 <document source=".*?">
     <paragraph>
         Text here
-    <container>
-        <only expr="html">
-            <bullet_list bullet="\*">
-                <list_item>
-                    <paragraph>
-                        <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
-                            Download this page as a Jupyter notebook \(with outputs\)
-                        ;
-                <list_item>
-                    <paragraph>
-                        <runrole_reference code_type="python" refdoc="contents" reftarget="contents.py" reftype="codefile">
-                            Download this page as a Python code file
-                        .
+    <code_links>
+        <bullet_list bullet="\*">
+            <list_item>
+                <paragraph>
+                    <runrole_reference code_type="full notebook" refdoc="contents" reftarget="contents_full.ipynb" reftype="fullnotebook">
+                        Download this page as a Jupyter notebook \(with outputs\)
+                    ;
+            <list_item>
+                <paragraph>
+                    <runrole_reference code_type="python" refdoc="contents" reftarget="contents.py" reftype="codefile">
+                        Download this page as a Python code file
+                    .
     <paragraph>
         More text here.""", pxml))
