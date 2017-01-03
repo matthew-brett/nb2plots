@@ -23,6 +23,7 @@ In more depth:
     nbplots
     mpl_interactive
     code_links
+    markdown_base
 
 Developer docs:
 

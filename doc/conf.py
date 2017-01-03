@@ -346,3 +346,5 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #
 # texinfo_no_detailmenu = False
+
+markdown_http_base = 'https://matthew-brett.github.io/nb2plots'
