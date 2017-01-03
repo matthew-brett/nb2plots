@@ -70,9 +70,9 @@ directives to run different code for different configurations.  For these
 options, see |nbplot-documentation|.  But - what do you lose, when going from
 a notebook to a Nb2plots ReST document?
 
-**************************************
-I want my notebook or Python code too!
-**************************************
+**********************************
+I want notebooks and .py files too
+**********************************
 
 You may also want a version of your document that your users can execute.
 Perhaps the page build is generating some tricky errors or warnings, and you
@@ -88,6 +88,15 @@ your page, and adds download links to these versions::
     .. code-links::
 
 See |code-links-documentation| for details.
+
+**************************
+Show me what it looks like
+**************************
+
+For a very simple example, see |worked-example|.
+
+For a moderate-sized teaching site that makes extensive use of Nb2plots, see
+https://matthew-brett.github.com/teaching.
 
 ************
 Installation
@@ -149,11 +158,14 @@ Please put up issues on the `nb2plots issue tracker`_.
 .. standalone-references
 
 .. |nbplot-documentation| replace:: `nbplots documentation`_
+.. |worked-example| replace:: `worked example`_
 .. |code-links-documentation| replace:: `code-links documentation`_
 .. _nbplots documentation:
     https://matthew-brett.github.com/nb2plots/nbplots.html
 .. _code-links documentation:
     https://matthew-brett.github.com/nb2plots/code_links.html
+.. _worked example:
+    https://matthew-brett.github.com/nb2plots/worked_example.html
 .. _documentation: https://matthew-brett.github.com/nb2plots
 .. _pandoc: http://pandoc.org
 .. _jupyter: jupyter.org

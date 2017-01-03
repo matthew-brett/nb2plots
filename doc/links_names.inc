@@ -55,3 +55,4 @@
    :trim:
 .. |nbplot-documentation| replace:: :ref:`nbplots-documentation`
 .. |code-links-documentation| replace:: :ref:`code-links-documentation`
+.. |worked-example| replace:: :doc:`worked_example`
