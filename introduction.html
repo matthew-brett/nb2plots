@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Basics &#8212; nb2plots 0.5 documentation</title>
+    <title>Basics &#8212; nb2plots 0.5.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5',
+        VERSION:     '0.5.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -100,8 +100,8 @@ directives to run different code for different configurations.  For these
 options, see <a class="reference internal" href="nbplots.html#nbplots-documentation"><span class="std std-ref">Using the nbplot directive</span></a>.  But - what do you lose, when going from
 a notebook to a Nb2plots ReST document?</p>
 </div>
-<div class="section" id="i-want-my-notebook-or-python-code-too">
-<h2>I want my notebook or Python code too!<a class="headerlink" href="#i-want-my-notebook-or-python-code-too" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="i-want-notebooks-and-py-files-too">
+<h2>I want notebooks and .py files too<a class="headerlink" href="#i-want-notebooks-and-py-files-too" title="Permalink to this headline">¶</a></h2>
 <p>You may also want a version of your document that your users can execute.
 Perhaps the page build is generating some tricky errors or warnings, and you
 want to experiment with the code in the page interactively.  Perhaps your
@@ -115,6 +115,12 @@ your page, and adds download links to these versions:</p>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="code_links.html#code-links-documentation"><span class="std std-ref">Using the code-links directive</span></a> for details.</p>
+</div>
+<div class="section" id="show-me-what-it-looks-like">
+<h2>Show me what it looks like<a class="headerlink" href="#show-me-what-it-looks-like" title="Permalink to this headline">¶</a></h2>
+<p>For a very simple example, see <a class="reference internal" href="worked_example.html#worked-example"><span class="std std-ref">Worked example</span></a>.</p>
+<p>For a moderate-sized teaching site that makes extensive use of Nb2plots, see
+<a class="reference external" href="https://matthew-brett.github.com/teaching">https://matthew-brett.github.com/teaching</a>.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -133,12 +139,7 @@ your page, and adds download links to these versions:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nb2plots&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">nbplot</span></code> directive is very similar to the <code class="docutils literal"><span class="pre">plot</span></code> directive of
-matplotlib, and started life as a fork of that code.  It differs mainly in
-that its default is to keep the name-space from one <code class="docutils literal"><span class="pre">nbplot</span></code> directive to the
-next in a given page, and has output defaults adapted to directive contents
-with source code rather than pointing to a standalone script.  See the
-docstring of <code class="docutils literal"><span class="pre">nb2plots/nbplots.py</span></code> for details.</p>
+<p>See <a class="reference internal" href="nbplots.html#nbplots-documentation"><span class="std std-ref">Using the nbplot directive</span></a> for the various <code class="docutils literal"><span class="pre">conf.py</span></code> configuration settings.</p>
 </div>
 <div class="section" id="code">
 <h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
@@ -183,7 +184,8 @@ code automatically under Python versions 2.7, and 3.3 through 3.5.</p>
 <li><a class="reference internal" href="#">Basics</a><ul>
 <li><a class="reference internal" href="#what-it-does">What it does</a></li>
 <li><a class="reference internal" href="#why-convert-jupyter-notebooks-to-sphinx">Why convert Jupyter notebooks to Sphinx?</a></li>
-<li><a class="reference internal" href="#i-want-my-notebook-or-python-code-too">I want my notebook or Python code too!</a></li>
+<li><a class="reference internal" href="#i-want-notebooks-and-py-files-too">I want notebooks and .py files too</a></li>
+<li><a class="reference internal" href="#show-me-what-it-looks-like">Show me what it looks like</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
 <li><a class="reference internal" href="#code">Code</a></li>

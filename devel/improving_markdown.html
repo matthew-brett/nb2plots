@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.5 documentation</title>
+    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.5.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.5',
+        VERSION:     '0.5.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -28,7 +28,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Test Sphinx builds on an example project" href="sphinx_example_project.html" />
-    <link rel="prev" title="Using the code-links directive" href="../code_links.html" />
+    <link rel="prev" title="Links in Markdown" href="../markdown_base.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -54,8 +54,8 @@ Markdown than the original rst2md project.  However, the converter still does
 not deal specifically with a fairly large number of Sphinx / ReST constructs,
 so we would be very grateful for your help in improving the converter.  These
 are some hints how to go about that.</p>
-<div class="section" id="workflow-for-improving-rest-to-markdown-conversion">
-<h2>Workflow for improving ReST to Markdown conversion<a class="headerlink" href="#workflow-for-improving-rest-to-markdown-conversion" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="workflow">
+<h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p class="first">Set yourself up with a git fork and clone of the <a class="reference external" href="http://github.com/matthew-brett/nb2plots">nb2plots code</a>.  Install
 the development code with something like:</p>
@@ -81,6 +81,14 @@ say you you&#8217;ve decided to make the converter do something sensible with th
 </pre></div>
 </div>
 <p>The file have any name, as long as it has a <code class="docutils literal"><span class="pre">.rst</span></code> extension.</p>
+</li>
+<li><p class="first">You might want to check what doctree the ReST file generates.  The doctree
+is the form that the Markdown converter will use.  See the pseudo XML
+version of the doctree with:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2pxml nb2plots/tests/rst_md_files/pep.rst
+</pre></div>
+</div>
+<p>This will show you the doctree node types and their attributes.</p>
 </li>
 <li><p class="first">If your construct is valid in vanilla <a class="reference external" href="http://docutils.sourceforge.net">docutils</a> ReST, then run the
 <code class="docutils literal"><span class="pre">rst2md</span></code> converter over the file and see what it looks like.  In the case
@@ -166,7 +174,7 @@ that the tests are using, feel free to edit.</p>
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Improving the ReST to Markdown conversion</a><ul>
-<li><a class="reference internal" href="#workflow-for-improving-rest-to-markdown-conversion">Workflow for improving ReST to Markdown conversion</a></li>
+<li><a class="reference internal" href="#workflow">Workflow</a></li>
 </ul>
 </li>
 </ul>
@@ -174,7 +182,7 @@ that the tests are using, feel free to edit.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../code_links.html" title="previous chapter">Using the code-links directive</a></li>
+      <li>Previous: <a href="../markdown_base.html" title="previous chapter">Links in Markdown</a></li>
       <li>Next: <a href="sphinx_example_project.html" title="next chapter">Test Sphinx builds on an example project</a></li>
   </ul></li>
 </ul>

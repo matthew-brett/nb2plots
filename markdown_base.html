@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Links in Markdown &#8212; nb2plots 0.5.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.5.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Improving the ReST to Markdown conversion" href="devel/improving_markdown.html" />
+    <link rel="prev" title="Using the code-links directive" href="code_links.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="links-in-markdown">
+<span id="id1"></span><h1>Links in Markdown<a class="headerlink" href="#links-in-markdown" title="Permalink to this headline">¶</a></h1>
+<p>By default, if your ReST documents has internal links, then generated Markdown
+output like the Notebook files or the Python code files drop these links,
+replacing them with some suitable text.</p>
+<p>Internal links can be <a class="reference internal" href="#links-in-markdown"><span class="std std-ref">internal to the document</span></a>, via
+the <code class="docutils literal"><span class="pre">:ref:</span></code> role, or to <a class="reference internal" href="scripts.html"><span class="doc">other ReST pages</span></a>, using the
+<code class="docutils literal"><span class="pre">:doc:</span></code> role.  Links can also be to files to download, such as
+<a class="reference download internal" href="_downloads/conf.py" download=""><code class="xref download docutils literal"><span class="pre">conf.py</span></code></a>.</p>
+<p>It&#8217;s often the case that you have built HTTP pages on the web somewhere, so it
+would make sense for the built Markdown to point to the HTTP versions of these
+links, rather than dropping them.</p>
+<p>You can tell <code class="docutils literal"><span class="pre">nb2plots</span></code> where your built HTTP docs are, by setting the
+<code class="docutils literal"><span class="pre">markdown_http_base</span></code> value in your <code class="docutils literal"><span class="pre">conf.py</span></code> file, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">markdown_http_base</span> <span class="o">=</span> <span class="s1">&#39;https://example.com&#39;</span>
+</pre></div>
+</div>
+<p>If you set this value to any string other than the empty string, the Markdown
+builders will use this base URL to resolve internal links.</p>
+<p>In fact, I&#8217;ve set that option in the <code class="docutils literal"><span class="pre">conf.py</span></code> for this project, like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">markdown_http_base</span> <span class="o">=</span> <span class="s1">&#39;https://matthew-brett.github.io/nb2plots&#39;</span>
+</pre></div>
+</div>
+<p>Have a look at the generated Python code and Notebook code for this pages, via
+the links below.  You should see that the Markdown links resolve to the HTTP
+pages at <a class="reference external" href="https://matthew-brett.github.io/nb2plots">https://matthew-brett.github.io/nb2plots</a>.</p>
+<ul class="simple">
+<li><a class="reference download internal" href="markdown_base.py">Download this page as a Python code file</a>;</li>
+<li><a class="reference download internal" href="markdown_base.ipynb">Download this page as a Jupyter notebook (no outputs)</a>;</li>
+<li><a class="reference download internal" href="markdown_base_full.ipynb">Download this page as a Jupyter notebook (with outputs)</a>.</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="code_links.html" title="previous chapter">Using the code-links directive</a></li>
+      <li>Next: <a href="devel/improving_markdown.html" title="next chapter">Improving the ReST to Markdown conversion</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/markdown_base.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Matthew Brett.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/markdown_base.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

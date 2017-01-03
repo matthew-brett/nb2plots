@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Using the code-links directive &#8212; nb2plots 0.5 documentation</title>
+    <title>Using the code-links directive &#8212; nb2plots 0.5.1 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5',
+        VERSION:     '0.5.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Improving the ReST to Markdown conversion" href="devel/improving_markdown.html" />
+    <link rel="next" title="Links in Markdown" href="markdown_base.html" />
     <link rel="prev" title="Using the mpl-interactive directive" href="mpl_interactive.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -54,34 +54,31 @@ add links to these files in the built HTML.  Use like this:</p>
 </pre></div>
 </div>
 <p>Here is an example, generating very boring code and notebooks:</p>
-<div class="docutils container">
 <ul class="simple">
 <li><a class="reference download internal" href="code_links.py">Download this page as a Python code file</a>;</li>
 <li><a class="reference download internal" href="code_links.ipynb">Download this page as a Jupyter notebook (no outputs)</a>;</li>
 <li><a class="reference download internal" href="code_links_full.ipynb">Download this page as a Jupyter notebook (with outputs)</a>.</li>
 </ul>
-</div>
 <div class="section" id="module-nb2plots.codelinks">
 <span id="id1"></span><span id="code-links-directive"></span><h2>code-links directive<a class="headerlink" href="#module-nb2plots.codelinks" title="Permalink to this headline">¶</a></h2>
-<p>Directive to insert links to current document as runnable code.
-
-As a bare directive, with no options, inserts links to the current document as
+<p>Directive to insert links to current document as runnable code.</p>
+<p>As a bare directive, with no options, inserts links to the current document as
 a Python code file; a clear notebook (no outputs) and a full notebook (outputs
-inserted by executing the built notebook)::
-
-    .. code-links:
-
-You can select one or more of these links with a list as an argument to the
+inserted by executing the built notebook):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>You can select one or more of these links with a list as an argument to the
 directive, where &#8220;python&#8221;, &#8220;clear&#8221; and &#8220;full&#8221; refer to a Python code file,
-clear notebook file and a full notebook file, respectively. For example::
+clear notebook file and a full notebook file, respectively. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">python</span>
 
-    .. code-links: python
+<span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">python</span> <span class="n">full</span>
 
-    .. code-links: python full
-
-    .. code-links: clear full
-
-<code class="docutils literal"><span class="pre">python</span> <span class="pre">clear</span> <span class="pre">full</span></code> is the default.</p>
+<span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">clear</span> <span class="n">full</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">python</span> <span class="pre">clear</span> <span class="pre">full</span></code> is the default.</p>
 </div>
 </div>
 
@@ -103,7 +100,7 @@ clear notebook file and a full notebook file, respectively. For example::
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="mpl_interactive.html" title="previous chapter">Using the mpl-interactive directive</a></li>
-      <li>Next: <a href="devel/improving_markdown.html" title="next chapter">Improving the ReST to Markdown conversion</a></li>
+      <li>Next: <a href="markdown_base.html" title="next chapter">Links in Markdown</a></li>
   </ul></li>
 </ul>
 </div>

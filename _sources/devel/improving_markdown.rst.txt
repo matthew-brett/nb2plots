@@ -11,9 +11,9 @@ not deal specifically with a fairly large number of Sphinx / ReST constructs,
 so we would be very grateful for your help in improving the converter.  These
 are some hints how to go about that.
 
-**************************************************
-Workflow for improving ReST to Markdown conversion
-**************************************************
+********
+Workflow
+********
 
 * Set yourself up with a git fork and clone of the `nb2plots code`_.  Install
   the development code with something like:
@@ -44,6 +44,16 @@ Workflow for improving ReST to Markdown conversion
     Test converting the :pep:`8` text role to Markdown
 
   The file have any name, as long as it has a ``.rst`` extension.
+
+* You might want to check what doctree the ReST file generates.  The doctree
+  is the form that the Markdown converter will use.  See the pseudo XML
+  version of the doctree with:
+
+  .. code-block:: bash
+
+    sphinx2pxml nb2plots/tests/rst_md_files/pep.rst
+
+  This will show you the doctree node types and their attributes.
 
 * If your construct is valid in vanilla `docutils`_ ReST, then run the
   ``rst2md`` converter over the file and see what it looks like.  In the case
