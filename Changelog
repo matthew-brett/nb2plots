@@ -2,9 +2,28 @@
 nb2plots Changelog
 ##################
 
-###
+*****
+0.5.1
+*****
+
+New feature and bugfix release.  Minor API breakage.
+
+* add explicit Markdown, Python, Notebook builders.  You can build the whole
+  site to Markdown with commands like ``sphinx-build -b markdown -d dt_dir
+  src_dir md_dir``.
+* add ability of Markdown etc builders to resolve internal references relative
+  to an HTTP build, using new ``markdown_http_base`` configuration option;
+* API break - change of template specification for epilogue to ``nbplot``
+  output; no longer include the source code in the template, but evaluate
+  source code as ReST separately.  This will cause anyone using custom
+  templates pain, as their code will crash.  To fix, simply remove the
+  reference to source code in the template;
+* slightly extend range of doctree nodes that Markdown converter can deal
+  with.
+
+***
 0.5
-###
+***
 
 New feature release.
 
