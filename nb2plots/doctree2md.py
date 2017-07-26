@@ -164,8 +164,10 @@ class Translator(nodes.NodeVisitor):
         self.language = languages.get_language(lcode, document.reporter)
         # Not-None here indicates Markdown should use HTTP for internal and
         # download links.
-        self.markdown_http_base = (builder.markdown_http_base if builder
-                                   else None)
+        builder_base = (builder.markdown_http_base
+                        if builder and hasattr(builder, 'markdown_http_base')
+                        else None)
+        self.markdown_http_base = builder_base if builder_base else None
         # Warn only once per writer about unsupported elements
         self._warned = set()
         # Lookup table to get section list from name

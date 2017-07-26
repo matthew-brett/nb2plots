@@ -160,3 +160,17 @@ It refers to [Refereed section](https://dynevor.org/a_page.html).
 
 It also refers to [Another page](https://dynevor.org/subdir1/b_page.html).
 """)
+
+
+class TestPythonBuild(PlotsBuilder):
+    """ Python builder without specified base URL
+    """
+
+    builder = 'python'
+
+    rst_sources = {'a_page': """\
+A section
+=========
+
+Some text
+"""}
