@@ -6,6 +6,7 @@ addons:
   apt:
     packages:
         - pandoc
+        - graphviz
 
 cache:
   directories:
