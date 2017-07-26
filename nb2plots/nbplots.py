@@ -89,15 +89,19 @@ The ``nbplot`` directive supports the following options:
 
             :render-parts: 0 if have_matlab else 1
 
+        Default value is 0.
+
     run-parts : str
         See ``render-parts`` above.  Python expression that returns integer or
         tuple giving indices for parts that should be executed when generating
         the figures.  Any doctests in these parts also get wrapped in standard
         doctest blocks, and so will be picked up by the sphinx doctest builder.
 
-        Examples:
+        Examples::
 
             :run-parts: 0 if slow else 1
+
+        Default value is 0.
 
 The namespace of the nbplot command is reset to empty for each document.  The
 code in each nbplot directive instance in a given document uses the namespace

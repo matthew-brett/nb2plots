@@ -29,7 +29,7 @@ In fact, I've set that option in the ``conf.py`` for this project, like this::
 
     markdown_http_base = 'https://matthew-brett.github.io/nb2plots'
 
-Have a look at the generated Python code and Notebook code for this pages, via
+Have a look at the generated Python code and Notebook code for this page, via
 the links below.  You should see that the Markdown links resolve to the HTTP
 pages at https://matthew-brett.github.io/nb2plots.
 
