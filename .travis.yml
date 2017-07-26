@@ -21,9 +21,9 @@ env:
         - EXTRA_WHEELS=https://nipy.bic.berkeley.edu/manylinux
 
 python:
-    - 3.3
     - 3.4
     - 3.5
+    - 3.6
 
 matrix:
   include:
@@ -55,6 +55,10 @@ matrix:
     - python: 3.5
       env:
         - BUILD_DOC=1
+    # Python 3.3 can't use latest sphinx or numpy
+    - python: 3.3
+      env:
+        - DEPENDS="ipython[notebook] numpy==1.10.2 sphinx==1.4.3 matplotlib==1.5.3"
 
 before_install:
     - source tools/travis_tools.sh
