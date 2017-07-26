@@ -173,7 +173,7 @@ from docutils import nodes
 from docutils.parsers.rst import directives
 from docutils.parsers.rst.directives.images import Image
 align = Image.align
-from sphinx.util.compat import Directive
+from docutils.parsers.rst import Directive
 
 import jinja2
 def format_template(template, **kw):

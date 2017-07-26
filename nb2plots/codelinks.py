@@ -21,8 +21,7 @@ clear notebook file and a full notebook file, respectively. For example::
 
 from docutils.statemachine import StringList
 from docutils import nodes
-
-from sphinx.util.compat import Directive
+from docutils.parsers.rst import Directive
 
 from .runroles import NAME2ROLE
 
