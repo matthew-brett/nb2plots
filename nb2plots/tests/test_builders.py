@@ -169,8 +169,48 @@ class TestPythonBuild(PlotsBuilder):
     builder = 'python'
 
     rst_sources = {'a_page': """\
+.. _a-ref:
+
 A section
 =========
 
 Some text
+
+This section refers to :ref:`itself <a-ref>`.
+
+.. nbplot::
+
+    >>> a = 1
 """}
+
+    def test_output(self):
+        assert_equal(self.get_built_file('contents.py').strip(), '')
+        assert_equal(self.get_built_file('a_page.py'), """\
+# ## A section
+#
+# Some text
+#
+# This section refers to itself.
+
+a = 1
+""")
+
+
+class TestBasedPythonBuild(TestPythonBuild):
+    """ Python builder with specified base URL
+    """
+
+    conf_source = ('extensions = ["nb2plots"]\n'
+                   'markdown_http_base = "https://dynevor.org"')
+
+    def test_output(self):
+        assert_equal(self.get_built_file('contents.py').strip(), '')
+        assert_equal(self.get_built_file('a_page.py'), """\
+# ## A section
+#
+# Some text
+#
+# This section refers to [itself](https://dynevor.org/a_page.html#a-ref).
+
+a = 1
+""")
