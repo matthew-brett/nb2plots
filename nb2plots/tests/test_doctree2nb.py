@@ -13,7 +13,12 @@ n_c_c = nbf.new_code_cell
 
 from nose.tools import assert_equal
 
-from .convutils import fcontents, DATA_PATH
+from .convutils import fcontents, unsmart_nb, DATA_PATH
+
+
+def to_nb_safe(rst_str):
+    out = to_notebook.from_rst(rst_str)
+    return unsmart_nb(out)
 
 
 def cells2json(cells):
@@ -129,7 +134,7 @@ def assert_nb_equiv(ipynb, expected):
 
 
 def assert_conv_equal(rst_str, expected):
-    assert_nb_equiv(to_notebook.from_rst(rst_str), expected)
+    assert_nb_equiv(to_nb_safe(rst_str), expected)
 
 
 def test_example_files():

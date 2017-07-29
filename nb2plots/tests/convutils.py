@@ -11,11 +11,38 @@ from nose.tools import assert_equal
 
 DATA_PATH = abspath(pjoin(dirname(__file__), 'rst_md_files'))
 
+# Translate inserted smartquote characters back to their original form
+_UNSMART_IN = u'\u2019\u201c\u201d\u2026'
+_UNSMART_OUT = (u"'", u'"', u'"', u"...")
+UNSMART_TABLE = {ord(x): y for x, y in zip(_UNSMART_IN, _UNSMART_OUT)}
+_UNSMART_OUT_NB = (u"'", u'\\"', u'\\"', u"...")
+UNSMART_TABLE_NB = {ord(x): y for x, y in zip(_UNSMART_IN, _UNSMART_OUT_NB)}
+
 
 def fcontents(fname, mode='b'):
     with open(fname, 'r' + mode) as fobj:
         contents = fobj.read()
     return contents
+
+
+def unsmart(in_str):
+    # Remove effect of smart quotes
+    # See: https://github.com/sphinx-doc/sphinx/issues/3967
+    return in_str.translate(UNSMART_TABLE)
+
+
+def unsmart_nb(in_str):
+    # Remove effect of smart quotes in notebook cells
+    return in_str.translate(UNSMART_TABLE_NB)
+
+
+def unsmart_converter(converter, table=None):
+    # Decorate function to remove effect of smart quotes.
+
+    def unsmarted(rst_str):
+        return unsmart(converter(rst_str))
+
+    return unsmarted
 
 
 def _diff_strs(first, second):

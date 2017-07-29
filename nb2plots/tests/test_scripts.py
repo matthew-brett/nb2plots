@@ -13,7 +13,7 @@ import re
 from nose.tools import assert_equal, assert_true
 
 from .scriptrunner import ScriptRunner
-from .convutils import fcontents, DATA_PATH
+from .convutils import fcontents, unsmart, unsmart_nb, DATA_PATH
 from .test_doctree2nb import assert_nb_equiv
 
 
@@ -57,7 +57,7 @@ def test_sphinx2md():
         expected_md = fcontents(md_fname)
         cmd = ['sphinx2md', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(stdout, expected_md)
+        assert_equal(unsmart(stdout.decode('utf-8')), expected_md)
 
 
 @script_test
@@ -68,7 +68,7 @@ def test_sphinx2nb():
         expected = fcontents(nb_fname, 't')
         cmd = ['sphinx2nb', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_nb_equiv(stdout.decode('utf-8'), expected)
+        assert_nb_equiv(unsmart_nb(stdout.decode('utf-8')), expected)
 
 
 @script_test
@@ -79,7 +79,7 @@ def test_sphinx2py():
         expected = fcontents(py_fname, 'b')
         cmd = ['sphinx2py', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(stdout, expected)
+        assert_equal(unsmart(stdout.decode('utf-8')), expected)
 
 
 @script_test

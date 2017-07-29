@@ -12,7 +12,7 @@ from nb2plots.doctree2py import parse_doctest
 
 from ..converters import to_py
 
-from .convutils import convert_assert, fcontents, DATA_PATH
+from .convutils import convert_assert, fcontents, unsmart_converter, DATA_PATH
 
 from nose.tools import assert_equal
 
@@ -28,8 +28,11 @@ def test_doctest_parser():
         'for i in (1, 2):\n    print(i)')
 
 
-def assert_conv_equal(rst_str, md_expected):
-    convert_assert(rst_str, to_py.from_rst, md_expected, None)
+to_py_safe = unsmart_converter(to_py.from_rst)
+
+
+def assert_conv_equal(rst_str, md_expected, unsmart=True):
+    convert_assert(rst_str, to_py_safe, md_expected, None)
 
 
 def test_example_files():

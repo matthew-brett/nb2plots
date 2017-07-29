@@ -12,11 +12,14 @@ from ..converters import to_markdown
 
 from nose.tools import assert_equal
 
-from .convutils import convert_assert, fcontents, DATA_PATH
+from .convutils import convert_assert, fcontents, unsmart_converter, DATA_PATH
+
+
+to_md_safe = unsmart_converter(to_markdown.from_rst)
 
 
 def assert_conv_equal(rst_str, md_expected):
-    convert_assert(rst_str, to_markdown.from_rst, md_expected, None)
+    convert_assert(rst_str, to_md_safe, md_expected, None)
 
 
 def test_example_files():
