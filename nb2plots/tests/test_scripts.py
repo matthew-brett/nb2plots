@@ -57,7 +57,8 @@ def test_sphinx2md():
         expected_md = fcontents(md_fname)
         cmd = ['sphinx2md', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(unsmart(stdout.decode('utf-8')), expected_md)
+        assert_equal(unsmart(stdout.decode('utf-8')),
+                     expected_md.decode('utf-8'))
 
 
 @script_test
@@ -68,7 +69,8 @@ def test_sphinx2nb():
         expected = fcontents(nb_fname, 't')
         cmd = ['sphinx2nb', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_nb_equiv(unsmart_nb(stdout.decode('utf-8')), expected)
+        assert_nb_equiv(unsmart_nb(stdout.decode('utf-8')),
+                        expected.decode('utf-8'))
 
 
 @script_test
@@ -79,7 +81,8 @@ def test_sphinx2py():
         expected = fcontents(py_fname, 'b')
         cmd = ['sphinx2py', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(unsmart(stdout.decode('utf-8')), expected)
+        assert_equal(unsmart(stdout.decode('utf-8')),
+                     expected.decode('utf-8'))
 
 
 @script_test
