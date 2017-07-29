@@ -70,7 +70,7 @@ def test_sphinx2nb():
         cmd = ['sphinx2nb', rst_fname]
         code, stdout, stderr = run_command(cmd)
         assert_nb_equiv(unsmart_nb(stdout.decode('utf-8')),
-                        expected.decode('utf-8'))
+                        expected)
 
 
 @script_test
