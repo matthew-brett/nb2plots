@@ -66,12 +66,13 @@ matrix:
 
 before_install:
     - source tools/travis_tools.sh
+    - pip install -U virtualenv
     - virtualenv --python=python venv
     - source venv/bin/activate
     - python -m pip install --upgrade pip wheel
     - python --version  # just to check
     - retry pip install nose mock # always
-    - retry pip install -f $EXTRA_WHEELS $DEPENDS
+    - retry pip install $EXTRA_PIP_FLAGS -f $EXTRA_WHEELS $DEPENDS
     - if [ -n "$COVERAGE" ]; then
       pip install coverage;
       pip install codecov;
