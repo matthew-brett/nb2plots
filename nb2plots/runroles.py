@@ -1,6 +1,7 @@
 """ Sphinx extension to convert RST pages to notebooks """
 
-from os.path import join as pjoin
+from os import makedirs
+from os.path import join as pjoin, dirname, isdir
 from copy import deepcopy
 from collections import defaultdict
 
@@ -91,6 +92,9 @@ class PyRunRole(object):
 
     def write(self, docname, app, out_fname):
         built = self.get_built(docname, app)
+        path = dirname(out_fname)
+        if not isdir(path):
+            makedirs(path)
         with open(out_fname, 'wb') as fobj:
             fobj.write(built.encode(self.encoding))
 
