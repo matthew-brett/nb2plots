@@ -2,7 +2,7 @@
 """
 from __future__ import unicode_literals
 
-from os.path import join as pjoin
+from os.path import join as pjoin, isfile
 
 from .test_nbplots import PlotsBuilder
 
@@ -214,3 +214,24 @@ class TestBasedPythonBuild(TestPythonBuild):
 
 a = 1
 """)
+
+
+class TestLatexBuild(PlotsBuilder):
+    """ Test LaTeX build
+
+    In particular, test that code outputs in a subdirectory work without
+    raising an error.
+    """
+
+    builder = 'latex'
+
+    rst_sources = {'foo/a_page': """\
+A section
+=========
+
+.. code-links::
+"""}
+
+    def test_output(self):
+        for suffix in ('.py', '.ipynb', '_full.ipynb'):
+            assert_true(isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix)))
