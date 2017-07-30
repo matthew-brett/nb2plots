@@ -32,6 +32,7 @@ Releasing nb2plots
 * Once everything looks good, you are ready to upload the source release to
   PyPi.  See `setuptools intro`_.  Make sure you have a file
   ``\$HOME/.pypirc``, of form::
+
     [distutils]
     index-servers =
         pypi
