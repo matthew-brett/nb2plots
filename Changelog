@@ -3,6 +3,16 @@ nb2plots Changelog
 ##################
 
 *****
+0.5.2
+*****
+
+Bugfix release.
+
+* Fix compatibility with Sphinx 1.6 series;
+* Fix bug causing crash in LaTeX builder with code-links directives in
+  subdirectories of main project (thanks to Jarrod Millman for the report).
+
+*****
 0.5.1
 *****
 
