@@ -2,7 +2,7 @@
 
 from os.path import (join as pjoin, dirname, isdir, exists)
 
-from nb2plots.sphinxutils import ModifiedPageBuilder
+from sphinxtesters import ModifiedPageBuilder
 
 from nose.tools import assert_true, assert_equal
 

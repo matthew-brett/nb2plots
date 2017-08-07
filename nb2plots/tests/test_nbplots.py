@@ -6,7 +6,7 @@ import re
 import os
 
 from nb2plots.nbplots import run_code, parse_parts
-from nb2plots.sphinxutils import SourcesBuilder
+from sphinxtesters import SourcesBuilder
 
 from nose.tools import (assert_true, assert_false, assert_equal, assert_raises)
 

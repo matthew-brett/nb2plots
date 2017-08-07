@@ -3,7 +3,7 @@
 
 from importlib import import_module
 
-from .sphinxutils import Converter
+from sphinxtesters import Converter
 
 
 def can_import(module_str):
