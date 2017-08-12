@@ -16,7 +16,7 @@ from .ipython_shim import nbf, nbconvert as nbc
 
 from . import doctree2nb, doctree2py
 from .sphinx2foos import PythonBuilder, NotebookBuilder
-from sphinxtesters import UnicodeOutput
+from .converters import UnicodeOutput
 
 
 from nb2plots.nbplots import drop_visit
