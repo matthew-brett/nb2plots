@@ -17,12 +17,11 @@ def test_converter():
     # Default converter
     conv = Converter()
     text = conv.from_rst(NEW_PAGE)
-    assert_equal(text, """\
+    assert_equal(text.strip(), """\
 More fancy title
 ****************
 
-More compelling text
-""")
+More compelling text""")
     # pseudoxml converter
     conv = Converter('pseudoxml')
     pxml = conv.from_rst(NEW_PAGE)
