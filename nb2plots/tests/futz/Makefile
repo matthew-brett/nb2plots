@@ -1,23 +1,20 @@
-html: clean
-	sphinx-build -W -b html -d html proj1 html
+BUILDDIR = build
+SRCDIR = proj1
 
-pxml: clean
-	sphinx-build -W -b pseudoxml -d html proj1 html
-
-phtml: clean
-	# Permissive HTML
-	sphinx-build -b html -d html proj1 html
-
-ppxml: clean
-	# Permissive PXML
-	sphinx-build -b pseudoxml -d html proj1 html
-
-debug: clean
-	sphinx-build -P -W -b html -d html proj1 html
+all: build-html
 
 clean:
-	rm -rf html
+	rm -rf $(BUILDDIR)
 
 init: clean
-	rm -rf proj1
-	cp -r ../proj1 .
+	rm -rf $(SRCDIR)
+	cp -r ../$(SRCDIR) .
+
+build-% :
+	sphinx-build -W -b $* -d $(BUILDDIR) $(SRCDIR) $(BUILDDIR)
+
+debug-% :
+	sphinx-build -P -W -b $* -d $(BUILDDIR) $(SRCDIR) $(BUILDDIR)
+
+permissive-% :
+	sphinx-build -b $* -d $(BUILDDIR) $(SRCDIR) $(BUILDDIR)

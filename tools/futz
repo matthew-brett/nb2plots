@@ -1,0 +1,5 @@
+# Move to futzing directory, get started
+# Source this, otherwise it won't work
+FUTZ_DIR="$(dirname "${BASH_SOURCE[0]}")/../nb2plots/tests/futz"
+cd $FUTZ_DIR && make init
+echo "Now futz with files in proj1 directory and 'make'"
