@@ -502,6 +502,9 @@ class NBPlotDirective(Directive):
                 if key in ('alt', 'height', 'width', 'scale', 'align',
                             'class')]
 
+        # These are the headers for blocks in the template that link to the
+        # various build plot images - where the logic is different for each
+        # builder.
         only_html = ".. only:: html"
         only_latex = ".. only:: latex"
         only_texinfo = ".. only:: texinfo"
@@ -509,8 +512,8 @@ class NBPlotDirective(Directive):
         # Not-None src_link signals the need for a source link in the generated
         # html
         src_link = source_link if config.nbplot_html_show_source_link else None
-
-        result = format_template(
+        # Build source text for image link epilogue
+        epilogue_source = format_template(
             config.nbplot_template or TEMPLATE,
             dest_dir=dest_dir_link,
             build_dir=build_dir_link,
@@ -525,7 +528,7 @@ class NBPlotDirective(Directive):
 
         rendered_nodes = self.rst2nodes(source_code.splitlines(),
                                         self.nbplot_rendered_node)
-        epilogue = self.rst2nodes(result.splitlines(),
+        epilogue = self.rst2nodes(epilogue_source.splitlines(),
                                   self.nbplot_epilogue)
         ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
