@@ -363,6 +363,51 @@ class NBPlotDirective(Directive):
             return False if self.options['format'] == 'python' else True
         return contains_doctest(multi_str)
 
+    def _build_epilogue(self, images, source_rel_dir, build_dir):
+        """ Build the epilogue housing the image links
+        """
+        document = self.state.document
+        config = document.settings.env.config
+        nofigs = 'nofigs' in self.options
+
+        # how to link to files from the RST file
+        rst_file = document.attributes['source']
+        rst_dir = dirname(rst_file)
+        dest_dir_link = pjoin(relpath(setup.confdir, rst_dir),
+                              source_rel_dir).replace(os.path.sep, '/')
+        build_dir_link = relpath(build_dir, rst_dir).replace(os.path.sep, '/')
+
+        images_to_show = [] if nofigs else images[:]
+        n_to_show = len(images_to_show)
+
+        opts = [':%s: %s' % (key, val)
+                for key, val in self.options.items()
+                if key in ('alt', 'height', 'width', 'scale', 'align',
+                            'class')]
+
+        # These are the headers for blocks in the template that link to the
+        # various build plot images - where the logic is different for each
+        # builder.
+        only_html = ".. only:: html"
+        only_latex = ".. only:: latex"
+        only_texinfo = ".. only:: texinfo"
+
+        # Build source text for image link epilogue
+        epilogue_source = format_template(
+            config.nbplot_template or EPILOGUE_TEMPLATE,
+            dest_dir=dest_dir_link,
+            build_dir=build_dir_link,
+            multi_image=n_to_show > 1,
+            only_html=only_html,
+            only_latex=only_latex,
+            only_texinfo=only_texinfo,
+            options=opts,
+            images=images_to_show,
+            html_show_formats=config.nbplot_html_show_formats and n_to_show)
+
+        return self.rst2nodes(epilogue_source.splitlines(),
+                              self.nbplot_epilogue)
+
     def _copy_image_files(self, images, dest_dir):
         # copy image files to builder's output directory, if necessary
         if not exists(dest_dir):
@@ -377,7 +422,6 @@ class NBPlotDirective(Directive):
     def run(self):
         document = self.state.document
         config = document.settings.env.config
-        nofigs = 'nofigs' in self.options
         env = document.settings.env
         docname = env.docname
 
@@ -490,39 +534,9 @@ class NBPlotDirective(Directive):
         else:  # Non-doctest blocks get dropped from page output
             source_code = ""
 
-        images_to_show = [] if nofigs else images[:]
-        n_to_show = len(images_to_show)
-
-        opts = [':%s: %s' % (key, val)
-                for key, val in self.options.items()
-                if key in ('alt', 'height', 'width', 'scale', 'align',
-                            'class')]
-
-        # These are the headers for blocks in the template that link to the
-        # various build plot images - where the logic is different for each
-        # builder.
-        only_html = ".. only:: html"
-        only_latex = ".. only:: latex"
-        only_texinfo = ".. only:: texinfo"
-
-        # Build source text for image link epilogue
-        epilogue_source = format_template(
-            config.nbplot_template or TEMPLATE,
-            dest_dir=dest_dir_link,
-            build_dir=build_dir_link,
-            source_link=None,
-            multi_image=n_to_show > 1,
-            only_html=only_html,
-            only_latex=only_latex,
-            only_texinfo=only_texinfo,
-            options=opts,
-            images=images_to_show,
-            html_show_formats=config.nbplot_html_show_formats and n_to_show)
-
         rendered_nodes = self.rst2nodes(source_code.splitlines(),
                                         self.nbplot_rendered_node)
-        epilogue = self.rst2nodes(epilogue_source.splitlines(),
-                                  self.nbplot_epilogue)
+        epilogue = self._build_epilogue(images, source_rel_dir, build_dir)
         ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
         if to_render == to_run:
@@ -586,7 +600,7 @@ def remove_coding(text):
 #------------------------------------------------------------------------------
 
 
-TEMPLATE = """
+EPILOGUE_TEMPLATE = """
 {{ only_html }}
 
    {% if html_show_formats and not multi_image %}
