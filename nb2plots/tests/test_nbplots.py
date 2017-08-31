@@ -48,8 +48,7 @@ def test_run_code():
 class TestNbplots(SourcesBuilder):
 
     conf_source = ('extensions = ["nb2plots"]\n'
-                   'nbplot_include_source = False\n'
-                   'nbplot_html_show_source_link = True')
+                   'nbplot_include_source = False\n')
 
     rst_sources = dict(a_page=get_otherpage('some_plots.rst'))
 
@@ -73,8 +72,6 @@ class TestNbplots(SourcesBuilder):
         html_contents = self.get_built_file('a_page.html')
         # Plot 10 has included source
         assert_true('# Only a comment' in html_contents)
-        # HTML links to source
-        assert_true('href=".//a_page-1.py">Source code</a>' in html_contents)
 
 
 class PlotsBuilder(SourcesBuilder):
