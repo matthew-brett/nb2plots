@@ -22,7 +22,7 @@ def main():
     parser.add_argument('notebook', help = 'notebook file to convert')
     args = parser.parse_args()
     rst_text = convert_nb_fname(args.notebook) + '\n'
-    bin_stdout.write(rst_text.encode('utf-8'))
+    bin_stdout().write(rst_text.encode('utf-8'))
 
 
 if __name__ == '__main__':
