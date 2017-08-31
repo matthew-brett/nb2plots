@@ -120,9 +120,6 @@ The nbplot directive has the following configuration options:
     nbplot_include_source
         Default value for the include-source option
 
-    nbplot_html_show_source_link
-        Whether to show a link to the source in HTML.
-
     nbplot_pre_code
         Code that should be executed before each plot.
 
@@ -444,7 +441,6 @@ class NBPlotDirective(Directive):
         dest_dir_link = pjoin(relpath(setup.confdir, rst_dir),
                               source_rel_dir).replace(os.path.sep, '/')
         build_dir_link = relpath(build_dir, rst_dir).replace(os.path.sep, '/')
-        source_link = dest_dir_link + '/' + output_base + source_ext
 
         # Break contents into parts, and select
         to_render, to_run = self._select_parts()
@@ -509,15 +505,12 @@ class NBPlotDirective(Directive):
         only_latex = ".. only:: latex"
         only_texinfo = ".. only:: texinfo"
 
-        # Not-None src_link signals the need for a source link in the generated
-        # html
-        src_link = source_link if config.nbplot_html_show_source_link else None
         # Build source text for image link epilogue
         epilogue_source = format_template(
             config.nbplot_template or TEMPLATE,
             dest_dir=dest_dir_link,
             build_dir=build_dir_link,
-            source_link=src_link,
+            source_link=None,
             multi_image=n_to_show > 1,
             only_html=only_html,
             only_latex=only_latex,
@@ -596,19 +589,14 @@ def remove_coding(text):
 TEMPLATE = """
 {{ only_html }}
 
-   {% if source_link or (html_show_formats and not multi_image) %}
+   {% if html_show_formats and not multi_image %}
    (
-   {%- if source_link -%}
-   `Source code <{{ source_link }}>`__
-   {%- endif -%}
-   {%- if html_show_formats and not multi_image -%}
-     {%- for img in images -%}
-       {%- for fmt in img.formats -%}
-         {%- if source_link or not loop.first -%}, {% endif -%}
-         `{{ fmt }} <{{ dest_dir }}/{{ img.basename }}.{{ fmt }}>`__
-       {%- endfor -%}
+   {%- for img in images -%}
+     {%- for fmt in img.formats -%}
+       {%- if not loop.first -%}, {% endif -%}
+       `{{ fmt }} <{{ dest_dir }}/{{ img.basename }}.{{ fmt }}>`__
      {%- endfor -%}
-   {%- endif -%}
+   {%- endfor -%}
    )
    {% endif %}
 
@@ -1001,7 +989,6 @@ def setup(app):
     pre_default = "import numpy as np\nfrom matplotlib import pyplot as plt\n"
     app.add_config_value('nbplot_pre_code', pre_default, True)
     app.add_config_value('nbplot_include_source', True, True)
-    app.add_config_value('nbplot_html_show_source_link', False, True)
     app.add_config_value('nbplot_formats', ['png', 'hires.png', 'pdf'], True)
     app.add_config_value('nbplot_html_show_formats', True, True)
     app.add_config_value('nbplot_rcparams', {}, True)

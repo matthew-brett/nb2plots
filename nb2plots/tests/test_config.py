@@ -15,7 +15,6 @@ def test_nbplots_setup():
     nbp.setup(app)
     config_names = ['nbplot_pre_code',
                     'nbplot_include_source',
-                    'nbplot_html_show_source_link',
                     'nbplot_formats',
                     'nbplot_html_show_formats',
                     'nbplot_rcparams',
