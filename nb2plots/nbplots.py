@@ -434,21 +434,12 @@ class NBPlotDirective(Directive):
             context_reset = True
         close_figs = False if 'keepfigs' in self.options else True
 
-        rst_file = document.attributes['source']
-        rst_dir = dirname(rst_file)
-        source_file_name = rst_file
-
         counter = document.attributes.get('_plot_counter', 0) + 1
         document.attributes['_plot_counter'] = counter
+
+        source_file_name = document.attributes['source']
         base, ext = splitext(basename(source_file_name))
-        output_base = '%s-%d.py' % (base, counter)
-
-        base, source_ext = splitext(output_base)
-        if source_ext in ('.py', '.rst', '.txt'):
-            output_base = base
-        else:
-            source_ext = ''
-
+        output_base = '%s-%d' % (base, counter)
         # ensure that LaTeX includegraphics doesn't choke in foo.bar.pdf
         # filenames
         output_base = output_base.replace('.', '-')
@@ -480,11 +471,6 @@ class NBPlotDirective(Directive):
         if not exists(dest_dir):
             # no problem here for me, but just use built-ins
             os.makedirs(dest_dir)
-
-        # how to link to files from the RST file
-        dest_dir_link = pjoin(relpath(setup.confdir, rst_dir),
-                              source_rel_dir).replace(os.path.sep, '/')
-        build_dir_link = relpath(build_dir, rst_dir).replace(os.path.sep, '/')
 
         # Break contents into parts, and select
         to_render, to_run = self._select_parts()
