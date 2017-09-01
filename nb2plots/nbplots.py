@@ -236,7 +236,7 @@ def _option_boolean(arg):
     elif arg.strip().lower() in ('yes', '1', 'true'):
         return True
     else:
-        raise ValueError('"%s" unknown boolean' % arg)
+        raise PlotValueError('"%s" unknown boolean' % arg)
 
 
 def _option_format(arg):
@@ -254,6 +254,28 @@ class nbplot_rendered(nodes.container, nodes.Targetable):
 
     Also serves as a reference target.
     """
+
+    def likes_builder(self, builder_name):
+        """ Return True if attributes specify this is an acceptable build
+
+        Parameters
+        ----------
+        builder_name : str
+            Name of builder by which the node is being visited.
+
+        Returns
+        -------
+        liked : bool
+            True if node attributes are compatible with `builder_name`, False
+            otherwise.
+        """
+        hide_from = self.get('hide-from', [])
+        show_to = self.get('show-to', [])
+        if builder_name in show_to:
+            return True
+        if 'all' in hide_from:
+            return False
+        return builder_name not in hide_from
 
 
 class nbplot_epilogue(nodes.container, nodes.Targetable):
@@ -283,6 +305,8 @@ class NBPlotDirective(Directive):
                    'scale': directives.nonnegative_int,
                    'align': _option_align,
                    'class': directives.class_option,
+                   'hide-from': directives.unchanged,
+                   'show-to': directives.unchanged,
                    'include-source': _option_boolean,
                    'format': _option_format,
                    'keepfigs': directives.flag,
@@ -313,7 +337,7 @@ class NBPlotDirective(Directive):
                                                  node.rawsource)
             node.replace_self(new_node)
 
-    def rst2nodes(self, lines, node_class):
+    def rst2nodes(self, lines, node_class, node_attrs=None):
         """ Build docutils nodes from list of ReST strings `lines`
 
         Parameters
@@ -322,6 +346,8 @@ class NBPlotDirective(Directive):
             list of strings containing ReST.
         node_class : :class:`nodes.Node` class
             Container class for output
+        node_attrs : None or dict, optional
+            Attributes to apply to instance of `node_class`
 
         Returns
         -------
@@ -330,8 +356,11 @@ class NBPlotDirective(Directive):
             `node_class` and node contents are nodes generated from ReST in
             `lines`.
         """
+        node_attrs = {} if node_attrs is None else node_attrs
         text = '\n'.join(lines)
         node = node_class(text)
+        for key, value in node_attrs.items():
+            node[key] = value
         self.add_name(node)
         if len(lines) != 0:
             self.state.nested_parse(StringList(lines),
@@ -419,13 +448,38 @@ class NBPlotDirective(Directive):
                 if fn != destimg:
                     shutil.copyfile(fn, destimg)
 
+    def _proc_builder_opts(self, config):
+        """ Process options related to later per-node selection of builders
+        """
+        options = self.options
+        node_attrs = {'hide-from': [], 'show-to': []}
+        reveal_opts = set(node_attrs).intersection(options)
+        if not reveal_opts:  # No hide / show options specified
+            # Set defaults from include-source
+            options.setdefault('include-source', config.nbplot_include_source)
+            if not options['include-source']:
+                node_attrs = {'hide-from': ['all'], 'show-to': ['doctest']}
+            return node_attrs
+        # Some show / hide options specified
+        if 'include-source' in options:
+            raise PlotValueError('Cannot specify "include-source" and {} '
+                                 'in the same directive'.format(
+                                     ','.join(reveal_opts)))
+        for opt_name in reveal_opts:
+            node_attrs[opt_name] = [b_name.strip()
+                                    for b_name in options[opt_name].split()]
+        return node_attrs
+
     def run(self):
         document = self.state.document
         config = document.settings.env.config
         env = document.settings.env
         docname = env.docname
 
+        # Check and fill options for skipping nodes per builder
+        node_attrs = self._proc_builder_opts(config)
         self.options.setdefault('include-source', config.nbplot_include_source)
+
         # If this is the first directive in the document, clear context
         if env.nbplot_reset_markers.get(docname, False):
             context_reset = False
@@ -521,7 +575,8 @@ class NBPlotDirective(Directive):
             source_code = ""
 
         rendered_nodes = self.rst2nodes(source_code.splitlines(),
-                                        self.nbplot_rendered_node)
+                                        self.nbplot_rendered_node,
+                                        node_attrs)
         epilogue = self._build_epilogue(images, source_rel_dir, build_dir)
         ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
@@ -667,6 +722,9 @@ class PlotError(RuntimeError):
     pass
 
 
+class PlotValueError(ValueError):
+    pass
+
 
 PARTER = re.compile(r"""(?:\n\n|^)\.\.\ part\n  # part separator
                     ((?:\ *\w+\ *=\ *.+\n)*)  # attributes
@@ -683,10 +741,10 @@ def _proc_part_def(part_def):
     if part_def == '':
         return {}
     if not part_def.startswith(' '):
-        raise ValueError('Part attributes should be indented')
+        raise PlotValueError('Part attributes should be indented')
     justified = textwrap.dedent(part_def).splitlines()
     if any(s.startswith(' ') for s in justified):
-        raise ValueError('Part attributes should have same indentation')
+        raise PlotValueError('Part attributes should have same indentation')
     return dict(ATTRIBUTER.match(line).groups() for line in justified)
 
 
@@ -943,11 +1001,14 @@ def do_purge_doc(app, env, docname):
     env.nbplot_flag_namespaces[docname] = env.config.nbplot_flags.copy()
 
 
-def null_visit(self, node):
-    pass
+def checked_visit(self, node):
+    if not hasattr(node, 'likes_builder'):
+        return
+    if not node.likes_builder(self.builder.name):
+        raise nodes.SkipNode
 
 
-def null_depart(self, node):
+def checked_depart(self, node):
     pass
 
 
@@ -973,7 +1034,7 @@ def setup(app):
     # Pass through containers used as markers for nbplot contents
     for node_class in (nbplot_rendered, nbplot_epilogue):
         app.add_node(node_class,
-                     **{builder: (null_visit, null_depart)
+                     **{builder: (checked_visit, checked_depart)
                         for builder in standard_builders})
     # Render skipped doctest block as doctest block
     app.add_node(skipped_doctest_block,
