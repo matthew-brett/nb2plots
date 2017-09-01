@@ -37,9 +37,24 @@ The ``nbplot`` directive supports the following options:
         Specify the format of the input.  If not specified, nbplot guesses the
         format from the content.
 
+    hide-from : str
+        List of builders that should not render any source from this directive.
+        Can also be the special value "all", hiding the source from all
+        builders.  Any builder names in `show-to` override builders specified
+        with this option.
+
+    show-to : str
+        List of builders that *should* render any source from this directive.
+        Builder names here override any builders specified in `hide-from`.
+
     include-source : bool
-        Whether to display the source code. The default can be changed
-        using the `nbplot_include_source` variable in conf.py
+        Whether to display the source code. The default can be changed using
+        the `nbplot_include_source` variable in ``conf.py``.  Any doctests in
+        the source code will still be run by the doctest builder.
+        `include-source` has the same effect as ``:hide-from: all`` then
+        ``:show-to: doctest`` (in fact, that is how it is implemented).  We
+        raise an error if you try and specify `include-source` with either of
+        `hide-from` or `show-to`.
 
     encoding : str
         If this source file is in a non-UTF8 or non-ASCII encoding,
