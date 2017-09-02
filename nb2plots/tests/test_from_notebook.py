@@ -34,7 +34,8 @@ def test_simple_cells():
     empty_code_cell = v4.new_code_cell('')
     nb['cells'] = [empty_code_cell]
     exp_empty_code = "\n"
-    assert_equal(convert_nb(nb), exp_empty_code)
+    # nbconvert 5.3.0 started returning '' from an empty code cell
+    assert_true(convert_nb(nb) in (exp_empty_code, ''))
     # magic lines get stripped
     magic_code_cell = v4.new_code_cell('%timeit a = 1')
     nb['cells'] = [magic_code_cell]
