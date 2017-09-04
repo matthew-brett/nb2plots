@@ -18,3 +18,9 @@ debug-% :
 
 permissive-% :
 	sphinx-build -b $* -d $(BUILDDIR) $(SRCDIR) $(BUILDDIR)
+
+html: build-html
+
+doctest: build-doctest
+
+text: build-text
