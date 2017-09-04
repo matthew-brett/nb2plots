@@ -5,7 +5,10 @@ from os.path import (join as pjoin, dirname, isdir)
 import re
 import os
 
-from nb2plots.nbplots import run_code, parse_parts
+from docutils.nodes import paragraph, title
+
+from nb2plots.nbplots import (run_code, parse_parts, nbplot_container,
+                              nbplot_epilogue)
 from sphinxtesters import SourcesBuilder
 
 from nose.tools import (assert_true, assert_false, assert_equal, assert_raises)
@@ -956,3 +959,98 @@ def test_part_finding():
                              [{'contents': ['a = 1', 'b = 2']},
                               {'contents': ['c = 4'],
                                'foo': '[1, 2, s]', 'bar': 'more stuff'}])
+
+
+class TestHideShow(PlotsBuilder):
+    """ Check that hide-from and show-to options respected
+    """
+
+    conf_source = ('extensions = ["nb2plots", "sphinx.ext.doctest"]\n')
+
+    builder = 'text'
+
+    rst_sources=dict(a_page="""\
+#########
+A section
+#########
+
+Text.
+
+.. nbplot::
+    :include-source: false
+
+    >>> a = 1
+
+More text.
+
+.. nbplot::
+    :hide-from: all
+    :show-to: doctest text
+
+    >>> b = 2
+
+Text to pad this boring page.
+
+.. nbplot::
+    :hide-from: all
+    :show-to: text
+
+    # Enigmatic sentence.
+
+Extra text.
+
+.. nbplot::
+
+    >>> assert a == 1
+    >>> assert b == 2
+""")
+
+    def test_hide_show(self):
+        built = self.get_built_file('a_page.txt')
+        assert_equal(built, """\
+A section
+*********
+
+Text.
+
+More text.
+
+>>> b = 2
+
+Text to pad this boring page.
+
+   # Enigmatic sentence.
+
+Extra text.
+
+>>> assert a == 1
+>>> assert b == 2
+""")
+
+
+class TestHideShowTests(TestHideShow):
+    """ Test that the doctests pass, requining the hide/show to work
+    """
+
+    builder = 'doctest'
+
+    def test_hide_show(self):
+        # The build tests the doctests - here we test the doctree
+        built = self.get_doctree('a_page')
+        expected_node_types = [title] + [
+            paragraph,
+            nbplot_container,
+            nbplot_epilogue] * 4
+        for node, exp_type in zip(built[0].children, expected_node_types):
+            assert_equal(type(node), exp_type)
+
+
+class TestHideShowHtml(TestHideShow):
+    """ Test that the HTML does not see the hidden section
+    """
+
+    builder = 'html'
+
+    def test_hide_show(self):
+        built = self.get_built_file('a_page.html')
+        assert_false('# Enigmatic sentence' in built)

@@ -37,24 +37,28 @@ The ``nbplot`` directive supports the following options:
         Specify the format of the input.  If not specified, nbplot guesses the
         format from the content.
 
-    hide-from : str
-        List of builders that should not render any source from this directive.
-        Can also be the special value "all", hiding the source from all
-        builders.  Any builder names in `show-to` override builders specified
-        with this option.
-
-    show-to : str
-        List of builders that *should* render any source from this directive.
-        Builder names here override any builders specified in `hide-from`.
-
     include-source : bool
         Whether to display the source code. The default can be changed using
         the `nbplot_include_source` variable in ``conf.py``.  Any doctests in
         the source code will still be run by the doctest builder.
         `include-source` has the same effect as ``:hide-from: all`` then
-        ``:show-to: doctest`` (in fact, that is how it is implemented).  We
-        raise an error if you try and specify `include-source` with either of
-        `hide-from` or `show-to`.
+        ``:show-to: doctest`` (in fact, that is how it is implemented).  See
+        below for interactions of ``:include-source:`` and these options.
+
+    hide-from : str
+        Space-separated list of builders that should not render any source from
+        this directive.  Can also be the special value "all", hiding the source
+        from all builders.  Any builder names in `show-to` override builders
+        specified with this option.  If you apply ``:hide-from:`` options as
+        well as ``:include-source: false`` (see above), these will have no
+        effect, because ``:include-source: false`` implies ``:hide-from: all``.
+
+    show-to : str
+        Space-separated list of builders that *should* render any source from
+        this directive.  Builder names here override any builders specified in
+        `hide-from`.  If you apply ``:show-to:`` options as well as
+        ``:include-source: false`` (see above) these can enable additional
+        builders on top of the implied ``doctest`` builder.
 
     encoding : str
         If this source file is in a non-UTF8 or non-ASCII encoding,
@@ -94,11 +98,10 @@ The ``nbplot`` directive supports the following options:
         variable (a dict) and any extra namespace defined above this directive
         with :class:`NBPlotFlags` directives.
 
-        For the selected parts, any generated doctest blocks in the code get
-        wrapped in a special doctree node for a skipped doctest, and therefore
-        do not get picked up by the sphinx doctest extension.  The nbplots
-        extension tells the other builders to build the skipped doctest as if
-        it were a standard doctest.
+        Any selected parts get labeled such that the doctest builder does not
+        see them, and therefore they do not get picked up by the sphinx doctest
+        extension.  The nbplots extension tells the other builders to build the
+        skipped doctest as if it were a standard doctest.
 
         Examples::
 
@@ -264,7 +267,7 @@ def _option_align(arg):
         ("top", "middle", "bottom", "left", "center", "right"))
 
 
-class nbplot_rendered(nodes.container, nodes.Targetable):
+class nbplot_container(nodes.container, nodes.Targetable):
     """ Container for rendered nbplot contents
 
     Also serves as a reference target.
@@ -297,15 +300,6 @@ class nbplot_epilogue(nodes.container, nodes.Targetable):
     """ Container for figures etc following nbplot """
 
 
-class nbplot_not_rendered(nodes.container):
-    """ Container for not-rendered nbplot contents
-    """
-
-
-class skipped_doctest_block(nodes.General, nodes.FixedTextElement):
-    """ Container for doctest block that should be skipped """
-
-
 class NBPlotDirective(Directive):
     """ Implements nbplot directive
 
@@ -333,24 +327,8 @@ class NBPlotDirective(Directive):
                   }
 
     # Node classes for rendered, not rendered nbplot contents
-    nbplot_rendered_node = nbplot_rendered
+    nbplot_node = nbplot_container
     nbplot_epilogue = nbplot_epilogue
-    nbplot_not_rendered_node = nbplot_not_rendered
-
-    # Class for skipped doctest
-    skipped_doctest_node = skipped_doctest_block
-
-    def _doctest_filter(self, node):
-        """ True if node is a doctest block node """
-        return isinstance(node, nodes.doctest_block)
-
-    def _skip_doctests(self, tree):
-        """ Replace doctest_block nodes with skipped_doctest block nodes
-        """
-        for node in tree.traverse(self._doctest_filter):
-            new_node = self.skipped_doctest_node(node.rawsource,
-                                                 node.rawsource)
-            node.replace_self(new_node)
 
     def rst2nodes(self, lines, node_class, node_attrs=None):
         """ Build docutils nodes from list of ReST strings `lines`
@@ -375,7 +353,8 @@ class NBPlotDirective(Directive):
         text = '\n'.join(lines)
         node = node_class(text)
         for key, value in node_attrs.items():
-            node[key] = value
+            if value:
+                node[key] = value
         self.add_name(node)
         if len(lines) != 0:
             self.state.nested_parse(StringList(lines),
@@ -465,24 +444,21 @@ class NBPlotDirective(Directive):
 
     def _proc_builder_opts(self, config):
         """ Process options related to later per-node selection of builders
+
+        hide-from ad show-to options apply on top of include-source option and
+        config setting.
         """
         options = self.options
-        node_attrs = {'hide-from': [], 'show-to': []}
-        reveal_opts = set(node_attrs).intersection(options)
-        if not reveal_opts:  # No hide / show options specified
-            # Set defaults from include-source
-            options.setdefault('include-source', config.nbplot_include_source)
-            if not options['include-source']:
-                node_attrs = {'hide-from': ['all'], 'show-to': ['doctest']}
-            return node_attrs
-        # Some show / hide options specified
-        if 'include-source' in options:
-            raise PlotValueError('Cannot specify "include-source" and {} '
-                                 'in the same directive'.format(
-                                     ','.join(reveal_opts)))
-        for opt_name in reveal_opts:
-            node_attrs[opt_name] = [b_name.strip()
-                                    for b_name in options[opt_name].split()]
+        options.setdefault('include-source', config.nbplot_include_source)
+        if options['include-source']:
+            node_attrs = {'hide-from': [], 'show-to': []}
+        else:  # include-source is False
+            node_attrs = {'hide-from': ['all'], 'show-to': ['doctest']}
+        for opt_name in node_attrs:
+            if opt_name not in options:
+                continue
+            values = options[opt_name].split()
+            node_attrs[opt_name] += [b_name.strip() for b_name in values]
         return node_attrs
 
     def run(self):
@@ -493,7 +469,6 @@ class NBPlotDirective(Directive):
 
         # Check and fill options for skipping nodes per builder
         node_attrs = self._proc_builder_opts(config)
-        self.options.setdefault('include-source', config.nbplot_include_source)
 
         # If this is the first directive in the document, clear context
         if env.nbplot_reset_markers.get(docname, False):
@@ -571,41 +546,36 @@ class NBPlotDirective(Directive):
 
         # generate output restructuredtext
         # is the code in doctest format?
-        is_doctest = self._contains_doctest(to_render)
-
-        if is_doctest:
-            lines = [''] + [row.rstrip() for row in to_render.split('\n')]
-        else:
-            lines = ['.. code-block:: python', '']
-            lines += ['    %s' % row.rstrip()
-                      for row in to_render.split('\n')]
-        if self.options['include-source']:
-            source_code = '\n'.join(lines)
-        elif is_doctest:
-            # Doctest blocks still go into page, but hidden
-            source_code = ('.. doctest::\n'
-                            '    :hide:\n'
-                            '    ' + '\n    '.join(lines))
-        else:  # Non-doctest blocks get dropped from page output
-            source_code = ""
-
-        rendered_nodes = self.rst2nodes(source_code.splitlines(),
-                                        self.nbplot_rendered_node,
+        lines = [''] + [row.rstrip() for row in to_render.split('\n')]
+        if not self._contains_doctest(to_render):
+            lines = (['.. code-block:: python'] +
+                     ['    ' + line for line in lines])
+        if to_render != to_run:
+            _hide_from_builder(node_attrs, 'doctest')
+        rendered_nodes = self.rst2nodes(lines,
+                                        self.nbplot_node,
                                         node_attrs)
         epilogue = self._build_epilogue(images, source_rel_dir, build_dir)
         ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
-        if to_render == to_run:
+        if to_render != to_run and self._contains_doctest(to_run):
             # Run code the same as rendered code, all done
-            return ret
-        # Label doctest blocks in rendered output as skipped
-        self._skip_doctests(rendered_nodes[0])
-        # Add not-rendered tree, if there are doctests in run code
-        lines = ([''] + [row.rstrip() for row in to_run.split('\n')]
-                 if self._contains_doctest(to_run) else [])
-        not_rendered_nodes = self.rst2nodes(lines,
-                                            self.nbplot_not_rendered_node)
-        return ret + not_rendered_nodes
+            lines = [''] + [row.rstrip() for row in to_run.split('\n')]
+            ret += self.rst2nodes(
+                lines,
+                self.nbplot_node,
+                {'hide-from': ['all'], 'show-to': ['doctest']})
+        return ret
+
+
+def _hide_from_builder(attrs, builder_name):
+    """ Change ``show-to, hide-from`` values to hide from `builder_name`
+    """
+    if builder_name in attrs['show-to']:
+        attrs['show-to'].remove(builder_name)
+    if builder_name not in attrs['hide-from']:
+        attrs['hide-from'].append(builder_name)
+
 
 #------------------------------------------------------------------------------
 # Doctest handling
@@ -1031,14 +1001,6 @@ def drop_visit(self, node):
     raise nodes.SkipNode
 
 
-def skipped_visit(self, node):
-    self.visit_doctest_block(node)
-
-
-def skipped_depart(self, node):
-    self.depart_doctest_block(node)
-
-
 def setup(app):
     setup.app = app
     setup.config = app.config
@@ -1046,19 +1008,11 @@ def setup(app):
 
     standard_builders = ('html', 'latex', 'text', 'texinfo')
 
-    # Pass through containers used as markers for nbplot contents
-    for node_class in (nbplot_rendered, nbplot_epilogue):
+    # Containers used as markers for nbplot contents
+    for node_class in (nbplot_container, nbplot_epilogue):
         app.add_node(node_class,
                      **{builder: (checked_visit, checked_depart)
                         for builder in standard_builders})
-    # Render skipped doctest block as doctest block
-    app.add_node(skipped_doctest_block,
-                 **{builder: (skipped_visit, skipped_depart)
-                    for builder in standard_builders})
-    # Drop not-rendered nodes completely from content output
-    app.add_node(nbplot_not_rendered,
-                 **{builder: (drop_visit, None)
-                    for builder in ('html', 'latex', 'text')})
     app.add_directive('nbplot', NBPlotDirective)
     app.add_directive('nbplot-flags', NBPlotFlags)
     app.add_directive('nbplot-show-flags', NBPlotShowFlags)
