@@ -19,9 +19,6 @@ from .sphinx2foos import PythonBuilder, NotebookBuilder
 from .converters import UnicodeOutput
 
 
-from nb2plots.nbplots import drop_visit
-
-
 class RunRoleError(ExtensionError):
     """ Error for runnable role Sphinx extensions """
 
@@ -240,6 +237,10 @@ def fill_notebook(nb):
     res['metadata'] = nbc.exporter.ResourcesDict()
     output_nb, _ = preprocessor(deepcopy(nb), res)
     return output_nb
+
+
+def drop_visit(self, node):
+    raise nodes.SkipNode
 
 
 def setup(app):

@@ -728,8 +728,8 @@ class TestWithSkipStructure(TestWithSkip):
             <comment xml:space="preserve">
         <paragraph>
             Text continues
-        <nbplot_container>
-            <skipped_doctest_block xml:space="preserve">
+        <nbplot_container hide-from="doctest">
+            <dont_doctest_block xml:space="preserve">
                 >>> # doctest only run when skip flag False, always rendered
                 >>> b == 'skip appears to be False'
                 True
@@ -737,7 +737,7 @@ class TestWithSkipStructure(TestWithSkip):
             <comment xml:space="preserve">
             <comment xml:space="preserve">
             <comment xml:space="preserve">
-        <nbplot_not_rendered>
+        <nbplot_container hide-from="all" show-to="doctest">
             <doctest_block xml:space="preserve">
                 >>> # only when skip flag True
                 >>> b == 'skip appears to be True'
@@ -974,14 +974,15 @@ class TestHideShow(PlotsBuilder):
 A section
 #########
 
-Text.
+A plot that does not show its source (but does get run by doctest).
 
 .. nbplot::
     :include-source: false
 
     >>> a = 1
 
-More text.
+The next incantation is nearly the same, except we also show the output in the
+text builder (but no other).
 
 .. nbplot::
     :hide-from: all
@@ -989,7 +990,8 @@ More text.
 
     >>> b = 2
 
-Text to pad this boring page.
+Here we hide the output from everything, including doctests, but show it to the
+text builder again.
 
 .. nbplot::
     :hide-from: all
@@ -997,35 +999,61 @@ Text to pad this boring page.
 
     # Enigmatic sentence.
 
-Extra text.
+Show to everything (including doctest builder).
 
 .. nbplot::
 
     >>> assert a == 1
     >>> assert b == 2
+
+Hide from doctest builder, but no other.
+
+.. nbplot::
+    :hide-from: doctest
+
+    >>> a = 99
+
+Show that the doctest builder did not see the previous plot directive.
+
+.. nbplot::
+
+    >>> a == 1
+    True
 """)
 
     def test_hide_show(self):
         built = self.get_built_file('a_page.txt')
-        assert_equal(built, """\
+        expected = """\
 A section
 *********
 
-Text.
+A plot that does not show its source (but does get run by doctest).
 
-More text.
+The next incantation is nearly the same, except we also show the
+output in the text builder (but no other).
 
 >>> b = 2
 
-Text to pad this boring page.
+Here we hide the output from everything, including doctests, but show
+it to the text builder again.
 
    # Enigmatic sentence.
 
-Extra text.
+Show to everything (including doctest builder).
 
 >>> assert a == 1
 >>> assert b == 2
-""")
+
+Hide from doctest builder, but no other.
+
+>>> a = 99
+
+Show that the doctest builder did not see the previous plot directive.
+
+>>> a == 1
+True
+"""
+        assert_equal(built, expected)
 
 
 class TestHideShowTests(TestHideShow):

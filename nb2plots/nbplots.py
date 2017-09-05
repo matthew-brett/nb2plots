@@ -171,6 +171,7 @@ The nbplot directive has the following configuration options:
     nbplot_template
         Provide a customized template for preparing restructured text.
 """
+
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
@@ -298,6 +299,10 @@ class nbplot_container(nodes.container, nodes.Targetable):
 
 class nbplot_epilogue(nodes.container, nodes.Targetable):
     """ Container for figures etc following nbplot """
+
+
+class dont_doctest_block(nodes.General, nodes.FixedTextElement):
+    """ Container to hide doctest block from doctest builder """
 
 
 class NBPlotDirective(Directive):
@@ -516,6 +521,24 @@ class NBPlotDirective(Directive):
             # no problem here for me, but just use built-ins
             os.makedirs(dest_dir)
 
+        # We are now going to chose which parts of the text go to which
+        # builders.  We might have specified which builders we want all the
+        # text to go to, using the hide-from, and show-to options, or
+        # (equivalently) using the include-source option. Or, we might have
+        # split the code into parts, to send some of the code to the renderers,
+        # such as HTML, and other parts of the code to the doctest builder
+        # only.  For most builders, we do that by adding 'hide-from' and
+        # 'show-to' attributes to the containing doctest node, and notifying
+        # the builders visiting the node to discard the node, if those
+        # attributes say they should.   However, the doctest builder does not
+        # visit, so we have have to run a doctree post-processing trick on the
+        # nbplot nodes, to check hide-from, show-to for the 'doctest' builder,
+        # and, if the node should be hidden from the doctest builder, we
+        # replace the doctest_block nodes with something that behaves in the
+        # same way as a doctest_block node for all the visiting builders, but,
+        # because it is not a doctest_block node, does not get picked up by the
+        # doctest builder.
+
         # Break contents into parts, and select
         to_render, to_run = self._select_parts()
 
@@ -545,19 +568,27 @@ class NBPlotDirective(Directive):
             errors = [sm]
 
         # generate output restructuredtext
-        # is the code in doctest format?
         lines = [''] + [row.rstrip() for row in to_render.split('\n')]
+        # If the code is not in doctest format, make it into code blocks.
         if not self._contains_doctest(to_render):
             lines = (['.. code-block:: python'] +
                      ['    ' + line for line in lines])
+        # If we're going to run different code from the source we're rendering
+        # then change node_attrs in place to hide the rendered code from the
+        # doctest builder.
         if to_render != to_run:
             _hide_from_builder(node_attrs, 'doctest')
+        # Build the rendered node
         rendered_nodes = self.rst2nodes(lines,
                                         self.nbplot_node,
                                         node_attrs)
+        # Epilogue node contains the built figures and supporting stuff.
         epilogue = self._build_epilogue(images, source_rel_dir, build_dir)
         ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
+        # Now, we need to put in nodes for the code that ran, so the doctest
+        # builder can find it.  But, we hide these nodes from all the other
+        # builders (using hide-from all).
         if to_render != to_run and self._contains_doctest(to_run):
             lines = [''] + [row.rstrip() for row in to_run.split('\n')]
             ret += self.rst2nodes(
@@ -569,6 +600,15 @@ class NBPlotDirective(Directive):
 
 def _hide_from_builder(attrs, builder_name):
     """ Change ``show-to, hide-from`` values to hide from `builder_name`
+
+    Modify `attrs` in-place.
+
+    Parameters
+    ----------
+    attrs : dict
+        Dict containing keys ``hide-from`` and ``show-to``.
+    builder_name : str
+        Name of builder that we want `attrs` to signal hiding from.
     """
     if builder_name in attrs['show-to']:
         attrs['show-to'].remove(builder_name)
@@ -985,11 +1025,13 @@ def do_purge_doc(app, env, docname):
     env.nbplot_flag_namespaces[docname] = env.config.nbplot_flags.copy()
 
 
+def likes_builder(node, builder_name):
+    return (not hasattr(node, 'likes_builder') or
+            node.likes_builder(builder_name))
+
+
 def checked_visit(self, node):
-    1/0
-    if not hasattr(node, 'likes_builder'):
-        return
-    if not node.likes_builder(self.builder.name):
+    if not likes_builder(node, self.builder.name):
         raise nodes.SkipNode
 
 
@@ -997,8 +1039,43 @@ def checked_depart(self, node):
     pass
 
 
-def drop_visit(self, node):
-    raise nodes.SkipNode
+def dont_doctest_visit(self, node):
+    # Make node behave like doctest node, for builders that visit.  This allows
+    # us to make another not-doctest_block node to replace the actual
+    # ductest_block node, so that, for builders that visit, such as html, we
+    # get the same output, but thd doctest builder passes over it, because it
+    # is not a doctest_block node.
+    self.visit_doctest_block(node)
+
+
+def dont_doctest_depart(self, node):
+    self.depart_doctest_block(node)
+
+
+def doctest_filter(node):
+    """ True if node is a ``doctest_block`` node
+    """
+    return isinstance(node, nodes.doctest_block)
+
+
+def dont_doctest_doctests(tree):
+    """ Replace ``doctest_block`` nodes with ``dont_doctest_block`` nodes
+    """
+    for node in tree.traverse(doctest_filter):
+        new_node = dont_doctest_block(node.rawsource, node.rawsource)
+        node.replace_self(new_node)
+
+
+def maybe_disable_doctests(app, doctree):
+    """ If nbplot container node marks doctests as hidden, hide.
+
+    Hide by replacing ``doctest_block`` nodes with ``dont_doctest_block``
+    nodes, that render as doctest blocks, but don't get picked up by the
+    doctest builder.
+    """
+    for node in doctree.traverse(nbplot_container):
+        if not likes_builder(node, 'doctest'):
+            dont_doctest_doctests(node)
 
 
 def setup(app):
@@ -1006,14 +1083,23 @@ def setup(app):
     setup.config = app.config
     setup.confdir = app.confdir
 
-    known_builders = ('html', 'latex', 'text', 'texinfo', 'doctest',
-                      'markdown', 'python', 'jupyter')
+    # Builders which run visit methods on nodes.  Basically everything but
+    # doctest.
+    visiting_builders = ('html', 'latex', 'text', 'texinfo', 'doctest',
+                         'markdown', 'python', 'jupyter')
 
     # Containers used as markers for nbplot contents
     for node_class in (nbplot_container, nbplot_epilogue):
         app.add_node(node_class,
                      **{builder: (checked_visit, checked_depart)
-                        for builder in known_builders})
+                        for builder in visiting_builders})
+    # Allow nodes hidden from doctest builder to render on other builders
+    app.add_node(dont_doctest_block,
+                 **{builder: (dont_doctest_visit, dont_doctest_depart)
+                    for builder in visiting_builders})
+    # Hide doctests from doctest builder, if node says that it should be hidden
+    # from the doctest builder.
+    app.connect('doctree-read', maybe_disable_doctests)
     app.add_directive('nbplot', NBPlotDirective)
     app.add_directive('nbplot-flags', NBPlotFlags)
     app.add_directive('nbplot-show-flags', NBPlotShowFlags)
