@@ -454,7 +454,7 @@ r"""<document _plot_counter="1" source=".*?a_page.rst">
         <title>
             A title
         <target ids="a-ref" names="a-ref">
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block.*>
                 >>> a = 1
         <nbplot_epilogue>
@@ -629,7 +629,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
     <section ids="a-title" names="a\\ title">
         <title>
             A title
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block xml:space="preserve">
                 >>> # always
                 >>> a = 'default'
@@ -639,7 +639,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
             <comment xml:space="preserve">
         <paragraph>
             Some text
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block xml:space="preserve">
                 >>> a = 'skip is False'
         <nbplot_epilogue>
@@ -648,7 +648,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
             <comment xml:space="preserve">
         <paragraph>
             Keep text coming
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block xml:space="preserve">
                 >>> b = 'skip appears to be False'
                 >>> a == 'skip is False'
@@ -659,7 +659,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
             <comment xml:space="preserve">
         <paragraph>
             Text continues
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block xml:space="preserve">
                 >>> # doctest only run when skip flag False, always rendered
                 >>> b == 'skip appears to be False'
@@ -698,7 +698,7 @@ class TestWithSkipStructure(TestWithSkip):
     <section ids="a-title" names="a\\ title">
         <title>
             A title
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block xml:space="preserve">
                 >>> # always
                 >>> a = 'default'
@@ -708,7 +708,7 @@ class TestWithSkipStructure(TestWithSkip):
             <comment xml:space="preserve">
         <paragraph>
             Some text
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block xml:space="preserve">
                 >>> a = 'skip is True'
         <nbplot_epilogue>
@@ -717,7 +717,7 @@ class TestWithSkipStructure(TestWithSkip):
             <comment xml:space="preserve">
         <paragraph>
             Keep text coming
-        <nbplot_rendered>
+        <nbplot_container>
             <doctest_block xml:space="preserve">
                 >>> b = 'skip appears to be True'
                 >>> a == 'skip is True'
@@ -728,7 +728,7 @@ class TestWithSkipStructure(TestWithSkip):
             <comment xml:space="preserve">
         <paragraph>
             Text continues
-        <nbplot_rendered>
+        <nbplot_container>
             <skipped_doctest_block xml:space="preserve">
                 >>> # doctest only run when skip flag False, always rendered
                 >>> b == 'skip appears to be False'

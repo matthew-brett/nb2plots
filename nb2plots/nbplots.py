@@ -559,7 +559,6 @@ class NBPlotDirective(Directive):
         ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
         if to_render != to_run and self._contains_doctest(to_run):
-            # Run code the same as rendered code, all done
             lines = [''] + [row.rstrip() for row in to_run.split('\n')]
             ret += self.rst2nodes(
                 lines,
@@ -987,6 +986,7 @@ def do_purge_doc(app, env, docname):
 
 
 def checked_visit(self, node):
+    1/0
     if not hasattr(node, 'likes_builder'):
         return
     if not node.likes_builder(self.builder.name):
@@ -1006,13 +1006,14 @@ def setup(app):
     setup.config = app.config
     setup.confdir = app.confdir
 
-    standard_builders = ('html', 'latex', 'text', 'texinfo')
+    known_builders = ('html', 'latex', 'text', 'texinfo', 'doctest',
+                      'markdown', 'python', 'jupyter')
 
     # Containers used as markers for nbplot contents
     for node_class in (nbplot_container, nbplot_epilogue):
         app.add_node(node_class,
                      **{builder: (checked_visit, checked_depart)
-                        for builder in standard_builders})
+                        for builder in known_builders})
     app.add_directive('nbplot', NBPlotDirective)
     app.add_directive('nbplot-flags', NBPlotFlags)
     app.add_directive('nbplot-show-flags', NBPlotShowFlags)

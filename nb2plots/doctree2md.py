@@ -144,7 +144,7 @@ PASS_THRU_ELEMENTS = ('document',
                       'field',
                       'field_name',
                       'mpl_hint',
-                      'nbplot_rendered',
+                      'nbplot_container',
                       'pending_xref',
                       'compound',
                      )

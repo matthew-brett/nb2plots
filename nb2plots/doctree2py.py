@@ -85,10 +85,10 @@ class Translator(d2m.Translator):
             self.add_code_block(parse_doctest(doctest_txt))
         raise nodes.SkipNode
 
-    def visit_nbplot_rendered(self, node):
+    def visit_nbplot_container(self, node):
         self._in_nbplot = True
 
-    def depart_nbplot_rendered(self, node):
+    def depart_nbplot_container(self, node):
         self._in_nbplot = False
 
     def visit_runrole_reference(self, node):
