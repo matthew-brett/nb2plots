@@ -737,14 +737,6 @@ EPILOGUE_TEMPLATE = """
 
 """
 
-exception_template = """
-.. htmlonly::
-
-   [`source code <%(linkdir)s/%(basename)s.py>`__]
-
-Exception occurred rendering plot.
-
-"""
 
 # the context of the plot for all directives
 plot_context = dict()
