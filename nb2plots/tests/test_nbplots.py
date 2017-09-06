@@ -1053,7 +1053,8 @@ Show that the doctest builder did not see the previous plot directive.
 >>> a == 1
 True
 """
-        assert_equal(built, expected)
+        # Blank lines at beginning differ in Sphinx versions
+        assert_equal(built.strip(), expected.strip())
 
 
 class TestHideShowTests(TestHideShow):
