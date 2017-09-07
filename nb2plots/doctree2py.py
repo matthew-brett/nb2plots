@@ -86,7 +86,7 @@ class Translator(d2m.Translator):
         raise nodes.SkipNode
 
     def visit_nbplot_container(self, node):
-        super(Translator, self).visit_nbplot_container(node)
+        d2m.Translator.visit_nbplot_container(self, node)
         self._in_nbplot = True
 
     def depart_nbplot_container(self, node):
