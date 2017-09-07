@@ -17,6 +17,8 @@ __docformat__ = 'reStructuredText'
 from docutils import frontend, nodes, writers, languages
 from collections import OrderedDict
 
+from .nbplots import checked_visit
+
 
 class IndentLevel(object):
     """ Class to hold text being written for a certain indentation level
@@ -144,7 +146,6 @@ PASS_THRU_ELEMENTS = ('document',
                       'field',
                       'field_name',
                       'mpl_hint',
-                      'nbplot_container',
                       'pending_xref',
                       'compound',
                      )
@@ -494,6 +495,12 @@ class Translator(nodes.NodeVisitor):
     visit_compact_paragraph = visit_paragraph
 
     depart_compact_paragraph = depart_paragraph
+
+    def visit_nbplot_container(self, node):
+        checked_visit(self, node)
+
+    def depart_nbplot_container(self, node):
+        pass
 
     def unknown_visit(self, node):
         """ Warn once per instance for unsupported nodes

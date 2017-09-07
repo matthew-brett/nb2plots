@@ -1072,8 +1072,7 @@ def setup(app):
 
     # Builders which run visit methods on nodes.  Basically everything but
     # doctest.
-    visiting_builders = ('html', 'latex', 'text', 'texinfo', 'doctest',
-                         'markdown', 'python', 'jupyter')
+    visiting_builders = ('html', 'latex', 'text', 'texinfo')
 
     # Containers used as markers for nbplot contents
     for node_class in (nbplot_container, nbplot_epilogue):

@@ -25,3 +25,17 @@ A block to test line-wrapping:
 ```python
 >>> # Here is a comment line that goes beyond the normal 80 character line wrap to test (non) wrapping
 ```
+
+Markdown builder can be forced to skip:
+
+Python builder can be forced to skip:
+
+```python
+>>> # Should not appear in Python
+```
+
+Jupyter builder can be forced to skip:
+
+```python
+>>> # Should not appear in Notebook
+```
