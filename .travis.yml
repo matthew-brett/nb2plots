@@ -31,6 +31,13 @@ matrix:
       env:
         - COVERAGE=1
         - DOCTESTS=1
+    # Check finding dependencies from pip
+    - python: 2.7
+      env:
+        - DEPENDS=
+    - python: 3.6
+      env:
+        - DEPENDS=
     - python: 3.5
       env:
         - DOCTESTS=1
