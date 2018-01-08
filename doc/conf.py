@@ -348,3 +348,6 @@ texinfo_documents = [
 # texinfo_no_detailmenu = False
 
 markdown_http_base = 'https://matthew-brett.github.io/nb2plots'
+
+# Doctest configuration.  Use older numpy array representation.
+doctest_global_setup = 'from nb2plots.testing import setup_test; setup_test()'
