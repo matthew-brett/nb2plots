@@ -62,7 +62,7 @@ class CodeLinks(Directive):
             suffix = params['suffix']
             role = NAME2ROLE[role_name]
             lines.append(
-                '* :{role_name}:`{descr} <{docname}{suffix}{ext}>`'.format(
+                '* :{role_name}:`{descr} </{docname}{suffix}{ext}>`'.format(
                     role_name=role_name,
                     descr=role.default_text,
                     docname=env.docname,

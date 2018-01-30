@@ -36,7 +36,7 @@ class TestProj1(Proj1Builder):
             '<title>A section</title>\n'
             '<paragraph>Some text.</paragraph>\n'
             '<paragraph><runrole_reference code_type="clear notebook" '
-            'refdoc="a_page" reftarget="a_page.ipynb" reftype="clearnotebook">'
+            'refdoc="a_page" reftarget="/a_page.ipynb" reftype="clearnotebook">'
             'notebook here</runrole_reference></paragraph>\n'
             '<paragraph>More text.</paragraph>\n'
             '<paragraph><runrole_reference code_type="full notebook" '
@@ -44,7 +44,7 @@ class TestProj1(Proj1Builder):
             'full</runrole_reference></paragraph>\n'
             '<paragraph>Text is endless.</paragraph>\n'
             '<paragraph><runrole_reference code_type="python" '
-            'refdoc="a_page" reftarget="a_page.py" reftype="codefile">'
+            'refdoc="a_page" reftarget="/a_page.py" reftype="codefile">'
             'code here</runrole_reference></paragraph>')
         assert_equal(doctree_str, expected)
         # Check the expected files were written

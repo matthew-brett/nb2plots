@@ -76,7 +76,7 @@ class PyRunRole(object):
         text = self.default_text if text.strip() == '.' else text
         has_fname, title, fname = split_explicit_title(text)
         if not has_fname:
-            fname = env.docname + self.default_extension
+            fname = '/' + env.docname + self.default_extension
         refnode = runrole_reference(rawtext, title, reftype=name)
         # We may need the line number for warnings
         set_role_source_info(inliner, lineno, refnode)

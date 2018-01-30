@@ -1,6 +1,27 @@
 """ Tests for runroles module
 """
 import re
+from os.path import isfile, join as pjoin
+
+from .test_nbplots import PlotsBuilder
+
+
+class TestSubdirCodeLinks(PlotsBuilder):
+    """ Test output file locations for code-links directive.
+    """
+
+    rst_sources = {'foo/a_page': """\
+A section
+#########
+
+.. code-links::
+
+More text.
+"""}
+
+    def test_output(self):
+        for suffix in ('.py', '.ipynb', '_full.ipynb'):
+            assert_true(isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix)))
 
 from nb2plots import runroles as rr
 from nb2plots import doctree2nb
@@ -10,6 +31,8 @@ from nb2plots.converters import to_pxml
 from nose.tools import assert_equal, assert_true
 
 from nb2plots.tests import mockapp
+
+from .test_nbplots import PlotsBuilder
 
 
 def test_runroles_setup(*args):
@@ -40,7 +63,7 @@ def test_runrole_doctrees():
 <document source=".*?">
     <paragraph>
         Text then 
-        <runrole_reference code_type="{code_type}" filename="{base}.{ext}" refdoc="contents" reftarget="{base}.{ext}" reftype="{role_type}">
+        <runrole_reference code_type="{code_type}" filename="{filebase}.{ext}" refdoc="contents" reftarget="{base}.{ext}" reftype="{role_type}">
             {descr}
          then text."""
 
@@ -60,39 +83,82 @@ def test_runrole_doctrees():
 
     assert_rst_pxml(
         dict(code_type='clear notebook',
-             base='contents',
+             filebase='contents',
+             base='/contents',
              descr='Download this page as a Jupyter notebook \(no outputs\)'),
         "Text then :clearnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='full notebook',
-             base='contents',
+             filebase='contents',
+             base='/contents',
              descr=('Download this page as a Jupyter notebook '
                     '\(with outputs\)')),
         "Text then :fullnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='python',
-             base='contents',
+             filebase='contents',
+             base='/contents',
              descr='Download this page as a Python code file'),
         "Text then :codefile:`.` then text.")
     for code_type in ('clear notebook', 'full notebook', 'python'):
         role_type = type2role[code_type]
         assert_rst_pxml(
             dict(code_type=code_type,
-                 base='contents',
+                 filebase='contents',
+                 base='/contents',
                  descr='message to taste'),
             "Text then :{}:`message to taste` then text.".format(role_type))
         assert_rst_pxml(
             dict(code_type=code_type,
+                 filebase='foo',
                  base='foo',
                  ext='ipynb',
                  descr='message to taste'),
             "Text then :{}:`message to taste <foo.ipynb>` then text."
             .format(role_type))
-        # Is it annoying, but there must be a first text description for the
+        # It is annoying, but there must be a first text description for the
         # angle brackets part to refer to the output file name.  This is how
         # ReST role processing usually works.
         assert_rst_pxml(
             dict(code_type=code_type,
-                 base='contents',
+                 filebase='contents',
+                 base='/contents',
                  descr='<foo.ipynb>'),
             "Text then :{}:`<foo.ipynb>` then text.".format(role_type))
+
+
+class TestSubdirBuild(PlotsBuilder):
+    """ Test that output files from subdirectories have correct location
+    """
+
+    rst_sources = {'foo/a_page': """\
+A section
+#########
+
+Some text.
+
+:clearnotebook:`notebook here`
+
+Text is endless.
+
+:codefile:`code here`
+
+Bare path is relative to containing directory:
+
+:codefile:`code here <my_code.py>`
+
+Can have relative parts too:
+
+:clearnotebook:`notebook here <../my_nb.ipynb>`
+
+Prepended / refers to root of project:
+
+:codefile:`code here </more_code.py>`
+"""}
+
+    def test_output(self):
+        for suffix in ('.py', '.ipynb'):
+            assert_true(isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix)))
+        assert_true(isfile(pjoin(self.out_dir, 'foo', 'my_code.py')))
+        assert_true(isfile(pjoin(self.out_dir, 'my_nb.ipynb')))
+        assert_true(isfile(pjoin(self.out_dir, 'more_code.py')))
