@@ -187,6 +187,34 @@ class FullNotebookRunRole(ClearNotebookRunRole):
     def __init__(self, clear_role):
         self.clear_role = clear_role
 
+    def write_queue(self, queue, app):
+        """ Write queue of runnable nodes
+
+        Choose longest timeout for duplicate builds.
+
+        Parameters
+        ----------
+        queue : iterable
+            Iterable of Docutils nodes, where the nodes specify runnable
+            builds, including (for each node) the filename of original ReST
+            document.
+        app : Sphinx Application
+            Application responsible for build.
+        """
+        # Set longest timeout to duplicates
+        for docname in set(n['refdoc'] for n in queue):
+            duplicates = [n for n in queue if n['refdoc'] == docname]
+            timeouts = set(n['timeout'] for n in duplicates if 'timeout' in n)
+            if len(timeouts) == 0:
+                continue
+            max_timeout = (-1 if {None, -1}.intersection(timeouts)
+                           else max(timeouts))
+            for n in duplicates:
+                n['timeout'] = max_timeout
+
+        for node in queue:
+            self.write(node, app)
+
     def _build(self, node, env):
         """ Return byte string containing built version of `doctree` """
         empty_json = self.clear_role.get_built(node, env)
