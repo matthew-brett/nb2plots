@@ -186,3 +186,41 @@ True
 
     def test_output(self):
         assert_true(isfile(pjoin(self.out_dir, 'a_page.py')))
+
+
+class TestDuplicatesOK(PlotsBuilder):
+    """ Test that same and different filename for same code type works.
+    """
+
+    rst_sources = {'a_page': """\
+Title
+#####
+
+:fullnotebook:`name <foo.ipynb>`
+
+:fullnotebook:`name <foo.ipynb>`
+
+:fullnotebook:`name <bar.ipynb>`
+
+"""}
+
+    def test_output(self):
+        assert_true(isfile(pjoin(self.out_dir, 'foo.ipynb')))
+        assert_true(isfile(pjoin(self.out_dir, 'bar.ipynb')))
+
+
+class TestDuplicatesNotOK(PlotsBuilder):
+    """ Test that same filename for different code type fails.
+    """
+
+    rst_sources = {'a_page': """\
+Title
+#####
+
+:fullnotebook:`name <foo.ipynb>`
+
+:clearnotebook:`name <foo.ipynb>`
+
+"""}
+
+    should_error = True
