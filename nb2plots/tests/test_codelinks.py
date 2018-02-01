@@ -6,7 +6,7 @@ import re
 
 from nb2plots.converters import to_pxml
 
-from nose.tools import assert_true
+from nb2plots.testing import assert_true
 
 from .test_nbplots import PlotsBuilder
 
@@ -30,17 +30,17 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference code_type="python" refdoc="contents" reftarget="/contents.py" reftype="codefile">
+                    <runrole_reference refdoc="contents" reftarget="/contents.py" reftype="pyfile">
                         Download this page as a Python code file
                     ;
             <list_item>
                 <paragraph>
-                    <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="/contents.ipynb" reftype="clearnotebook">
+                    <runrole_reference refdoc="contents" reftarget="/contents.ipynb" reftype="clearnotebook">
                         Download this page as a Jupyter notebook \(no outputs\)
                     ;
             <list_item>
                 <paragraph>
-                    <runrole_reference code_type="full notebook" refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
+                    <runrole_reference refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
                         Download this page as a Jupyter notebook \(with outputs\)
                     .
     <paragraph>
@@ -71,7 +71,7 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference code_type="clear notebook" refdoc="contents" reftarget="/contents.ipynb" reftype="clearnotebook">
+                    <runrole_reference refdoc="contents" reftarget="/contents.ipynb" reftype="clearnotebook">
                         Download this page as a Jupyter notebook \(no outputs\)
                     .
     <paragraph>
@@ -91,7 +91,7 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference code_type="full notebook" refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
+                    <runrole_reference refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
                         Download this page as a Jupyter notebook \(with outputs\)
                     .
     <paragraph>
@@ -111,12 +111,12 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference code_type="full notebook" refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
+                    <runrole_reference refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
                         Download this page as a Jupyter notebook \(with outputs\)
                     ;
             <list_item>
                 <paragraph>
-                    <runrole_reference code_type="python" refdoc="contents" reftarget="/contents.py" reftype="codefile">
+                    <runrole_reference refdoc="contents" reftarget="/contents.py" reftype="pyfile">
                         Download this page as a Python code file
                     .
     <paragraph>

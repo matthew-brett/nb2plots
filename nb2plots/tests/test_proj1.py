@@ -35,16 +35,16 @@ class TestProj1(Proj1Builder):
         expected = (
             '<title>A section</title>\n'
             '<paragraph>Some text.</paragraph>\n'
-            '<paragraph><runrole_reference code_type="clear notebook" '
+            '<paragraph><runrole_reference '
             'refdoc="a_page" reftarget="/a_page.ipynb" reftype="clearnotebook">'
             'notebook here</runrole_reference></paragraph>\n'
             '<paragraph>More text.</paragraph>\n'
-            '<paragraph><runrole_reference code_type="full notebook" '
+            '<paragraph><runrole_reference '
             'refdoc="a_page" reftarget="another.ipynb" reftype="fullnotebook">'
             'full</runrole_reference></paragraph>\n'
             '<paragraph>Text is endless.</paragraph>\n'
-            '<paragraph><runrole_reference code_type="python" '
-            'refdoc="a_page" reftarget="/a_page.py" reftype="codefile">'
+            '<paragraph><runrole_reference '
+            'refdoc="a_page" reftarget="/a_page.py" reftype="pyfile">'
             'code here</runrole_reference></paragraph>')
         assert_equal(doctree_str, expected)
         # Check the expected files were written
@@ -89,5 +89,5 @@ class TestSameNamePy(Proj1Builder):
 """
 :clearnotebook:`.` (the default name).
 
-:codefile:`code file <a_page.ipynb>` (same name as notebook)
+:pyfile:`code file <a_page.ipynb>` (same name as notebook)
 """)

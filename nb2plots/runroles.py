@@ -32,7 +32,7 @@ class PyRunRole(object):
 
     default_text = 'Download this page as a Python code file'
     default_extension = '.py'
-    code_type = 'python'
+    code_type = 'pyfile'
     builder_class = PythonBuilder
     encoding = 'utf-8'
 
@@ -66,62 +66,92 @@ class PyRunRole(object):
         messages : list
             list of system messages. Can be empty.
         """
-        # process options
-        # http://docutils.sourceforge.net/docs/howto/rst-roles.html
-        set_classes(options)
         # Get objects from context
         env = inliner.document.settings.env
+        # process class options.
+        # http://docutils.sourceforge.net/docs/howto/rst-roles.html
+        # Remaining options will be added as attributes of the node (see
+        # below).
+        set_classes(options)
         # Get title and link
         text = utils.unescape(text)
         text = self.default_text if text.strip() == '.' else text
         has_fname, title, fname = split_explicit_title(text)
         if not has_fname:
             fname = '/' + env.docname + self.default_extension
-        refnode = runrole_reference(rawtext, title, reftype=name)
+        refnode = runrole_reference(rawtext, title,
+                                    reftype=self.code_type,
+                                    refdoc=env.docname,
+                                    reftarget=fname,
+                                    **options)
         # We may need the line number for warnings
         set_role_source_info(inliner, lineno, refnode)
-        refnode['reftarget'] = fname
-        # we also need the source document
-        refnode['refdoc'] = env.docname
-        # result_nodes allow further modification of return values
-        refnode['code_type'] = self.code_type
         return [refnode], []
 
-    def write(self, docname, app, out_fname):
-        built = self.get_built(docname, app)
+    def write_queue(self, queue, app):
+        """ Write queue of runnable nodes
+
+        Parameters
+        ----------
+        queue : iterable
+            Iterable of Docutils nodes, where the nodes specify runnable
+            builds, including (for each node) the filename of original ReST
+            document.
+        app : Sphinx Application
+            Application responsible for build.
+        """
+        for node in queue:
+            self.write(node, app)
+
+    def write(self, node, app):
+        """ Build + cache runnable, or return build from cache.
+
+        Parameters
+        ----------
+        node : docutils node
+            Docutils node specifying runnable build, including filename of
+            original ReST document.
+        app : Sphinx Application
+            Application responsible for build.
+        """
+        out_fname = _relfn2outpath(node['filename'], app)
+        built = self.get_built(node, app)
         path = dirname(out_fname)
         if not isdir(path):
             makedirs(path)
         with open(out_fname, 'wb') as fobj:
             fobj.write(built.encode(self.encoding))
 
-    def get_built(self, docname, app):
-        """ Build, cache output file
+    def get_built(self, node, app):
+        """ Build, cache, return output object, or return from cache.
 
         Parameters
         ----------
-        docname : str
-            Document name.
+        node : object
+            Runrole node.
         app : object
             Sphinx application in charge of build
-        """
-        own_params = app.env.runrole[docname][self.code_type]
-        if own_params['built'] is None:
-            own_params['built'] = self._build(docname, app)
-        return own_params['built']
 
-    def _build(self, docname, app):
+        Returns
+        -------
+        output : built output.
+        """
+        code_type = self.code_type
+        own_params = app.env.runrole_cache[node['refdoc']]
+        if own_params.get(code_type) is None:
+            own_params[code_type] = self._build(node, app)
+        return own_params[code_type]
+
+    def _build(self, node, app):
         """ Return string containing built / resolved version of `doctree`
         """
         builder = self.builder_class(app)
+        docname = node['refdoc']
         doctree = app.env.get_and_resolve_doctree(docname, builder)
         builder.prepare_writing([docname])
         # Set current docname for writer to work out link targets
         builder.current_docname = docname
         return builder.writer.write(doctree, UnicodeOutput())
-
-    def clear_cache(self, docname, env):
-        env.runrole[docname][self.code_type]['built'] = None
 
 
 class ClearNotebookRunRole(PyRunRole):
@@ -129,7 +159,7 @@ class ClearNotebookRunRole(PyRunRole):
 
     default_text = 'Download this page as a Jupyter notebook (no outputs)'
     default_extension = '.ipynb'
-    code_type = 'clear notebook'
+    code_type = 'clearnotebook'
     builder_class = NotebookBuilder
 
 
@@ -137,65 +167,80 @@ class FullNotebookRunRole(ClearNotebookRunRole):
     """ Role builder for evaluated notebook """
 
     default_text = 'Download this page as a Jupyter notebook (with outputs)'
-    code_type = 'full notebook'
+    code_type = 'fullnotebook'
 
     def __init__(self, clear_role):
         self.clear_role = clear_role
 
-    def _build(self, docname, env):
+    def _build(self, node, env):
         """ Return byte string containing built version of `doctree` """
         empty_json = self.clear_role.get_built(docname, env)
         full_nb = fill_notebook(nbf.reads(empty_json))
         return nbf.writes(full_nb)
 
 
+# Collect instances of the known role types
 _clearnotebook = ClearNotebookRunRole()
-NAME2ROLE = dict(codefile=PyRunRole(),
+NAME2ROLE = dict(pyfile=PyRunRole(),
+                 codefile=PyRunRole(),  # compatibility with older name
                  clearnotebook=_clearnotebook,
                  fullnotebook=FullNotebookRunRole(_clearnotebook))
 
-_TYPE2ROLE = {role.code_type: role for role in NAME2ROLE.values()}
-
-
-def _empty_rundict():
-    return {code_type: dict(to_build=[], built=None)
-            for code_type in _TYPE2ROLE}
-
 
 def do_builder_init(app):
-    """ Initialize builder with runrole caches
+    """ Initialize builder with empty runrole caches and queues.
     """
     env = app.env
-    env.runrole = defaultdict(_empty_rundict)
+    env.runrole_queue = defaultdict(list)
+    env.runrole_cache = defaultdict(dict)
 
 
 def do_purge_doc(app, env, docname):
-    """ Clear caches of runrole builds and finds
+    """ Clear caches and queues of runrole builds from this `docname`.
     """
-    env.runrole[docname] = _empty_rundict()
+    env.runrole_cache.pop(docname, None)
+    queues = env.runrole_queue
+    for code_type in queues:
+        queues[code_type] = [node for node in queues[code_type]
+                             if node['refdoc'] != docname]
 
 
 def collect_runfiles(app, doctree, fromdocname):
+    r""" Collate requested runnable files, store in env
+
+    Traverse doctree, find runrole nodes, and collect the nodes that need to be
+    built.  Store references to the nodes in the ``env.runroles_queue``
+    dictionary, The dictionary has keys giving runrole type (string, one
+    of 'pyfile', 'clearnotebook', 'fullnotebook') and values that are lists
+    of nodes to be built into runnable outputs.
+
+    Set filename of file to be built into node.
+
+    Called at ``doctree-resolved`` event.
+    """
     env = app.env
-    out_files = {}
+    queues = env.runrole_queue
+    files = {}
+
     for ref in doctree.traverse(runrole_reference):
-        # Calculate relative filename
-        rel_fn, _ = env.relfn2path(ref['reftarget'], fromdocname)
-        # Check for duplicates
-        code_type = ref['code_type']
-        if rel_fn not in out_files:
-            out_files[rel_fn] = code_type
-        elif out_files[rel_fn] != code_type:
-            raise RunRoleError(
-                'Trying to register filename {0} as {1}, '
-                'but it is already registered as {2}'.format(
-                    rel_fn, code_type, out_files[rel_fn]))
+        # Calculate filename of file to be built, relative to project root
+        rel_fn, _ = env.relfn2path(ref['reftarget'], ref['refdoc'])
         ref['filename'] = rel_fn
-    if len(out_files) == 0:
-        return
-    own_params = env.runrole[fromdocname]
-    for rel_fn, code_type in out_files.items():
-        own_params[code_type]['to_build'].append(rel_fn)
+        # Check for duplicates.  It's OK to reference a file that is already
+        # registered for building, but it must be of the same code type.
+        code_type = ref['reftype']
+        if rel_fn not in files:
+            files[rel_fn] = code_type
+        elif files[rel_fn] != code_type:
+            raise RunRoleError(
+                'Trying to register filename {0} as type {1}, '
+                'but it is already registered as type {2}'.format(
+                    rel_fn,
+                    code_type,
+                    files[rel_fn]))
+        # The queue can have duplicate combinations of (docname, code_type,
+        # rel_fn).
+        queues[code_type].append(ref)
 
 
 def _relfn2outpath(rel_path, app):
@@ -203,18 +248,21 @@ def _relfn2outpath(rel_path, app):
 
 
 def write_runfiles(app, exception):
-    """ Write notebooks / code files when build has finished """
+    """ Write notebooks / code files when build has finished
+
+    :func:`collect_runfiles` has already collected the files that need to be
+    built, and stored then in the ``env.runroles`` dictionary.  See the
+    docstring for that function for details.
+
+    We cycle through these collected relative filenames, and build the
+    necessary files using the ``write`` method of the stored role instances.
+
+    Called at ``build-finished`` event.
+    """
     if exception is not None:
         return
-    env = app.env
-    for docname, type_params in env.runrole.items():
-        for code_type, build_params in type_params.items():
-            role = _TYPE2ROLE[code_type]
-            for rel_fname in build_params['to_build']:
-                out_fname = _relfn2outpath(rel_fname, app)
-                role.write(docname, app, out_fname)
-        for role in _TYPE2ROLE.values():
-            role.clear_cache(docname, env)
+    for code_type, queue in app.env.runrole_queue.items():
+        NAME2ROLE[code_type].write_queue(queue, app)
 
 
 def visit_runrole(self, node):
@@ -263,5 +311,5 @@ def setup(app):
     # code visit, depart methods with app.add_node as we have just done for the
     # html translator in the lines above.  See:
     # http://www.sphinx-doc.org/en/1.4.8/extdev/tutorial.html#the-setup-function
-    app.set_translator('python', doctree2py.Translator)
+    app.set_translator('pyfile', doctree2py.Translator)
     app.set_translator('ipynb', doctree2nb.Translator)

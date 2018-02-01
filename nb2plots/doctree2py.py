@@ -105,7 +105,7 @@ class Translator(d2m.Translator):
 
 class Writer(d2m.Writer):
 
-    supported = ('python',)
+    supported = ('pyfile',)
     """Formats this writer supports."""
 
     output = None

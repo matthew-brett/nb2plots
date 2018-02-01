@@ -23,7 +23,7 @@ from docutils.statemachine import StringList
 from docutils import nodes
 from docutils.parsers.rst import Directive
 
-from .runroles import NAME2ROLE
+from .runroles import NAME2ROLE, runrole_reference
 
 
 def setup_module(module):
@@ -43,7 +43,7 @@ class CodeLinks(Directive):
     required_arguments = 0
     optional_arguments = 3
 
-    _type2params = dict(python=dict(role_name='codefile', suffix=''),
+    _type2params = dict(python=dict(role_name='pyfile', suffix=''),
                         clear=dict(role_name='clearnotebook', suffix=''),
                         full=dict(role_name='fullnotebook', suffix='_full'))
 
@@ -58,8 +58,8 @@ class CodeLinks(Directive):
         lines = []
         for code_type in code_types:
             params = self._type2params[code_type]
-            role_name = params['role_name']
             suffix = params['suffix']
+            role_name = params['role_name']
             role = NAME2ROLE[role_name]
             lines.append(
                 '* :{role_name}:`{descr} </{docname}{suffix}{ext}>`'.format(

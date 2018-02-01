@@ -12,4 +12,4 @@ More text.
 
 Text is endless.
 
-:codefile:`code here`
+:pyfile:`code here`
