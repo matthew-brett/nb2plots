@@ -17,13 +17,23 @@ clear notebook file and a full notebook file, respectively. For example::
     .. code-links: clear full
 
 ``python clear full`` is the default.
+
+Configuration options
+---------------------
+
+The code-links directive has the following configuration options:
+
+    fill_notebook_timeout
+        Default value for Jupyter kernel timeout when executing notebooks
+        during page build.  If not set, default is 30 seconds. Set to -1 or
+        None to disable timeout.
 """
 
 from docutils.statemachine import StringList
 from docutils import nodes
 from docutils.parsers.rst import Directive
 
-from .runroles import NAME2ROLE, runrole_reference
+from .runroles import NAME2ROLE, convert_timeout, runrole_reference
 
 
 def setup_module(module):
@@ -42,6 +52,7 @@ class CodeLinks(Directive):
     has_content = False
     required_arguments = 0
     optional_arguments = 3
+    option_spec = {'timeout': convert_timeout}
 
     _type2params = dict(python=dict(role_name='pyfile', suffix=''),
                         clear=dict(role_name='clearnotebook', suffix=''),
@@ -80,6 +91,10 @@ class CodeLinks(Directive):
         self.state.nested_parse(StringList(lines),
                                 self.content_offset,
                                 node)
+        if 'timeout' in self.options:
+            for node in node.traverse(runrole_reference):
+                if node['reftype'] == 'fullnotebook':
+                    node['timeout'] = self.options['timeout']
         return [node]
 
 
@@ -91,3 +106,4 @@ def setup(app):
     app.add_node(CodeLinks.code_links_node,
                  **{builder: (null, null)
                     for builder in ('html', 'latex', 'text', 'texinfo')})
+    app.add_config_value('fill_notebook_timeout', 30, True)

@@ -163,19 +163,35 @@ class ClearNotebookRunRole(PyRunRole):
     builder_class = NotebookBuilder
 
 
+def convert_timeout(argument):
+    """ Allow -1, 0, positive integers and None
+
+    These are the valid options for the nbconvert timeout option.
+    """
+    if argument.lower() == 'none':
+        return None
+    value = int(argument)
+    if value < -1:
+        raise ValueError('Value less than -1 not allowed')
+    return value
+
+
 class FullNotebookRunRole(ClearNotebookRunRole):
     """ Role builder for evaluated notebook """
 
     default_text = 'Download this page as a Jupyter notebook (with outputs)'
     code_type = 'fullnotebook'
 
+    options = dict(timeout=convert_timeout)
+
     def __init__(self, clear_role):
         self.clear_role = clear_role
 
     def _build(self, node, env):
         """ Return byte string containing built version of `doctree` """
-        empty_json = self.clear_role.get_built(docname, env)
-        full_nb = fill_notebook(nbf.reads(empty_json))
+        empty_json = self.clear_role.get_built(node, env)
+        timeout = node.get('timeout', env.config.fill_notebook_timeout)
+        full_nb = fill_notebook(nbf.reads(empty_json), timeout=timeout)
         return nbf.writes(full_nb)
 
 
@@ -276,10 +292,11 @@ def depart_runrole(self, node):
     self.body.append(self.context.pop())
 
 
-def fill_notebook(nb):
+def fill_notebook(nb, timeout=30):
     """ Execute notebook `nb` and return notebook with built outputs
     """
-    preprocessor = nbc.preprocessors.execute.ExecutePreprocessor()
+    preprocessor = nbc.preprocessors.execute.ExecutePreprocessor(
+        timeout=timeout)
     preprocessor.enabled = True
     res = nbc.exporter.ResourcesDict()
     res['metadata'] = nbc.exporter.ResourcesDict()
