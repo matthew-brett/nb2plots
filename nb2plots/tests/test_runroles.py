@@ -3,26 +3,6 @@
 import re
 from os.path import isfile, join as pjoin
 
-from .test_nbplots import PlotsBuilder
-
-
-class TestSubdirCodeLinks(PlotsBuilder):
-    """ Test output file locations for code-links directive.
-    """
-
-    rst_sources = {'foo/a_page': """\
-A section
-#########
-
-.. code-links::
-
-More text.
-"""}
-
-    def test_output(self):
-        for suffix in ('.py', '.ipynb', '_full.ipynb'):
-            assert_true(isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix)))
-
 from nb2plots import runroles as rr
 from nb2plots.runroles import convert_timeout
 from nb2plots import doctree2nb
