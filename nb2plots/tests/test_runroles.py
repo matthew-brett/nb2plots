@@ -204,3 +204,21 @@ Title
 """}
 
     should_error = True
+
+
+class TestPyfileAlias(PlotsBuilder):
+    """ Test that 'codefile' alias works for pyfile
+    """
+
+    rst_sources = {'a_page': """\
+A section
+#########
+
+:codefile:`code here`
+
+>>> True
+True
+"""}
+
+    def test_output(self):
+        assert_true(isfile(pjoin(self.out_dir, 'a_page.py')))
