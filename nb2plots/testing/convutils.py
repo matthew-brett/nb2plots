@@ -1,13 +1,10 @@
 """ Utilities for testing conversion between formats
 """
-from os.path import (dirname, join as pjoin, abspath)
 import difflib
 
 from docutils.core import publish_string
 from docutils.writers.pseudoxml import Writer as PXMLWriter
 from docutils.io import StringOutput
-
-DATA_PATH = abspath(pjoin(dirname(__file__), 'rst_md_files'))
 
 # Translate inserted smartquote characters back to their original form
 _UNSMART_IN = u'\u2019\u201c\u201d\u2026'

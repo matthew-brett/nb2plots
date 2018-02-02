@@ -17,9 +17,11 @@ from docutils import nodes
 from docutils.utils import new_document
 from docutils.core import publish_string
 
-from ..doctree2md import Writer, IndentLevel
+from nb2plots.doctree2md import Writer, IndentLevel
 
-from .convutils import convert_assert, doctree_assert, fcontents, DATA_PATH
+from nb2plots.testing import DATA_PATH
+from nb2plots.testing.convutils import (convert_assert, doctree_assert,
+                                        fcontents)
 
 
 def assert_conv_equal(rst_str, md_expected, encoding='utf8'):

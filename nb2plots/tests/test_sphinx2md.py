@@ -8,9 +8,11 @@ from __future__ import (division, print_function, absolute_import,
 from os.path import join as pjoin, exists
 from glob import glob
 
-from ..converters import to_markdown
+from nb2plots.converters import to_markdown
 
-from .convutils import convert_assert, fcontents, unsmart_converter, DATA_PATH
+from nb2plots.testing import DATA_PATH
+from nb2plots.testing.convutils import (convert_assert, fcontents,
+                                        unsmart_converter)
 
 
 to_md_safe = unsmart_converter(to_markdown.from_rst)

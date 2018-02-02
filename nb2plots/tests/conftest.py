@@ -6,4 +6,4 @@ def pytest_ignore_collect(path, config):
 
     That file needs some specific doctest setup.
     """
-    return path.basename == 'conf.py' or path.basename == 'rst_md_files'
+    return path.basename in ('conf.py', 'rst_md_files')

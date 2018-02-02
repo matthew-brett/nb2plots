@@ -9,9 +9,8 @@ from nb2plots import doctree2nb
 from nb2plots import doctree2py
 from nb2plots.converters import to_pxml
 
-from nb2plots.tests import mockapp
-
-from .test_nbplots import PlotsBuilder
+from nb2plots.testing import mockapp
+from nb2plots.testing import PlotsBuilder
 
 import pytest
 

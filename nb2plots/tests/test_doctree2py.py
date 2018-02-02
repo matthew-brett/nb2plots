@@ -10,9 +10,11 @@ from glob import glob
 
 from nb2plots.doctree2py import parse_doctest
 
-from ..converters import to_py
+from nb2plots.converters import to_py
 
-from .convutils import convert_assert, fcontents, unsmart_converter, DATA_PATH
+from nb2plots.testing import DATA_PATH
+from nb2plots.testing.convutils import (convert_assert, fcontents,
+                                        unsmart_converter)
 
 
 def test_doctest_parser():

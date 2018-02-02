@@ -3,7 +3,7 @@
 
 from os.path import join as pjoin, isfile
 
-from .test_nbplots import PlotsBuilder
+from nb2plots.testing import PlotsBuilder
 
 
 class _CheckTimeout(PlotsBuilder):

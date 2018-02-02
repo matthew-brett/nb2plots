@@ -81,7 +81,7 @@ before_install:
     - source venv/bin/activate
     - python -m pip install --upgrade pip wheel
     - python --version  # just to check
-    - retry pip install pytest mock # always
+    - retry pip install pytest mock scriptrunner # always
     - retry pip install $EXTRA_PIP_FLAGS -f $EXTRA_WHEELS $DEPENDS
 
 install:

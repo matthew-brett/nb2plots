@@ -11,7 +11,9 @@ n_nb = nbf.new_notebook
 n_md_c = nbf.new_markdown_cell
 n_c_c = nbf.new_code_cell
 
-from .convutils import fcontents, unsmart_nb, DATA_PATH
+from nb2plots.testing import DATA_PATH
+from nb2plots.testing.convutils import fcontents, unsmart_nb
+from nb2plots.testing.nbtesters import assert_nb_equiv
 
 
 def to_nb_safe(rst_str):
@@ -119,16 +121,6 @@ Text 2
       n_md_c('Some thoughts I had'),
       n_c_c('a = 1'),
       n_md_c('Text 2')])
-
-
-def assert_nb_equiv(ipynb, expected):
-    actual_nb = nbf.reads(ipynb)
-    expected_nb = nbf.reads(expected)
-    # Ignore different minor versions of Notebook format
-    # It does not appear to be possible to request specific minor versions of
-    # the Notebook format.
-    expected_nb['nbformat_minor'] = actual_nb['nbformat_minor']
-    assert actual_nb == expected_nb
 
 
 def assert_conv_equal(rst_str, expected):

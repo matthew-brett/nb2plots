@@ -6,8 +6,8 @@ from os.path import join as pjoin, dirname
 from nb2plots.from_notebook import convert_nb_fname
 from nb2plots.converters import to_py, to_notebook
 
-from .convutils import fcontents
-from .test_doctree2nb import assert_nb_equiv
+from nb2plots.testing.convutils import fcontents
+from nb2plots.testing.nbtesters import assert_nb_equiv
 
 HERE = dirname(__file__)
 DATA = pjoin(HERE, 'data')

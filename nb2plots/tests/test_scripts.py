@@ -10,12 +10,14 @@ from os.path import (join as pjoin, exists)
 from glob import glob
 import re
 
-from .scriptrunner import ScriptRunner
-from .convutils import fcontents, unsmart, unsmart_nb, DATA_PATH
-from .test_doctree2nb import assert_nb_equiv
+from scriptrunner import ScriptRunner
+
+from nb2plots.testing import DATA_PATH
+from nb2plots.testing.convutils import fcontents, unsmart, unsmart_nb
+from nb2plots.testing.nbtesters import assert_nb_equiv
 
 
-runner = ScriptRunner()
+runner = ScriptRunner('nb2plots')
 run_command = runner.run_command
 
 

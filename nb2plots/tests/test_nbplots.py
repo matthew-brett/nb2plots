@@ -11,7 +11,9 @@ from nb2plots.nbplots import (run_code, parse_parts, nbplot_container,
                               nbplot_epilogue)
 from sphinxtesters import SourcesBuilder
 
-from .test_doctree2nb import assert_nb_equiv
+from nb2plots.testing import PlotsBuilder
+
+from nb2plots.testing.nbtesters import assert_nb_equiv
 
 import pytest
 
@@ -76,13 +78,6 @@ class TestNbplots(SourcesBuilder):
         html_contents = self.get_built_file('a_page.html')
         # Plot 10 has included source
         assert '# Only a comment' in html_contents
-
-
-class PlotsBuilder(SourcesBuilder):
-    """ Build pages with nbplots default extensions
-    """
-
-    conf_source = 'extensions = ["nb2plots", "sphinx.ext.doctest"]'
 
 
 class TestDefaultSource(PlotsBuilder):

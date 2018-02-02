@@ -6,7 +6,7 @@ import re
 
 from nb2plots.converters import to_pxml
 
-from .test_nbplots import PlotsBuilder
+from nb2plots.testing import PlotsBuilder
 
 
 def test_codelinks():

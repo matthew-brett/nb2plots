@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from os.path import join as pjoin, isfile
 
-from .test_nbplots import PlotsBuilder
+from nb2plots.testing import PlotsBuilder
 
 
 class TestMarkdownBuild(PlotsBuilder):
