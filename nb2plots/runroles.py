@@ -205,7 +205,7 @@ class FullNotebookRunRole(ClearNotebookRunRole):
         for docname in set(n['refdoc'] for n in queue):
             duplicates = [n for n in queue if n['refdoc'] == docname]
             timeouts = set(n['timeout'] for n in duplicates if 'timeout' in n)
-            if len(timeouts) == 0:
+            if len(timeouts) < 2:
                 continue
             max_timeout = (-1 if {None, -1}.intersection(timeouts)
                            else max(timeouts))
