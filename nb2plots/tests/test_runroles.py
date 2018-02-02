@@ -29,7 +29,7 @@ from nb2plots import doctree2nb
 from nb2plots import doctree2py
 from nb2plots.converters import to_pxml
 
-from nb2plots.testing import assert_equal, assert_true, assert_raises
+from nose.tools import assert_equal, assert_true, assert_raises
 
 from nb2plots.tests import mockapp
 

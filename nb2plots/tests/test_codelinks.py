@@ -6,7 +6,7 @@ import re
 
 from nb2plots.converters import to_pxml
 
-from nb2plots.testing import assert_true
+from nose.tools import assert_true
 
 from .test_nbplots import PlotsBuilder
 

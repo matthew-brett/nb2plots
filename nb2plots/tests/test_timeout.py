@@ -5,7 +5,7 @@ from os.path import join as pjoin, isfile
 
 from .test_nbplots import PlotsBuilder
 
-from nb2plots.testing import assert_true
+from nose.tools import assert_true
 
 
 class _CheckTimeout(PlotsBuilder):

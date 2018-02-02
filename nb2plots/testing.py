@@ -1,11 +1,7 @@
 """ Utilities for testing
 """
 
-from unittest import TestCase
-
 import numpy as np
-
-from nose.tools import assert_true, assert_equal
 
 
 def setup_test():
@@ -19,7 +15,3 @@ def setup_test():
 
     if LooseVersion(np.__version__) >= LooseVersion('1.14'):
         np.set_printoptions(legacy="1.13")
-
-
-# Replacement for nose.tools.assert_raises
-assert_raises = TestCase().assertRaises
