@@ -7,8 +7,6 @@ from docutils.core import publish_string
 from docutils.writers.pseudoxml import Writer as PXMLWriter
 from docutils.io import StringOutput
 
-from nose.tools import assert_equal
-
 DATA_PATH = abspath(pjoin(dirname(__file__), 'rst_md_files'))
 
 # Translate inserted smartquote characters back to their original form
@@ -59,7 +57,7 @@ def _diff_strs(first, second):
 def convert_assert(rst_str, converter, expected, encoding='utf8'):
     actual = converter(rst_str)
     if (actual == expected):
-        assert_equal(actual, expected)
+        assert actual == expected
         return
     # Make some useful debugging output
     if encoding is not None:
@@ -70,10 +68,9 @@ def convert_assert(rst_str, converter, expected, encoding='utf8'):
     pxml = publish_string(rst_str, writer=PXMLWriter())
     msg += '\nwith doctree\n' + pxml.decode(
         'utf8' if encoding is None else encoding)
-    assert_equal(actual, expected, msg=msg)
+    assert actual == expected, msg
 
 
 def doctree_assert(doctree, writer, expected):
     destination = StringOutput(encoding='utf8')
-    assert_equal(writer.write(doctree, destination), expected)
-
+    assert writer.write(doctree, destination) == expected

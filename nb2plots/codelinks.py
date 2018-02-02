@@ -36,11 +36,6 @@ from docutils.parsers.rst import Directive
 from .runroles import NAME2ROLE, convert_timeout, runrole_reference
 
 
-def setup_module(module):
-    # Prevent nosetests trying to run setup function
-    pass
-
-
 class code_links(nodes.container):
     """ Node to contain code links """
 

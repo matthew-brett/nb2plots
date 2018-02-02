@@ -10,8 +10,6 @@ from glob import glob
 
 from ..converters import to_markdown
 
-from nose.tools import assert_equal
-
 from .convutils import convert_assert, fcontents, unsmart_converter, DATA_PATH
 
 
@@ -39,4 +37,4 @@ def test_default_mathdollar():
     # Test mathdollar extension present by default.
     md = to_markdown.from_rst(r'Some text with $a = 1$ math.')
     expected = "Some text with $a = 1$ math.\n"
-    assert_equal(md, expected)
+    assert md == expected

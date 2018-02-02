@@ -19,8 +19,6 @@ from docutils.core import publish_string
 
 from ..doctree2md import Writer, IndentLevel
 
-from nose.tools import assert_equal
-
 from .convutils import convert_assert, doctree_assert, fcontents, DATA_PATH
 
 
@@ -49,9 +47,9 @@ def test_example_files():
 def test_indent_level():
     # Test IndentLevel object
     level = IndentLevel(['foo', 'bar'], 'prefix')
-    assert_equal(len(level), 0)
+    assert len(level) == 0
     level.append('baz')
-    assert_equal(len(level), 1)
+    assert len(level) == 1
 
 
 def test_container():

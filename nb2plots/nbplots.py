@@ -204,11 +204,6 @@ from matplotlib._pylab_helpers import Gcf
 __version__ = 2
 
 
-def setup_module(module):
-    # Prevent nosetests trying to run setup function
-    pass
-
-
 class NBPlotFlags(Directive):
     """ Set flag namespace for nbplot
     """

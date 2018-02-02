@@ -11,8 +11,6 @@ n_nb = nbf.new_notebook
 n_md_c = nbf.new_markdown_cell
 n_c_c = nbf.new_code_cell
 
-from nose.tools import assert_equal
-
 from .convutils import fcontents, unsmart_nb, DATA_PATH
 
 
@@ -30,7 +28,7 @@ def cells2json(cells):
 def assert_rst_cells_equal(rst_text, cells):
     actual = to_notebook.from_rst(rst_text)
     expected = cells2json(cells)
-    assert_equal(actual, expected)
+    assert actual == expected
 
 
 def test_basic():
@@ -130,7 +128,7 @@ def assert_nb_equiv(ipynb, expected):
     # It does not appear to be possible to request specific minor versions of
     # the Notebook format.
     expected_nb['nbformat_minor'] = actual_nb['nbformat_minor']
-    assert_equal(actual_nb, expected_nb)
+    assert actual_nb == expected_nb
 
 
 def assert_conv_equal(rst_str, expected):

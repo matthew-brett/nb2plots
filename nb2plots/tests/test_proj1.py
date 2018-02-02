@@ -4,8 +4,6 @@ from os.path import (join as pjoin, dirname, isdir, exists)
 
 from sphinxtesters import ModifiedPageBuilder
 
-from nose.tools import assert_true, assert_equal
-
 HERE = dirname(__file__)
 
 PAGE_HEADER = """\
@@ -27,10 +25,10 @@ class Proj1Builder(ModifiedPageBuilder):
 class TestProj1(Proj1Builder):
 
     def test_basic_build(self):
-        assert_true(isdir(self.out_dir))
-        assert_true(isdir(self.doctree_dir))
+        assert isdir(self.out_dir)
+        assert isdir(self.doctree_dir)
         doctree = self.get_doctree('a_page')
-        assert_equal(len(doctree.document), 1)
+        assert len(doctree.document) == 1
         doctree_str = self.doctree2str(doctree)
         expected = (
             '<title>A section</title>\n'
@@ -46,11 +44,11 @@ class TestProj1(Proj1Builder):
             '<paragraph><runrole_reference '
             'refdoc="a_page" reftarget="/a_page.py" reftype="pyfile">'
             'code here</runrole_reference></paragraph>')
-        assert_equal(doctree_str, expected)
+        assert doctree_str == expected
         # Check the expected files were written
         for fname in ('a_page.ipynb', 'another.ipynb', 'a_page.py'):
             built_fname = pjoin(self.build_path, 'html', fname)
-            assert_true(exists(built_fname))
+            assert exists(built_fname)
 
 
 class TestNotSameName(Proj1Builder):

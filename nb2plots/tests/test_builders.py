@@ -6,8 +6,6 @@ from os.path import join as pjoin, isfile
 
 from .test_nbplots import PlotsBuilder
 
-from nose.tools import (assert_true, assert_false, assert_equal, assert_raises)
-
 
 class TestMarkdownBuild(PlotsBuilder):
     """ Markdown builder without specified base URL
@@ -68,8 +66,8 @@ It refers to :doc:`../a_page`.
 It also refers to :doc:`/subdir1/b_page`."""}
 
     def test_output(self):
-        assert_equal(self.get_built_file('contents.md').strip(), '')
-        assert_equal(self.get_built_file('a_page.md'), """\
+        assert self.get_built_file('contents.md').strip() == ''
+        assert self.get_built_file('a_page.md') == """\
 ## Refereed section
 
 This section refers to itself.
@@ -92,15 +90,15 @@ Then `another page`.
 Then [a link](https://another-place.com/page.html).
 
 Again, we link to another doc.
-""")
-        assert_equal(self.get_built_file(pjoin('subdir1', 'b_page.md')), """\
+"""
+        assert self.get_built_file(pjoin('subdir1', 'b_page.md')) == """\
 ## Another page
 
 Here is another page.
 
 It refers to Refereed section.
-""")
-        assert_equal(self.get_built_file(pjoin('subdir2', 'c_page.md')), """\
+"""
+        assert self.get_built_file(pjoin('subdir2', 'c_page.md')) == """\
 ## Further page
 
 Here is further page.
@@ -108,7 +106,7 @@ Here is further page.
 It refers to Refereed section.
 
 It also refers to Another page.
-""")
+"""
 
 
 class TestBasedMarkdownBuild(TestMarkdownBuild):
@@ -119,8 +117,8 @@ class TestBasedMarkdownBuild(TestMarkdownBuild):
                    'markdown_http_base = "https://dynevor.org"')
 
     def test_output(self):
-        assert_equal(self.get_built_file('contents.md').strip(), '')
-        assert_equal(self.get_built_file('a_page.md'), """\
+        assert self.get_built_file('contents.md').strip() == ''
+        assert self.get_built_file('a_page.md') == """\
 ## Refereed section
 
 This section refers to [itself](https://dynevor.org/a_page.html#a-ref).
@@ -143,15 +141,15 @@ Then [another page](https://dynevor.org/_downloads/a_page.rst).
 Then [a link](https://another-place.com/page.html).
 
 Again, we [link to another doc](https://dynevor.org/subdir1/b_page.html).
-""")
-        assert_equal(self.get_built_file(pjoin('subdir1', 'b_page.md')), """\
+"""
+        assert self.get_built_file(pjoin('subdir1', 'b_page.md')) == """\
 ## Another page
 
 Here is another page.
 
 It refers to [Refereed section](https://dynevor.org/a_page.html).
-""")
-        assert_equal(self.get_built_file(pjoin('subdir2', 'c_page.md')), """\
+"""
+        assert self.get_built_file(pjoin('subdir2', 'c_page.md')) == """\
 ## Further page
 
 Here is further page.
@@ -159,7 +157,7 @@ Here is further page.
 It refers to [Refereed section](https://dynevor.org/a_page.html).
 
 It also refers to [Another page](https://dynevor.org/subdir1/b_page.html).
-""")
+"""
 
 
 class TestPythonBuild(PlotsBuilder):
@@ -184,8 +182,8 @@ This section refers to :ref:`itself <a-ref>`.
 """}
 
     def test_output(self):
-        assert_equal(self.get_built_file('contents.py').strip(), '')
-        assert_equal(self.get_built_file('a_page.py'), """\
+        assert self.get_built_file('contents.py').strip() == ''
+        assert self.get_built_file('a_page.py') == """\
 # ## A section
 #
 # Some text
@@ -193,7 +191,7 @@ This section refers to :ref:`itself <a-ref>`.
 # This section refers to itself.
 
 a = 1
-""")
+"""
 
 
 class TestBasedPythonBuild(TestPythonBuild):
@@ -204,8 +202,8 @@ class TestBasedPythonBuild(TestPythonBuild):
                    'markdown_http_base = "https://dynevor.org"')
 
     def test_output(self):
-        assert_equal(self.get_built_file('contents.py').strip(), '')
-        assert_equal(self.get_built_file('a_page.py'), """\
+        assert self.get_built_file('contents.py').strip() == ''
+        assert self.get_built_file('a_page.py') == """\
 # ## A section
 #
 # Some text
@@ -213,7 +211,7 @@ class TestBasedPythonBuild(TestPythonBuild):
 # This section refers to [itself](https://dynevor.org/a_page.html#a-ref).
 
 a = 1
-""")
+"""
 
 
 class TestLatexBuild(PlotsBuilder):
@@ -234,4 +232,4 @@ A section
 
     def test_output(self):
         for suffix in ('.py', '.ipynb', '_full.ipynb'):
-            assert_true(isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix)))
+            assert isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix))

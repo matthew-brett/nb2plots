@@ -35,6 +35,7 @@
 .. _python.org releases: http://www.python.org/download/releases
 .. _setuptools: http://pypi.python.org/pypi/setuptools
 .. _matplotlib: http://matplotlib.org/
+.. _pytest: https://pytest.readthedocs.io
 .. _nose: http://readthedocs.org/docs/nose/en/latest
 .. _mock: https://github.com/testing-cabal/mock
 .. _pip: http://pypi.python.org/pypi/pip

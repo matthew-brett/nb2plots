@@ -9,8 +9,8 @@ something like this in a test module::
 Then, in the tests, something like::
 
     code, stdout, stderr = runner.run_command(['my-script', my_arg])
-    assert_equal(code, 0)
-    assert_equal(stdout, b'This script ran OK')
+    assert code == 0
+    assert stdout == b'This script ran OK'
 """
 import sys
 import os

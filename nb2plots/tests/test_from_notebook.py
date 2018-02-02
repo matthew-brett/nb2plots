@@ -8,10 +8,6 @@ from ..from_notebook import (convert_nb, convert_nb_fname, to_doctests,
                              has_mpl_inline, CODE_WITH_OUTPUT)
 
 
-from nose.tools import (assert_true, assert_false, assert_raises,
-                        assert_equal, assert_not_equal)
-
-
 DATA_PATH = pjoin(dirname(__file__), 'data')
 
 PLT_HDR = "\n.. nbplot::\n\n"
@@ -24,27 +20,27 @@ def test_simple_cells():
     md_cell = v4.new_markdown_cell('# Some text')
     nb['cells'] = [md_cell]
     exp_text = "\nSome text\n=========\n"
-    assert_equal(convert_nb(nb), exp_text)
+    assert convert_nb(nb) == exp_text
     # Code -> replaced with plot directive / doctest markers
     code_cell = v4.new_code_cell('a = 10')
     nb['cells'] = [code_cell]
     exp_code = PLT_HDR + "    >>> a = 10\n"
-    assert_equal(convert_nb(nb), exp_code)
+    assert convert_nb(nb) == exp_code
     # Empty code -> no output
     empty_code_cell = v4.new_code_cell('')
     nb['cells'] = [empty_code_cell]
     exp_empty_code = "\n"
     # nbconvert 5.3.0 started returning '' from an empty code cell
-    assert_true(convert_nb(nb) in (exp_empty_code, ''))
+    assert convert_nb(nb) in (exp_empty_code, '')
     # magic lines get stripped
     magic_code_cell = v4.new_code_cell('%timeit a = 1')
     nb['cells'] = [magic_code_cell]
-    assert_equal(convert_nb(nb), exp_empty_code)
+    assert convert_nb(nb) == exp_empty_code
     # Magic lines stripped from within other code lines
     mixed_magic_code_cell = v4.new_code_cell('%timeit a = 1\nb = 2')
     exp_mixed_magic = PLT_HDR + "    >>> b = 2\n"
     nb['cells'] = [mixed_magic_code_cell]
-    assert_equal(convert_nb(nb), exp_mixed_magic)
+    assert convert_nb(nb) == exp_mixed_magic
 
 
 def test_mpl_inline_works():
@@ -54,27 +50,27 @@ def test_mpl_inline_works():
     code_cell = v4.new_code_cell('%matplotlib inline\na = 10')
     nb['cells'] = [code_cell]
     exp_code = "\n.. mpl-interactive::\n{}    >>> a = 10\n".format(PLT_HDR)
-    assert_equal(convert_nb(nb), exp_code)
+    assert convert_nb(nb) == exp_code
 
 
 def test_mpl_inline():
-    assert_false(has_mpl_inline(''))
-    assert_false(has_mpl_inline('%matplotlib inline # foo'))
-    assert_true(has_mpl_inline('%matplotlib inline'))
-    assert_true(has_mpl_inline('%   matplotlib    inline'))
-    assert_true(has_mpl_inline('  %   matplotlib    inline'))
-    assert_false(has_mpl_inline('%matplotlib nbagg # foo'))
-    assert_true(has_mpl_inline('%matplotlib nbagg'))
-    assert_true(has_mpl_inline('% matplotlib nbagg\nb = 2'))
-    assert_true(has_mpl_inline('a = 1\n% matplotlib nbagg\nb = 2'))
+    assert not has_mpl_inline('')
+    assert not has_mpl_inline('%matplotlib inline # foo')
+    assert has_mpl_inline('%matplotlib inline')
+    assert has_mpl_inline('%   matplotlib    inline')
+    assert has_mpl_inline('  %   matplotlib    inline')
+    assert not has_mpl_inline('%matplotlib nbagg # foo')
+    assert has_mpl_inline('%matplotlib nbagg')
+    assert has_mpl_inline('% matplotlib nbagg\nb = 2')
+    assert has_mpl_inline('a = 1\n% matplotlib nbagg\nb = 2')
 
 
 def test_to_doctests():
     # Test to_doctests filter
-    assert_equal(to_doctests(''), '')
-    assert_equal(to_doctests('a = 1'), '>>> a = 1')
-    assert_equal(to_doctests('a = 1\nb = 2'), '>>> a = 1\n>>> b = 2')
-    assert_equal(to_doctests(
+    assert to_doctests('') == ''
+    assert to_doctests('a = 1') == '>>> a = 1'
+    assert to_doctests('a = 1\nb = 2') == '>>> a = 1\n>>> b = 2'
+    assert (to_doctests(
 """
 a = 1
 for i in (1, 2):
@@ -88,7 +84,7 @@ for i in (1, 2):
 
     a += i
 print(a)
-"""),
+""") ==
 """>>>
 >>> a = 1
 >>> for i in (1, 2):
@@ -103,7 +99,7 @@ print(a)
 ...     a += i
 >>> print(a)
 """)
-    assert_equal(to_doctests(
+    assert (to_doctests(
 """def xyz_trans_vol(vol, x_y_z_trans):
     \"\"\" Make a new copy of `vol` translated by `x_y_z_trans` voxels
 
@@ -112,7 +108,7 @@ print(a)
     Values in `x_y_z_trans` can be positive or negative, and can be floats.
     \"\"\"
     x_y_z_trans = np.array(x_y_z_trans)
-"""),
+""") ==
 """>>> def xyz_trans_vol(vol, x_y_z_trans):
 ...     \"\"\" Make a new copy of `vol` translated by `x_y_z_trans` voxels
 ...
@@ -130,7 +126,7 @@ def test_small():
     rst_fname = pjoin(DATA_PATH, 'small.rst')
     out = convert_nb_fname(nb_fname)
     with open(rst_fname, 'rt') as fobj:
-        assert_equal(out + '\n', fobj.read())
+        assert out + '\n' == fobj.read()
 
 
 code = \
@@ -168,8 +164,8 @@ def test_code_regex():
         return match.groupdict()
 
     # Check that the code part must match
-    assert_equal(get_dict(stdout), None)
-    assert_equal(get_dict(end_out), None)
+    assert get_dict(stdout) is None
+    assert get_dict(end_out) is None
     # Check different joins still allows detection of parts
     for combination, output in zip(
         ((code,),
@@ -183,7 +179,7 @@ def test_code_regex():
         )):
         for joiner in ('\n', '\n  \n\n'):
             in_str = joiner.join(combination)
-            assert_equal(get_dict(in_str), output)
+            assert get_dict(in_str) == output
             # Check adding extra carriage returns etc is OK
             in_str += '\n\n'
-            assert_equal(get_dict(in_str), output)
+            assert get_dict(in_str) == output

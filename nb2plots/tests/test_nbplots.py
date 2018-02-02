@@ -11,9 +11,10 @@ from nb2plots.nbplots import (run_code, parse_parts, nbplot_container,
                               nbplot_epilogue)
 from sphinxtesters import SourcesBuilder
 
-from nose.tools import (assert_true, assert_false, assert_equal, assert_raises)
-
 from .test_doctree2nb import assert_nb_equiv
+
+import pytest
+
 
 HERE = dirname(__file__)
 
@@ -34,16 +35,16 @@ def file_same(file1, file2):
 def test_run_code():
     # Test run_code function
     ns1 = run_code('a = 10')
-    assert_equal(ns1['a'], 10)
-    assert_false('b' in ns1)
+    assert ns1['a'] == 10
+    assert not 'b' in ns1
     # New namespace by default
     ns2 = run_code('b = 20')
-    assert_equal(ns2['b'], 20)
-    assert_false('a' in ns2)
+    assert ns2['b'] == 20
+    assert not 'a' in ns2
     # Adding to a namespace
     ns3 = run_code('c = 30', ns=ns1)
-    assert_true(ns3 is ns1)
-    assert_equal(ns1['c'], 30)
+    assert ns3 is ns1
+    assert ns1['c'] == 30
     # Checking raises
     run_code('d', raises=NameError)
 
@@ -56,25 +57,25 @@ class TestNbplots(SourcesBuilder):
     rst_sources = dict(a_page=get_otherpage('some_plots.rst'))
 
     def test_some_plots(self):
-        assert_true(isdir(self.out_dir))
+        assert isdir(self.out_dir)
 
         def plot_file(num):
             return pjoin(self.out_dir, 'a_page-{0}.png'.format(num))
 
         range_10, range_6, range_4 = [plot_file(i) for i in range(1, 4)]
         # Plot 5 is range(6) plot
-        assert_true(file_same(range_6, plot_file(5)))
+        assert file_same(range_6, plot_file(5))
         # Plot 7 is range(4) plot
-        assert_true(file_same(range_4, plot_file(7)))
+        assert file_same(range_4, plot_file(7))
         # Plot 8 uses the old range(4) figure and the new range(6) figure
-        assert_true(file_same(range_4, plot_file('8_00')))
-        assert_true(file_same(range_6, plot_file('8_01')))
+        assert file_same(range_4, plot_file('8_00'))
+        assert file_same(range_6, plot_file('8_01'))
         # Plot 9 shows the default close-figures behavior in action
-        assert_true(file_same(range_4, plot_file(9)))
+        assert file_same(range_4, plot_file(9))
         # Plot 9 does not include source
         html_contents = self.get_built_file('a_page.html')
         # Plot 10 has included source
-        assert_true('# Only a comment' in html_contents)
+        assert '# Only a comment' in html_contents
 
 
 class PlotsBuilder(SourcesBuilder):
@@ -99,10 +100,10 @@ A title
     def test_include_source_default(self):
         # Plot 1 has included source
         html_contents = self.get_built_file('a_page.html')
-        assert_true('# Only a comment' in html_contents)
+        assert '# Only a comment' in html_contents
         # Plot 1 has no source link
         html_contents = self.get_built_file('a_page.html')
-        assert_false('href=".//a_page-1.py">Source code</a>' in html_contents)
+        assert 'href=".//a_page-1.py">Source code</a>' not in html_contents
 
 
 class TestAnnoyingParens(PlotsBuilder):
@@ -126,7 +127,7 @@ A title
 
     def test_annoying_parens(self):
         # Plot 1 has included source
-        assert_false('<p>()</p>' in self.get_built_file('a_page.html'))
+        assert not '<p>()</p>' in self.get_built_file('a_page.html')
 
 
 class TestDefaultContext(PlotsBuilder):
@@ -256,9 +257,9 @@ Plot color resumes at red:
 
         red_bright = gpf('a_page', 2)
         blue_eager = gpf('a_page', 4)
-        assert_true(file_same(gpf('a_page', 1), red_bright))
-        assert_true(file_same(gpf('a_page', 3), blue_eager))
-        assert_true(file_same(gpf('b_page', 1), red_bright))
+        assert file_same(gpf('a_page', 1), red_bright)
+        assert file_same(gpf('a_page', 3), blue_eager)
+        assert file_same(gpf('b_page', 1), red_bright)
 
 
 class TestDefaultPre(PlotsBuilder):
@@ -338,11 +339,11 @@ Text3
 
     def test_whats_in_the_page(self):
         txt_contents = self.get_built_file('a_page.txt')
-        assert_false('a = 1' in txt_contents)
-        assert_false('b = 2' in txt_contents)
-        assert_true('a == 1' in txt_contents)
-        assert_true('b == 2' in txt_contents)
-        assert_false('c = 3' in txt_contents)
+        assert 'a = 1' not in txt_contents
+        assert 'b = 2' not in txt_contents
+        assert 'a == 1' in txt_contents
+        assert 'b == 2' in txt_contents
+        assert 'c = 3' not in txt_contents
 
 
 class TestMoreDoctests(PlotsBuilder):
@@ -421,7 +422,7 @@ A title
 
     def test_include_source_default(self):
         # Check that source still included
-        assert_true('# Another comment' in self.get_built_file('a_page.html'))
+        assert '# Another comment' in self.get_built_file('a_page.html')
 
 
 class TestReference(PlotsBuilder):
@@ -465,7 +466,7 @@ r"""<document _plot_counter="1" source=".*?a_page.rst">
                 <inline.*?>
                     the ref
             \.""", re.DOTALL)
-        assert_true(expected_regexp.match(built))
+        assert expected_regexp.match(built)
 
 
 class TestFlags(PlotsBuilder):
@@ -497,7 +498,7 @@ Some text
     def test_flags(self):
         # Check that flags correctly set from flag directives
         built = self.get_built_file('a_page.pseudoxml')
-        assert_true("""
+        assert """
         <title>
             A title
         <literal_block xml:space="preserve">
@@ -505,7 +506,7 @@ Some text
         <paragraph>
             Some text
         <literal_block xml:space="preserve">
-            {'a': 1, 'b': 2, 'c': 3}""" in built)
+            {'a': 1, 'b': 2, 'c': 3}""" in built
 
 
 class TestFlagsConfig(TestFlags):
@@ -519,7 +520,7 @@ nbplot_flags = {'flag1': 5, 'flag2': 6}
     def test_flags(self):
         # Check that global flags merged with local
         built = self.get_built_file('a_page.pseudoxml')
-        assert_true("""
+        assert ("""
         <title>
             A title
         <literal_block xml:space="preserve">
@@ -600,14 +601,14 @@ Text continues
     def test_pages(self):
         # Test that the skip=False sections selected
         txt = self.get_built_file('a_page.txt')
-        assert_true(">>> # always\n>>> a = 'default'" in txt)
-        assert_true(">>> a = 'skip is False'" in txt)
-        assert_true(">>> a = 'skip is True'" not in txt)
+        assert ">>> # always\n>>> a = 'default'" in txt
+        assert ">>> a = 'skip is False'" in txt
+        assert ">>> a = 'skip is True'" not in txt
         # Note ==, distinguishing from test above
-        assert_true(">>> a == 'skip is True'" not in txt)
-        assert_true(">>> a == 'skip is False'" in txt)
-        assert_true(">>> b == 'skip appears to be False'" in txt)
-        assert_true(">>> b == 'skip appears to be True'" not in txt)
+        assert ">>> a == 'skip is True'" not in txt
+        assert ">>> a == 'skip is False'" in txt
+        assert ">>> b == 'skip appears to be False'" in txt
+        assert ">>> b == 'skip appears to be True'" not in txt
 
 
 class TestWithoutSkipDoctest(TestWithoutSkip):
@@ -676,15 +677,15 @@ class TestWithSkip(TestWithoutSkip):
     def test_pages(self):
         # Test that the skip=True sections selected
         txt = self.get_built_file('a_page.txt')
-        assert_true(">>> # always\n>>> a = 'default'" in txt)
-        assert_true(">>> a = 'skip is False'" not in txt)
-        assert_true(">>> a = 'skip is True'" in txt)
+        assert ">>> # always\n>>> a = 'default'" in txt
+        assert ">>> a = 'skip is False'" not in txt
+        assert ">>> a = 'skip is True'" in txt
         # Note ==, distinguishing from test above
-        assert_true(">>> a == 'skip is True'" in txt)
-        assert_true(">>> a == 'skip is False'" not in txt)
+        assert ">>> a == 'skip is True'" in txt
+        assert ">>> a == 'skip is False'" not in txt
         # The rendered version always has the first section, regardless of skip
-        assert_true(">>> b == 'skip appears to be False'" in txt)
-        assert_true(">>> b == 'skip appears to be True'" not in txt)
+        assert ">>> b == 'skip appears to be False'" in txt
+        assert ">>> b == 'skip appears to be True'" not in txt
 
 
 class TestWithSkipStructure(TestWithSkip):
@@ -806,9 +807,9 @@ Some text.
 
     def test_pages(self):
         txt = self.get_built_file('a_page.txt')
-        assert_true(re.match(
+        assert re.match(
             r'\n?A title\n\*{7}\n\n\nSome text.\n\n>>> a = 1\n>>> a\n1\n',
-            txt))
+            txt)
         ipynb = self.get_built_file('a_page.ipynb')
         assert_nb_equiv(ipynb, r"""
 {
@@ -840,7 +841,7 @@ Some text.
  "nbformat": 4,
  "nbformat_minor": 1
 }""")
-        assert_equal(self.get_built_file('clear.ipynb'), ipynb)
+        assert self.get_built_file('clear.ipynb') == ipynb
         full = self.get_built_file('full.ipynb')
         assert_nb_equiv(full, r"""
 {
@@ -886,79 +887,74 @@ Some text.
 
 
 def test_part_finding():
-    assert_equal(parse_parts([]), [{'contents': []}])
-    assert_equal(parse_parts(['a = 1', 'b = 2']),
+    assert parse_parts([]) == [{'contents': []}]
+    assert (parse_parts(['a = 1', 'b = 2']) ==
                              [{'contents': ['a = 1', 'b = 2']}])
-    assert_equal(parse_parts(['a = 1', 'b = 2', '', '.. part', '', 'c = 4']),
+    assert (parse_parts(['a = 1', 'b = 2', '', '.. part', '', 'c = 4']) ==
                              [{'contents': ['a = 1', 'b = 2']},
                               {'contents': ['c = 4']}])
     # Need blank lines between
-    assert_equal(parse_parts(['a = 1', 'b = 2', '.. part', '', 'c = 4']),
-                             [{'contents':
-                               ['a = 1', 'b = 2', '.. part', '', 'c = 4']}]),
-    assert_equal(parse_parts(['a = 1', 'b = 2', '', '.. part', 'c = 4']),
-                             [{'contents':
-                               ['a = 1', 'b = 2', '', '.. part', 'c = 4']}]),
+    assert (parse_parts(['a = 1', 'b = 2', '.. part', '', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2', '.. part', '', 'c = 4']}])
+    assert (parse_parts(['a = 1', 'b = 2', '', '.. part', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2', '', '.. part', 'c = 4']}])
     # Add some attributes
-    assert_equal(parse_parts(['a = 1', 'b = 2', '',
-                              '.. part', ' foo=bar', ' baz=boo',
-                              '', 'c = 4']),
-                             [{'contents': ['a = 1', 'b = 2']},
-                              {'contents': ['c = 4'],
-                               'foo': 'bar', 'baz': 'boo'}])
+    assert (parse_parts(['a = 1', 'b = 2', '',
+                         '.. part', ' foo=bar', ' baz=boo',
+                         '', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2']},
+             {'contents': ['c = 4'],
+              'foo': 'bar', 'baz': 'boo'}])
     # Can have spaces around the equals
-    assert_equal(parse_parts(['a = 1', 'b = 2', '',
-                              '.. part', ' foo =bar', ' baz= boo',
-                              '', 'c = 4']),
-                             [{'contents': ['a = 1', 'b = 2']},
-                              {'contents': ['c = 4'],
-                               'foo': 'bar', 'baz': 'boo'}])
-    assert_equal(parse_parts(['a = 1', 'b = 2', '',
-                              '.. part', ' foo = bar', ' baz=  boo',
-                              '', 'c = 4']),
-                             [{'contents': ['a = 1', 'b = 2']},
-                              {'contents': ['c = 4'],
-                               'foo': 'bar', 'baz': 'boo'}])
+    assert (parse_parts(['a = 1', 'b = 2', '',
+                         '.. part', ' foo =bar', ' baz= boo',
+                         '', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2']},
+             {'contents': ['c = 4'],
+              'foo': 'bar', 'baz': 'boo'}])
+    assert (parse_parts(['a = 1', 'b = 2', '',
+                         '.. part', ' foo = bar', ' baz=  boo',
+                         '', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2']},
+             {'contents': ['c = 4'],
+              'foo': 'bar', 'baz': 'boo'}])
     # Cannot continue on same line as part separator
-    assert_equal(parse_parts(['a = 1', 'b = 2', '',
-                              '.. part foo=bar',
-                              '', 'c = 4']),
-                             [{'contents': ['a = 1', 'b = 2', '',
-                              '.. part foo=bar',
-                              '', 'c = 4']}])
+    assert (parse_parts(['a = 1', 'b = 2', '',
+                         '.. part foo=bar',
+                         '', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2', '',
+                           '.. part foo=bar',
+                           '', 'c = 4']}])
     # Must be indentation
-    assert_raises(ValueError,
-                  parse_parts,
-                  ['a = 1', 'b = 2', '',
-                   '.. part', 'foo=bar',
-                   '', 'c = 4'])
+    with pytest.raises(ValueError):
+        parse_parts(['a = 1', 'b = 2', '',
+                     '.. part', 'foo=bar',
+                     '', 'c = 4'])
     # Must be same indentation
-    assert_raises(ValueError,
-                  parse_parts,
-                  ['a = 1', 'b = 2', '',
-                   '.. part', ' foo=bar', 'baz=boo',
-                   '', 'c = 4'])
-    assert_raises(ValueError,
-                  parse_parts,
-                  ['a = 1', 'b = 2', '',
-                   '.. part', ' foo=bar', '  baz=boo',
-                   '', 'c = 4'])
+    with pytest.raises(ValueError):
+        parse_parts(['a = 1', 'b = 2', '',
+                     '.. part', ' foo=bar', 'baz=boo',
+                     '', 'c = 4'])
+    with pytest.raises(ValueError):
+        parse_parts(['a = 1', 'b = 2', '',
+                     '.. part', ' foo=bar', '  baz=boo',
+                     '', 'c = 4'])
     # Add some attributes in the first part
-    assert_equal(parse_parts(['.. part', ' mr=brightside', ' eager=eyes', '',
-                              'a = 1', 'b = 2', '',
-                              '.. part', ' foo=bar', ' baz=boo', '', 'c = 4']),
-                             [{'contents': ['a = 1', 'b = 2'],
-                               'mr': 'brightside',
-                               'eager': 'eyes'},
-                              {'contents': ['c = 4'],
-                               'foo': 'bar', 'baz': 'boo'}])
+    assert (parse_parts(['.. part', ' mr=brightside', ' eager=eyes', '',
+                         'a = 1', 'b = 2', '',
+                         '.. part', ' foo=bar', ' baz=boo', '', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2'],
+              'mr': 'brightside',
+              'eager': 'eyes'},
+             {'contents': ['c = 4'],
+              'foo': 'bar', 'baz': 'boo'}])
     # Contents with spaces, leading and trailing spaces skipped
-    assert_equal(parse_parts(['a = 1', 'b = 2', '',
-                              '.. part', ' foo=[1, 2, s]', ' bar= more stuff ',
-                              '', 'c = 4']),
-                             [{'contents': ['a = 1', 'b = 2']},
-                              {'contents': ['c = 4'],
-                               'foo': '[1, 2, s]', 'bar': 'more stuff'}])
+    assert (parse_parts(['a = 1', 'b = 2', '',
+                         '.. part', ' foo=[1, 2, s]', ' bar= more stuff ',
+                         '', 'c = 4']) ==
+            [{'contents': ['a = 1', 'b = 2']},
+             {'contents': ['c = 4'],
+              'foo': '[1, 2, s]', 'bar': 'more stuff'}])
 
 
 class TestHideShow(PlotsBuilder):
@@ -1054,7 +1050,7 @@ Show that the doctest builder did not see the previous plot directive.
 True
 """
         # Blank lines at beginning differ in Sphinx versions
-        assert_equal(built.strip(), expected.strip())
+        assert built.strip() == expected.strip()
 
 
 class TestHideShowTests(TestHideShow):
@@ -1071,7 +1067,7 @@ class TestHideShowTests(TestHideShow):
             nbplot_container,
             nbplot_epilogue] * 4
         for node, exp_type in zip(built[0].children, expected_node_types):
-            assert_equal(type(node), exp_type)
+            assert type(node) == exp_type
 
 
 class TestHideShowHtml(TestHideShow):
@@ -1082,4 +1078,4 @@ class TestHideShowHtml(TestHideShow):
 
     def test_hide_show(self):
         built = self.get_built_file('a_page.html')
-        assert_false('# Enigmatic sentence' in built)
+        assert not '# Enigmatic sentence' in built

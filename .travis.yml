@@ -18,7 +18,7 @@ env:
         - PKG_NAME=nb2plots
         - INSTALL_TYPE="pip"
         # URL for extra wheel repo
-        - EXTRA_WHEELS=https://nipy.bic.berkeley.edu/manylinux
+        - EXTRA_WHEELS="https://5cf40426d9f06eb7461d-6fe47d9331aba7cd62fc36c7196769e4.ssl.cf2.rackcdn.com"
 
 python:
     - 3.4
@@ -29,8 +29,8 @@ matrix:
   include:
     - python: 2.7
       env:
-        - COVERAGE=1
-        - DOCTESTS=1
+        - COVER_ARGS="--cov=$PKG_NAME"
+        - DOCTEST_ARGS="--doctest-modules"
     # Check finding dependencies from pip
     - python: 2.7
       env:
@@ -40,7 +40,7 @@ matrix:
         - DEPENDS=
     - python: 3.5
       env:
-        - DOCTESTS=1
+        - DOCTEST_ARGS="--doctest-modules"
     # Absolute minimum dependencies
     # Check also requirements.txt
     - python: 2.7
@@ -81,12 +81,8 @@ before_install:
     - source venv/bin/activate
     - python -m pip install --upgrade pip wheel
     - python --version  # just to check
-    - retry pip install nose mock # always
+    - retry pip install pytest mock # always
     - retry pip install $EXTRA_PIP_FLAGS -f $EXTRA_WHEELS $DEPENDS
-    - if [ -n "$COVERAGE" ]; then
-      pip install coverage;
-      pip install codecov;
-      fi
 
 install:
     - |
@@ -121,15 +117,13 @@ script:
         # Change into an innocuous directory and find tests from installation
         mkdir for_testing
         cd for_testing
-        if [ -n "$COVERAGE" ]; then
+        if [ -n "$COVER_ARGS" ]; then
           cp ../.coveragerc .;
-          COVER_ARGS="--with-coverage --cover-package $PKG_NAME";
+          pip install pytest-cov
+          pip install coveralls
         fi
-        if [ -n "$DOCTESTS" ]; then
-          DOCTEST_ARGS="--with-doctest";
-        fi
-        nosetests $COVER_ARGS $DOCTEST_ARGS $PKG_NAME
+        py.test $COVER_ARGS $DOCTEST_ARGS --pyargs $PKG_NAME
       fi
 
 after_success:
-    - if [ -n "$COVERAGE" ]; then codecov; fi
+    - if [ -n "$COVER_ARGS" ]; then codecov; fi

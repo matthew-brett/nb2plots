@@ -14,17 +14,15 @@ from ..converters import to_py
 
 from .convutils import convert_assert, fcontents, unsmart_converter, DATA_PATH
 
-from nose.tools import assert_equal
-
 
 def test_doctest_parser():
-    assert_equal(parse_doctest('>>> # comment'), '# comment')
-    assert_equal(parse_doctest('>>> a = 10'), 'a = 10')
-    assert_equal(parse_doctest('   >>> a = 10'), 'a = 10')
-    assert_equal(parse_doctest('   >>> a = 10\n   >>> b = 20'),
+    assert parse_doctest('>>> # comment') == '# comment'
+    assert parse_doctest('>>> a = 10') == 'a = 10'
+    assert parse_doctest('   >>> a = 10') == 'a = 10'
+    assert (parse_doctest('   >>> a = 10\n   >>> b = 20') ==
                  'a = 10\nb = 20')
-    assert_equal(parse_doctest(
-        '   >>> for i in (1, 2):\n   ...     print(i)'),
+    assert (parse_doctest(
+        '   >>> for i in (1, 2):\n   ...     print(i)') ==
         'for i in (1, 2):\n    print(i)')
 
 

@@ -141,13 +141,13 @@ Tests
 *****
 
 * Install ``nb2plots``
-* Install the nose_ testing framework and the ``mock`` module::
+* Install the pytest_ testing framework and the ``mock`` module::
 
-    pip install nose mock
+    pip install pytest mock
 
 * Run the tests with::
 
-    nosetests nb2plots
+    py.test --pyargs nb2plots
 
 *******
 Support
@@ -175,6 +175,5 @@ Please put up issues on the `nb2plots issue tracker`_.
 .. _nb2plots issue tracker: https://github.com/matthew-brett/nb2plots/issues
 .. _matplotlib plot directive: http://matplotlib.org/sampledoc/extensions.html
 .. _nbconvert: http://nbconvert.readthedocs.org/en/latest/
-.. _nose: http://readthedocs.org/docs/nose/en/latest
-.. _nose: http://readthedocs.org/docs/nose/en/latest
+.. _pytest: https://pytest.readthedocs.io
 .. _mock: https://github.com/testing-cabal/mock

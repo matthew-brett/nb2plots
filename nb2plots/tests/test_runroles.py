@@ -9,11 +9,11 @@ from nb2plots import doctree2nb
 from nb2plots import doctree2py
 from nb2plots.converters import to_pxml
 
-from nose.tools import assert_equal, assert_true, assert_raises
-
 from nb2plots.tests import mockapp
 
 from .test_nbplots import PlotsBuilder
+
+import pytest
 
 
 def test_runroles_setup(*args):
@@ -33,9 +33,9 @@ def test_runroles_setup(*args):
         if (method_name == 'set_translator' and args[0:2] in translators):
             translators.remove(args[0:2])
 
-    assert_equal(len(connects), 0, 'Connections failed')
-    assert_equal(len(roles), 0, 'Roles failed')
-    assert_equal(len(translators), 0, 'Translators failed')
+    assert len(connects) == 0, 'Connections failed'
+    assert len(roles) == 0, 'Roles failed'
+    assert len(translators) == 0, 'Translators failed'
 
 
 def test_convert_timeout():
@@ -45,7 +45,8 @@ def test_convert_timeout():
     assert convert_timeout('None') == None
     assert convert_timeout('none') == None
     assert convert_timeout('noNe') == None
-    assert_raises(ValueError, convert_timeout, '-2')
+    with pytest.raises(ValueError):
+        convert_timeout('-2')
 
 
 def test_runrole_doctrees():
@@ -66,7 +67,7 @@ def test_runrole_doctrees():
         pxml_regex = expected_re_fmt.format(
             role_type=code_type,
             **pxml_params)
-        assert_true(re.match(pxml_regex, pxml))
+        assert re.match(pxml_regex, pxml)
 
     assert_rst_pxml(
         dict(code_type='clearnotebook',
@@ -144,10 +145,10 @@ Prepended / refers to root of project:
 
     def test_output(self):
         for suffix in ('.py', '.ipynb'):
-            assert_true(isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix)))
-        assert_true(isfile(pjoin(self.out_dir, 'foo', 'my_code.py')))
-        assert_true(isfile(pjoin(self.out_dir, 'my_nb.ipynb')))
-        assert_true(isfile(pjoin(self.out_dir, 'more_code.py')))
+            assert isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix))
+        assert isfile(pjoin(self.out_dir, 'foo', 'my_code.py'))
+        assert isfile(pjoin(self.out_dir, 'my_nb.ipynb'))
+        assert isfile(pjoin(self.out_dir, 'more_code.py'))
 
 
 class TestPyfileAlias(PlotsBuilder):
@@ -165,7 +166,7 @@ True
 """}
 
     def test_output(self):
-        assert_true(isfile(pjoin(self.out_dir, 'a_page.py')))
+        assert isfile(pjoin(self.out_dir, 'a_page.py'))
 
 
 class TestDuplicatesOK(PlotsBuilder):
@@ -185,8 +186,8 @@ Title
 """}
 
     def test_output(self):
-        assert_true(isfile(pjoin(self.out_dir, 'foo.ipynb')))
-        assert_true(isfile(pjoin(self.out_dir, 'bar.ipynb')))
+        assert isfile(pjoin(self.out_dir, 'foo.ipynb'))
+        assert isfile(pjoin(self.out_dir, 'bar.ipynb'))
 
 
 class TestDuplicatesNotOK(PlotsBuilder):
@@ -204,21 +205,3 @@ Title
 """}
 
     should_error = True
-
-
-class TestPyfileAlias(PlotsBuilder):
-    """ Test that 'codefile' alias works for pyfile
-    """
-
-    rst_sources = {'a_page': """\
-A section
-#########
-
-:codefile:`code here`
-
->>> True
-True
-"""}
-
-    def test_output(self):
-        assert_true(isfile(pjoin(self.out_dir, 'a_page.py')))

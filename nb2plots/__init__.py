@@ -11,11 +11,6 @@ from . import codelinks
 from . import sphinx2foos
 
 
-def setup_package():
-    # Prevent nose tests running setup function
-    pass
-
-
 def setup(app):
     nbplots.setup(app)
     runroles.setup(app)

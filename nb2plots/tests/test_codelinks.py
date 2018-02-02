@@ -6,8 +6,6 @@ import re
 
 from nb2plots.converters import to_pxml
 
-from nose.tools import assert_true
-
 from .test_nbplots import PlotsBuilder
 
 
@@ -46,7 +44,7 @@ More text here."""
     <paragraph>
         More text here.""")
     pxml = as_pxml(page)
-    assert_true(both_re.match(pxml))
+    assert both_re.match(pxml)
     # Default is 'both'
     page = """\
 Text here
@@ -55,7 +53,7 @@ Text here
 
 More text here."""
     pxml = as_pxml(page)
-    assert_true(both_re.match(pxml))
+    assert both_re.match(pxml)
     page = """\
 Text here
 
@@ -63,7 +61,7 @@ Text here
 
 More text here."""
     pxml = as_pxml(page)
-    assert_true(re.match("""\
+    assert re.match("""\
 <document source=".*?">
     <paragraph>
         Text here
@@ -75,7 +73,7 @@ More text here."""
                         Download this page as a Jupyter notebook \(no outputs\)
                     .
     <paragraph>
-        More text here.""" , pxml))
+        More text here.""" , pxml)
     page = """\
 Text here
 
@@ -83,7 +81,7 @@ Text here
 
 More text here."""
     pxml = as_pxml(page)
-    assert_true(re.match("""\
+    assert re.match("""\
 <document source=".*?">
     <paragraph>
         Text here
@@ -95,7 +93,7 @@ More text here."""
                         Download this page as a Jupyter notebook \(with outputs\)
                     .
     <paragraph>
-        More text here.""", pxml))
+        More text here.""", pxml)
     page = """\
 Text here
 
@@ -103,7 +101,7 @@ Text here
 
 More text here."""
     pxml = as_pxml(page)
-    assert_true(re.match("""\
+    assert re.match("""\
 <document source=".*?">
     <paragraph>
         Text here
@@ -120,7 +118,7 @@ More text here."""
                         Download this page as a Python code file
                     .
     <paragraph>
-        More text here.""", pxml))
+        More text here.""", pxml)
 
 
 class TestSubdirCodeLinks(PlotsBuilder):
@@ -138,4 +136,4 @@ More text.
 
     def test_output(self):
         for suffix in ('.py', '.ipynb', '_full.ipynb'):
-            assert_true(isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix)))
+            assert isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix))

@@ -21,11 +21,6 @@ from docutils import nodes
 from docutils.statemachine import StringList
 
 
-def setup_module(module):
-    # Prevent nosetests trying to run setup function
-    pass
-
-
 class mpl_hint(nodes.hint):
     """ Node signals presence of MPL interactive block """
 

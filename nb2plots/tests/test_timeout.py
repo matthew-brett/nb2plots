@@ -5,8 +5,6 @@ from os.path import join as pjoin, isfile
 
 from .test_nbplots import PlotsBuilder
 
-from nose.tools import assert_true
-
 
 class _CheckTimeout(PlotsBuilder):
     """ Machinery for checking timeout
@@ -33,7 +31,7 @@ class TestNoTimeout(_CheckTimeout):
     """
 
     def test_output(self):
-        assert_true(isfile(pjoin(self.out_dir, 'a_page_full.ipynb')))
+        assert isfile(pjoin(self.out_dir, 'a_page_full.ipynb'))
 
 
 class TestCLOptsTimeout(_CheckTimeout):

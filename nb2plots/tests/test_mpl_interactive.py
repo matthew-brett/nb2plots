@@ -2,11 +2,7 @@
 
 import re
 
-from docutils.core import publish_from_doctree
-
 from nb2plots.converters import to_pxml
-
-from nose.tools import assert_true
 
 
 def test_mpl_interactive():
@@ -17,7 +13,7 @@ Text here
 
 More text here."""
     pxml = to_pxml.from_rst(page)
-    assert_true(re.match("""\
+    assert re.match("""\
 <document source=".*?">
     <paragraph>
         Text here
@@ -33,7 +29,7 @@ More text here."""
                 inline
             .
     <paragraph>
-        More text here.""", pxml))
+        More text here.""", pxml)
     page = """\
 Text here
 
@@ -43,7 +39,7 @@ Text here
 
 More text here."""
     pxml = to_pxml.from_rst(page)
-    assert_true(re.match("""\
+    assert re.match("""\
 <document source=".*?">
     <paragraph>
         Text here
@@ -54,4 +50,4 @@ More text here."""
                 like
             .
     <paragraph>
-        More text here.""", pxml))
+        More text here.""", pxml)

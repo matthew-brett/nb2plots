@@ -4,8 +4,6 @@
 
 from nb2plots import nbplots as nbp
 
-from nose.tools import assert_equal
-
 from nb2plots.tests import mockapp
 
 
@@ -31,6 +29,6 @@ def test_nbplots_setup():
             config_names.remove(args[0])
         if (method_name == 'connect' and args[0:2] in connects):
             connects.remove(args[0:2])
-    assert_equal(len(config_names), 0,
-                 'config set failed for {}'.format(config_names))
-    assert_equal(len(connects), 0, 'Connections failed')
+    assert len(config_names) == 0, \
+            'config set failed for {}'.format(config_names)
+    assert len(connects) == 0, 'Connections failed'

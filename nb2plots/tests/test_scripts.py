@@ -10,8 +10,6 @@ from os.path import (join as pjoin, exists)
 from glob import glob
 import re
 
-from nose.tools import assert_equal, assert_true
-
 from .scriptrunner import ScriptRunner
 from .convutils import fcontents, unsmart, unsmart_nb, DATA_PATH
 from .test_doctree2nb import assert_nb_equiv
@@ -25,7 +23,6 @@ def script_test(func):
     # Decorator to label test as a script_test
     func.script_test = True
     return func
-script_test.__test__ = False # It's not a nose test
 
 
 @script_test
@@ -42,7 +39,7 @@ def test_rst2md():
             continue
         cmd = ['rst2md', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(stdout, expected_md)
+        assert stdout == expected_md
 
 
 @script_test
@@ -57,8 +54,8 @@ def test_sphinx2md():
         expected_md = fcontents(md_fname)
         cmd = ['sphinx2md', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(unsmart(stdout.decode('utf-8')),
-                     expected_md.decode('utf-8'))
+        assert (unsmart(stdout.decode('utf-8')) ==
+                expected_md.decode('utf-8'))
 
 
 @script_test
@@ -81,8 +78,8 @@ def test_sphinx2py():
         expected = fcontents(py_fname, 'b')
         cmd = ['sphinx2py', rst_fname]
         code, stdout, stderr = run_command(cmd)
-        assert_equal(unsmart(stdout.decode('utf-8')),
-                     expected.decode('utf-8'))
+        assert (unsmart(stdout.decode('utf-8')) ==
+                expected.decode('utf-8'))
 
 
 @script_test
@@ -100,4 +97,4 @@ def test_sphinx2pxml():
                 text
             ."""
     output = stdout.decode('utf-8')
-    assert_true(re.match(pattern, output))
+    assert re.match(pattern, output)
