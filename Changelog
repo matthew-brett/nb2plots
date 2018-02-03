@@ -3,6 +3,24 @@ nb2plots Changelog
 ##################
 
 *****
+0.6.0
+*****
+
+New feature release.
+
+* Add hide from / show to options to nbplot directive.  This gives a more
+  flexible way of concealing individual plots from specific builders, such as
+  the HTML or doctest builders.  See the documentation of nbplot for more
+  detail.
+* Fix bug writing Notebooks, Python files for ReST sources not at root of
+  project tree.
+* Add options to set Jupyter kernel timeout when building full notebooks
+  (thanks to Juan Nunez-Iglesias for the suggestion);
+* Make compatible with newest Numpy, nbconvert.
+* Refactor tests to use Pytest instead of Nose.
+* Refactor Sphinx testers and script running testers in own packages.
+
+*****
 0.5.2
 *****
 

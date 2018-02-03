@@ -42,8 +42,8 @@ Releasing nb2plots
     username:your.pypi.username
     password:your-password
 
-* Once everything looks good, tag the release.  This will also set the version
-  (we are using versioneer_ to manage versions via git tags)::
+* Tag the release.  This will also set the version (we are using versioneer_
+  to manage versions via git tags)::
 
     git tag -s 0.3
 
