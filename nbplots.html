@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Using the nbplot directive &#8212; nb2plots 0.5.1 documentation</title>
-    
+    <title>Using the nbplot directive &#8212; nb2plots 0.6 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.1',
+        VERSION:     '0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Using the mpl-interactive directive" href="mpl_interactive.html" />
@@ -36,7 +33,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -101,7 +98,7 @@ code according to your local configuration.</p>
 link to a high-res .png and .pdf.  In LaTeX output, it will include a
 .pdf.</p>
 <p>The source code for the plot is <strong>inline content</strong> to the directive:.  It can
-be with or without <em>doctest</em> syntax.  Here&#8217;s an example without doctest
+be with or without <em>doctest</em> syntax.  Here’s an example without doctest
 syntax:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">nbplot</span><span class="p">::</span>
 
@@ -112,7 +109,7 @@ syntax:</p>
     <span class="n">imgplot</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here&#8217;s an example with doctest syntax:</p>
+<p>Here’s an example with doctest syntax:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">nbplot</span><span class="p">::</span>
 
     <span class="n">A</span> <span class="n">plotting</span> <span class="n">example</span><span class="p">:</span>
@@ -126,31 +123,48 @@ syntax:</p>
 <p>The <code class="docutils literal"><span class="pre">nbplot</span></code> directive supports the following options:</p>
 <blockquote>
 <div><dl class="docutils">
-<dt>format</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">{&#8216;python&#8217;, &#8216;doctest&#8217;}</span><dd>Specify the format of the input.  If not specified, nbplot guesses the
+<dt>format <span class="classifier-delimiter">:</span> <span class="classifier">{‘python’, ‘doctest’}</span></dt>
+<dd>Specify the format of the input.  If not specified, nbplot guesses the
 format from the content.</dd>
-<dt>include-source</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>Whether to display the source code. The default can be changed
-using the <cite>nbplot_include_source</cite> variable in conf.py</dd>
-<dt>encoding</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>If this source file is in a non-UTF8 or non-ASCII encoding,
+<dt>include-source <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>Whether to display the source code. The default can be changed using
+the <cite>nbplot_include_source</cite> variable in <code class="docutils literal"><span class="pre">conf.py</span></code>.  Any doctests in
+the source code will still be run by the doctest builder.
+<cite>include-source</cite> has the same effect as <code class="docutils literal"><span class="pre">:hide-from:</span> <span class="pre">all</span></code> then
+<code class="docutils literal"><span class="pre">:show-to:</span> <span class="pre">doctest</span></code> (in fact, that is how it is implemented).  See
+below for interactions of <code class="docutils literal"><span class="pre">:include-source:</span></code> and these options.</dd>
+<dt>hide-from <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Space-separated list of builders that should not render any source from
+this directive.  Can also be the special value “all”, hiding the source
+from all builders.  Any builder names in <cite>show-to</cite> override builders
+specified with this option.  If you apply <code class="docutils literal"><span class="pre">:hide-from:</span></code> options as
+well as <code class="docutils literal"><span class="pre">:include-source:</span> <span class="pre">false</span></code> (see above), these will have no
+effect, because <code class="docutils literal"><span class="pre">:include-source:</span> <span class="pre">false</span></code> implies <code class="docutils literal"><span class="pre">:hide-from:</span> <span class="pre">all</span></code>.</dd>
+<dt>show-to <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Space-separated list of builders that <em>should</em> render any source from
+this directive.  Builder names here override any builders specified in
+<cite>hide-from</cite>.  If you apply <code class="docutils literal"><span class="pre">:show-to:</span></code> options as well as
+<code class="docutils literal"><span class="pre">:include-source:</span> <span class="pre">false</span></code> (see above) these can enable additional
+builders on top of the implied <code class="docutils literal"><span class="pre">doctest</span></code> builder.</dd>
+<dt>encoding <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>If this source file is in a non-UTF8 or non-ASCII encoding,
 the encoding must be specified using the <cite>:encoding:</cite> option.
 The encoding will not be inferred using the <code class="docutils literal"><span class="pre">-*-</span> <span class="pre">coding</span> <span class="pre">-*-</span></code>
 metacomment.</dd>
-<dt>keepfigs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>If specified, do not close figures from previous plot command. This
+<dt>keepfigs <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If specified, do not close figures from previous plot command. This
 allows you to build up a plot in stages, with the current nbplot
 command building on the figure generated by previous nbplot commands.</dd>
-<dt>nofigs</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">bool</span><dd>If specified, the code block will be run, but no figures will be
+<dt>nofigs <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
+<dd>If specified, the code block will be run, but no figures will be
 inserted.  This is sometimes necessary when your code generates a plot,
 but you do not want to include it.  If the code does not generate a
 plot, this option is not necessary.</dd>
-<dt>raises</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>String giving error class.  The code runner will assert this error was
+<dt>raises <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>String giving error class.  The code runner will assert this error was
 raised by the enclosed code, and suppress stderr.</dd>
-<dt>render-parts</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd><p class="first">The contents of the directive may be divided into &#8220;parts&#8221; at lines
+<dt>render-parts <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first">The contents of the directive may be divided into “parts” at lines
 containing <code class="docutils literal"><span class="pre">..</span> <span class="pre">part</span></code> with a blank line before and after.  This option
 gives a Python expression returning an integer or tuple giving the
 indices of the <em>parts</em> that should be used for the built output of the
@@ -165,32 +179,26 @@ tuple is a tuple of such integers. The expression operates in a
 namespace defined by the contents of the <code class="docutils literal"><span class="pre">nbplot_flags</span></code> config
 variable (a dict) and any extra namespace defined above this directive
 with <code class="xref py py-class docutils literal"><span class="pre">NBPlotFlags</span></code> directives.</p>
-<p>For the selected parts, any generated doctest blocks in the code get
-wrapped in a special doctree node for a skipped doctest, and therefore
-do not get picked up by the sphinx doctest extension.  The nbplots
-extension tells the other builders to build the skipped doctest as if
-it were a standard doctest.</p>
+<p>Any selected parts get labeled such that the doctest builder does not
+see them, and therefore they do not get picked up by the sphinx doctest
+extension.  The nbplots extension tells the other builders to build the
+skipped doctest as if it were a standard doctest.</p>
 <p>Examples:</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">render</span><span class="o">-</span><span class="n">parts</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">have_matlab</span> <span class="k">else</span> <span class="mi">1</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">render</span><span class="o">-</span><span class="n">parts</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">have_matlab</span> <span class="k">else</span> <span class="mi">1</span>
 </pre></div>
 </div>
+<p class="last">Default value is 0.</p>
 </dd>
-<dt>run-parts</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd><p class="first">See <code class="docutils literal"><span class="pre">render-parts</span></code> above.  Python expression that returns integer or
+<dt>run-parts <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first">See <code class="docutils literal"><span class="pre">render-parts</span></code> above.  Python expression that returns integer or
 tuple giving indices for parts that should be executed when generating
 the figures.  Any doctests in these parts also get wrapped in standard
 doctest blocks, and so will be picked up by the sphinx doctest builder.</p>
 <p>Examples:</p>
-<blockquote class="last">
-<div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">run-parts:</th><td class="field-body">0 if slow else 1</td>
-</tr>
-</tbody>
-</table>
-</div></blockquote>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">run</span><span class="o">-</span><span class="n">parts</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">slow</span> <span class="k">else</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p class="last">Default value is 0.</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -209,8 +217,6 @@ target).  These include <cite>alt</cite>, <cite>height</cite>, <cite>width</cite
 <div><dl class="docutils">
 <dt>nbplot_include_source</dt>
 <dd>Default value for the include-source option</dd>
-<dt>nbplot_html_show_source_link</dt>
-<dd>Whether to show a link to the source in HTML.</dd>
 <dt>nbplot_pre_code</dt>
 <dd>Code that should be executed before each plot.</dd>
 <dt>nbplot_formats</dt>
@@ -221,7 +227,7 @@ target).  These include <cite>alt</cite>, <cite>height</cite>, <cite>width</cite
 <p class="last">that determine the file format and the DPI. For entries whose
 DPI was omitted, sensible defaults are chosen. When passing from
 the command line through sphinx_build the list should be passed as
-suffix:dpi,suffix:dpi, ....</p>
+suffix:dpi,suffix:dpi, ….</p>
 </dd>
 <dt>nbplot_html_show_formats</dt>
 <dd>Whether to show links to the files in HTML.</dd>
@@ -293,11 +299,11 @@ than source directory).</dd>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Matthew Brett.
+      &copy;2016-2018, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="_sources/nbplots.rst.txt"

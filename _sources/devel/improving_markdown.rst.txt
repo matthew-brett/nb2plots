@@ -29,7 +29,7 @@ Workflow
 
   .. code-block:: bash
 
-      nosetests nb2plots
+      py.test nb2plots
 
 * Identify a ReST construct you would like to handle, or handle better. Let's
   say you you've decided to make the converter do something sensible with the
@@ -123,10 +123,10 @@ Workflow
 
   .. code-block:: bash
 
-      nosetests nb2plots/tests/test_doctree2md.py
-      nosetests nb2plots/tests/test_sphinx2md.py
-      nosetests nb2plots/tests/test_doctree2py.py
-      nosetests nb2plots/tests/test_doctree2nb.py
+      py.test nb2plots/tests/test_doctree2md.py
+      py.test nb2plots/tests/test_sphinx2md.py
+      py.test nb2plots/tests/test_doctree2py.py
+      py.test nb2plots/tests/test_doctree2nb.py
 
   These will test your new ReST file, and the various other example ReST
   files, against their expected Markdown, code and notebook outputs.
@@ -138,7 +138,7 @@ Workflow
 
   .. code-block:: bash
 
-      nosetests nb2plots
+      py.test nb2plots
 
 * Make a pull request to `nb2plots github`_.
 

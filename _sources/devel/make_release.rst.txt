@@ -38,16 +38,12 @@ Releasing nb2plots
         pypi
 
     [pypi]
-    username:your.pypi.username
-    password:your-password
-
-    [warehouse]
     repository: https://upload.pypi.io/legacy/
     username:your.pypi.username
     password:your-password
 
-* Once everything looks good, tag the release.  This will also set the version
-  (we are using versioneer_ to manage versions via git tags)::
+* Tag the release.  This will also set the version (we are using versioneer_
+  to manage versions via git tags)::
 
     git tag -s 0.3
 

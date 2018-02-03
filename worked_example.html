@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Worked example &#8212; nb2plots 0.5.1 documentation</title>
-    
+    <title>Worked example &#8212; nb2plots 0.6 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.1',
+        VERSION:     '0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Scripts in nb2plots" href="scripts.html" />
@@ -36,7 +33,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -46,7 +43,7 @@
             
   <div class="section" id="worked-example">
 <span id="id1"></span><h1>Worked example<a class="headerlink" href="#worked-example" title="Permalink to this headline">¶</a></h1>
-<p>Let&#8217;s say I have a notebook <a class="reference external" href="example_notebook.html">example notebook</a>.  You
+<p>Let’s say I have a notebook <a class="reference external" href="example_notebook.html">example notebook</a>.  You
 can download the notebook from <a class="reference download internal" href="_downloads/example_notebook.ipynb" download=""><code class="xref download docutils literal"><span class="pre">example_notebook.ipynb</span></code></a>.</p>
 <p>I want to make this notebook into a ReST page to include in my Sphinx
 project.  First I convert the notebook with the <code class="docutils literal"><span class="pre">nb2plots</span></code> script:</p>
@@ -74,7 +71,7 @@ correctness of the code on my page with the Sphinx doctest extension:</p>
 <p>This example page converts well, but, in practice, you may well want to edit
 the ReST document to clean up some differences between the notebook code cells
 and doctest blocks in Nbplot directives.</p>
-<p>Now let&#8217;s say that I would like to make this page available to my users as
+<p>Now let’s say that I would like to make this page available to my users as
 Jupyter notebooks and / or a Python code file.  To do this, I add the
 following directive to the end of my page (or wherever I like):</p>
 <div class="highlight-rest"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">code-links</span><span class="p">::</span>
@@ -125,11 +122,11 @@ options to select which of these links to add.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Matthew Brett.
+      &copy;2016-2018, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="_sources/worked_example.rst.txt"

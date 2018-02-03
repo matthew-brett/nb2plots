@@ -5,9 +5,10 @@ Test Sphinx builds on an example project
 If you've developed Sphinx extensions before, you'll know that they can be
 hard to test.
 
-Have a look at the machinery in ``nb2plots/sphinxutils.py`` for a somewhat
-general way of writing tests for Sphinx builds, and
-``nb2plots/tests/test_nbplots.py`` for many examples using that machinery.
+Have a look at the machinery in `sphinxtesters
+<https://github.com/matthew-brett/sphinxtesters>`_ for a somewhat general way
+of writing tests for Sphinx builds, and ``nb2plots/tests/test_nbplots.py`` for
+many examples using that machinery.
 
 Sometimes, what you really want to do, is try an actual Sphinx build from the
 command line.

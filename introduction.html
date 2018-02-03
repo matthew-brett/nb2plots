@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Basics &#8212; nb2plots 0.5.1 documentation</title>
-    
+    <title>Basics &#8212; nb2plots 0.6 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.1',
+        VERSION:     '0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Worked example" href="worked_example.html" />
@@ -36,7 +33,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -60,7 +57,7 @@ Sphinx build.  Why? Read on.</p>
 <p>Jupyter notebooks are just what the doctor ordered when hacking up a quick
 tutorial, or preparing a software demo.  The problems start when you want to
 do not-trivial edits to the notebooks, or you need features that notebooks
-don&#8217;t have, such as flexible cross-referencing, extensible markup, and so on.
+don’t have, such as flexible cross-referencing, extensible markup, and so on.
 Notebooks are also painful to use with version control.  These times make you
 wish your notebook was in a standard extensible text format, such as <a class="reference external" href="http://docutils.sourceforge.net/rst.html">ReST</a>.</p>
 <p>You could convert your notebook to ReST using the standard <a class="reference external" href="http://nbconvert.readthedocs.org/en/latest/">nbconvert</a>
@@ -155,13 +152,14 @@ code automatically under Python versions 2.7, and 3.3 through 3.5.</p>
 <ul>
 <li><p class="first">Install <code class="docutils literal"><span class="pre">nb2plots</span></code></p>
 </li>
-<li><p class="first">Install the <a class="reference external" href="http://readthedocs.org/docs/nose/en/latest">nose</a> testing framework and the <code class="docutils literal"><span class="pre">mock</span></code> module:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">nose</span> <span class="n">mock</span>
-</pre></div>
-</div>
+<li><p class="first">Install the <a class="reference external" href="https://pytest.readthedocs.io">pytest</a> testing framework, the <code class="docutils literal"><span class="pre">mock</span></code> package, and the
+<code class="docutils literal"><span class="pre">scripttester</span></code> package.</p>
+<blockquote>
+<div><p>pip install pytest mock scripttester</p>
+</div></blockquote>
 </li>
 <li><p class="first">Run the tests with:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">nosetests</span> <span class="n">nb2plots</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">py</span><span class="o">.</span><span class="n">test</span> <span class="o">--</span><span class="n">pyargs</span> <span class="n">nb2plots</span>
 </pre></div>
 </div>
 </li>
@@ -225,11 +223,11 @@ code automatically under Python versions 2.7, and 3.3 through 3.5.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Matthew Brett.
+      &copy;2016-2018, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="_sources/introduction.rst.txt"

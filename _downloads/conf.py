@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'nb2plots'
-copyright = '2016, Matthew Brett'
+copyright = '2016-2018, Matthew Brett'
 author = 'Matthew Brett'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -348,3 +348,6 @@ texinfo_documents = [
 # texinfo_no_detailmenu = False
 
 markdown_http_base = 'https://matthew-brett.github.io/nb2plots'
+
+# Doctest configuration.  Use older numpy array representation.
+doctest_global_setup = 'from nb2plots.testing import setup_test; setup_test()'

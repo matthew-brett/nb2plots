@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Using the code-links directive &#8212; nb2plots 0.5.1 documentation</title>
-    
+    <title>Using the code-links directive &#8212; nb2plots 0.6 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.1',
+        VERSION:     '0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Links in Markdown" href="markdown_base.html" />
@@ -36,7 +33,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -69,7 +66,7 @@ inserted by executing the built notebook):</p>
 </pre></div>
 </div>
 <p>You can select one or more of these links with a list as an argument to the
-directive, where &#8220;python&#8221;, &#8220;clear&#8221; and &#8220;full&#8221; refer to a Python code file,
+directive, where “python”, “clear” and “full” refer to a Python code file,
 clear notebook file and a full notebook file, respectively. For example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">python</span>
 
@@ -79,6 +76,34 @@ clear notebook file and a full notebook file, respectively. For example:</p>
 </pre></div>
 </div>
 <p><code class="docutils literal"><span class="pre">python</span> <span class="pre">clear</span> <span class="pre">full</span></code> is the default.</p>
+<div class="section" id="kernel-timeout">
+<h3>Kernel timeout<a class="headerlink" href="#kernel-timeout" title="Permalink to this headline">¶</a></h3>
+<p>When you build the full notebook, Jupyter will execute the code in each cell.
+By default, Jupyter will time out of any cell takes longer than 30 seconds to
+execute.  You can change this default for the whole project with the
+<code class="docutils literal"><span class="pre">fill_notebook_timeout</span></code> setting in the <code class="docutils literal"><span class="pre">conf.py</span></code> file (see below).  If you
+just want to change the setting for a single page, you can add the <code class="docutils literal"><span class="pre">timeout</span></code>
+option to the <code class="docutils literal"><span class="pre">code-links</span></code> directive.  For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span>
+    <span class="p">:</span><span class="n">timeout</span><span class="p">:</span> <span class="mi">120</span>
+</pre></div>
+</div>
+<p>Set the timeout value to -1 or <code class="docutils literal"><span class="pre">none</span></code> to disable timeout entirely for this
+directive / page.</p>
+</div>
+<div class="section" id="configuration-options">
+<h3>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h3>
+<p>The code-links directive has the following configuration options, that can be
+set in the <code class="docutils literal"><span class="pre">conf.py</span></code> file.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>fill_notebook_timeout</dt>
+<dd>Default value for Jupyter kernel timeout when executing notebooks
+during page build.  If not set, default is 30 seconds. Set to -1 or
+None to disable timeout.</dd>
+</dl>
+</div></blockquote>
+</div>
 </div>
 </div>
 
@@ -91,7 +116,11 @@ clear notebook file and a full notebook file, respectively. For example:</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Using the code-links directive</a><ul>
-<li><a class="reference internal" href="#module-nb2plots.codelinks">code-links directive</a></li>
+<li><a class="reference internal" href="#module-nb2plots.codelinks">code-links directive</a><ul>
+<li><a class="reference internal" href="#kernel-timeout">Kernel timeout</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration options</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -126,11 +155,11 @@ clear notebook file and a full notebook file, respectively. For example:</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Matthew Brett.
+      &copy;2016-2018, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="_sources/code_links.rst.txt"

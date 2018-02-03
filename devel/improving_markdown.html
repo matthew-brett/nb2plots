@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.5.1 documentation</title>
-    
+    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.6 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.5.1',
+        VERSION:     '0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Test Sphinx builds on an example project" href="sphinx_example_project.html" />
@@ -36,7 +33,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -66,12 +63,12 @@ the development code with something like:</p>
 <code class="docutils literal"><span class="pre">setup.py</span></code> file.</p>
 </li>
 <li><p class="first">Make sure the current tests pass with:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests nb2plots
+<div class="highlight-bash"><div class="highlight"><pre><span></span>py.test nb2plots
 </pre></div>
 </div>
 </li>
-<li><p class="first">Identify a ReST construct you would like to handle, or handle better. Let&#8217;s
-say you you&#8217;ve decided to make the converter do something sensible with the
+<li><p class="first">Identify a ReST construct you would like to handle, or handle better. Let’s
+say you you’ve decided to make the converter do something sensible with the
 <code class="docutils literal"><span class="pre">:PEP:</span></code> text role in ReST;</p>
 </li>
 <li><p class="first">Make a new ReST file that uses the construct, and put it in the
@@ -115,7 +112,7 @@ ReST file to see what the output looks like;</p>
 </pre></div>
 </div>
 <p>If your Markdown is not valid docutils ReST, you can skip the <code class="docutils literal"><span class="pre">rst2md</span></code>
-test by writing an output file containing the work &#8220;skip&#8221;:</p>
+test by writing an output file containing the work “skip”:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;skip&quot;</span> &gt; nb2plots/tests/rst_md_files/pep.md
 </pre></div>
 </div>
@@ -142,10 +139,10 @@ with the matching scripts:</p>
 </div>
 </li>
 <li><p class="first">Run the relevant tests:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests nb2plots/tests/test_doctree2md.py
-nosetests nb2plots/tests/test_sphinx2md.py
-nosetests nb2plots/tests/test_doctree2py.py
-nosetests nb2plots/tests/test_doctree2nb.py
+<div class="highlight-bash"><div class="highlight"><pre><span></span>py.test nb2plots/tests/test_doctree2md.py
+py.test nb2plots/tests/test_sphinx2md.py
+py.test nb2plots/tests/test_doctree2py.py
+py.test nb2plots/tests/test_doctree2nb.py
 </pre></div>
 </div>
 <p>These will test your new ReST file, and the various other example ReST
@@ -155,7 +152,7 @@ files, against their expected Markdown, code and notebook outputs.</p>
 of the code (such as notebook conversion) is still working as expected.  If
 the tests fail, but you think your output is better than the previous output
 that the tests are using, feel free to edit.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>nosetests nb2plots
+<div class="highlight-bash"><div class="highlight"><pre><span></span>py.test nb2plots
 </pre></div>
 </div>
 </li>
@@ -209,11 +206,11 @@ that the tests are using, feel free to edit.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Matthew Brett.
+      &copy;2016-2018, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="../_sources/devel/improving_markdown.rst.txt"

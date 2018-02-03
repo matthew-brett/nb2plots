@@ -1,20 +1,17 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Links in Markdown &#8212; nb2plots 0.5.1 documentation</title>
-    
+    <title>Links in Markdown &#8212; nb2plots 0.6 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.5.1',
+        VERSION:     '0.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -24,7 +21,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Improving the ReST to Markdown conversion" href="devel/improving_markdown.html" />
@@ -36,7 +33,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body role="document">
+  <body>
   
 
     <div class="document">
@@ -53,7 +50,7 @@ replacing them with some suitable text.</p>
 the <code class="docutils literal"><span class="pre">:ref:</span></code> role, or to <a class="reference internal" href="scripts.html"><span class="doc">other ReST pages</span></a>, using the
 <code class="docutils literal"><span class="pre">:doc:</span></code> role.  Links can also be to files to download, such as
 <a class="reference download internal" href="_downloads/conf.py" download=""><code class="xref download docutils literal"><span class="pre">conf.py</span></code></a>.</p>
-<p>It&#8217;s often the case that you have built HTTP pages on the web somewhere, so it
+<p>It’s often the case that you have built HTTP pages on the web somewhere, so it
 would make sense for the built Markdown to point to the HTTP versions of these
 links, rather than dropping them.</p>
 <p>You can tell <code class="docutils literal"><span class="pre">nb2plots</span></code> where your built HTTP docs are, by setting the
@@ -63,11 +60,11 @@ links, rather than dropping them.</p>
 </div>
 <p>If you set this value to any string other than the empty string, the Markdown
 builders will use this base URL to resolve internal links.</p>
-<p>In fact, I&#8217;ve set that option in the <code class="docutils literal"><span class="pre">conf.py</span></code> for this project, like this:</p>
+<p>In fact, I’ve set that option in the <code class="docutils literal"><span class="pre">conf.py</span></code> for this project, like this:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">markdown_http_base</span> <span class="o">=</span> <span class="s1">&#39;https://matthew-brett.github.io/nb2plots&#39;</span>
 </pre></div>
 </div>
-<p>Have a look at the generated Python code and Notebook code for this pages, via
+<p>Have a look at the generated Python code and Notebook code for this page, via
 the links below.  You should see that the Markdown links resolve to the HTTP
 pages at <a class="reference external" href="https://matthew-brett.github.io/nb2plots">https://matthew-brett.github.io/nb2plots</a>.</p>
 <ul class="simple">
@@ -113,11 +110,11 @@ pages at <a class="reference external" href="https://matthew-brett.github.io/nb2
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, Matthew Brett.
+      &copy;2016-2018, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
       |
       <a href="_sources/markdown_base.rst.txt"

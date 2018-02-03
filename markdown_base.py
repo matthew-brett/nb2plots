@@ -9,7 +9,7 @@
 # `:doc:` role.  Links can also be to files to download, such as
 # [conf.py](https://matthew-brett.github.io/nb2plots/_downloads/conf.py).
 #
-# It's often the case that you have built HTTP pages on the web somewhere, so it
+# It’s often the case that you have built HTTP pages on the web somewhere, so it
 # would make sense for the built Markdown to point to the HTTP versions of these
 # links, rather than dropping them.
 #
@@ -23,12 +23,12 @@
 # If you set this value to any string other than the empty string, the Markdown
 # builders will use this base URL to resolve internal links.
 #
-# In fact, I've set that option in the `conf.py` for this project, like this:
+# In fact, I’ve set that option in the `conf.py` for this project, like this:
 #
 # ```
 # markdown_http_base = 'https://matthew-brett.github.io/nb2plots'
 # ```
 #
-# Have a look at the generated Python code and Notebook code for this pages, via
+# Have a look at the generated Python code and Notebook code for this page, via
 # the links below.  You should see that the Markdown links resolve to the HTTP
 # pages at [https://matthew-brett.github.io/nb2plots](https://matthew-brett.github.io/nb2plots).
