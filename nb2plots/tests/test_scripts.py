@@ -10,14 +10,14 @@ from os.path import (join as pjoin, exists)
 from glob import glob
 import re
 
-from scriptrunner import ScriptRunner
+from scripttester import ScriptTester
 
 from nb2plots.testing import DATA_PATH
 from nb2plots.testing.convutils import fcontents, unsmart, unsmart_nb
 from nb2plots.testing.nbtesters import assert_nb_equiv
 
 
-runner = ScriptRunner('nb2plots')
+runner = ScriptTester('nb2plots', win_bin_ext='.bat')
 run_command = runner.run_command
 
 

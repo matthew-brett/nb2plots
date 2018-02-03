@@ -4,7 +4,7 @@
 
 from nb2plots import nbplots as nbp
 
-from nb2plots.tests import mockapp
+from nb2plots.testing import mockapp
 
 
 def test_nbplots_setup():
