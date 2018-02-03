@@ -141,9 +141,10 @@ Tests
 *****
 
 * Install ``nb2plots``
-* Install the pytest_ testing framework and the ``mock`` module::
+* Install the pytest_ testing framework, the ``mock`` package, and the
+  ``scripttester`` package.
 
-    pip install pytest mock
+    pip install pytest mock scripttester
 
 * Run the tests with::
 
