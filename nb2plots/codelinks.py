@@ -22,8 +22,8 @@ Kernel timeout
 --------------
 
 When you build the full notebook, Jupyter will execute the code in each cell.
-By default, Jupyter will time out of any cell takes longer than 30 seconds to
-execute.  You can change this default for the whole project with the
+By default, Jupyter will time out for any cell that takes longer than 30
+seconds to execute.  You can change this default for the whole project with the
 ``fill_notebook_timeout`` setting in the ``conf.py`` file (see below).  If you
 just want to change the setting for a single page, you can add the ``timeout``
 option to the ``code-links`` directive.  For example::
@@ -31,8 +31,8 @@ option to the ``code-links`` directive.  For example::
     .. code-links:
         :timeout: 120
 
-Set the timeout value to -1 or ``none`` to disable timeout entirely for this
-directive / page.
+Set the ``timeout`` value to -1 or ``none`` to disable timeout entirely for
+this directive / page.
 
 Configuration options
 ---------------------
