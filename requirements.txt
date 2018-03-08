@@ -1,6 +1,6 @@
 # Minimum requirements
 #
-ipython[notebook]>=3.0
+ipython[notebook]>=4.0
 sphinx>=1.4
 numpy>=1.6.1
 matplotlib>=1.1.0

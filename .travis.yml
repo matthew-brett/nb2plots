@@ -45,7 +45,7 @@ matrix:
     # Check also requirements.txt
     - python: 2.7
       env:
-          - DEPENDS="ipython[notebook]==3.0.0 sphinx==1.4 matplotlib==1.1.0 six==1.7 numpy==1.6.1"
+          - DEPENDS="ipython[notebook]==4.0.0 sphinx==1.4 matplotlib==1.1.0 six==1.7 numpy==1.6.1"
     - python: 2.7
       env:
           - DEPENDS="ipython[notebook] sphinx==1.4.3 matplotlib"
