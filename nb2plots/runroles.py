@@ -356,5 +356,6 @@ def setup(app):
     # code visit, depart methods with app.add_node as we have just done for the
     # html translator in the lines above.  See:
     # http://www.sphinx-doc.org/en/1.4.8/extdev/tutorial.html#the-setup-function
+    app.set_translator('markdown', doctree2py.Translator)
     app.set_translator('pyfile', doctree2py.Translator)
     app.set_translator('ipynb', doctree2nb.Translator)
