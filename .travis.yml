@@ -82,7 +82,9 @@ before_install:
     - python -m pip install --upgrade pip wheel
     - python --version  # just to check
     - pip install pytest mock scripttester # always
-    - pip install $EXTRA_PIP_FLAGS -f $EXTRA_WHEELS $DEPENDS
+    - if [ -n "$DEPENDS" ]; then
+      pip install $EXTRA_PIP_FLAGS -f $EXTRA_WHEELS $DEPENDS;
+      fi
 
 install:
     - |
