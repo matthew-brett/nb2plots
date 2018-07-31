@@ -1,9 +1,8 @@
-""" Configuration for py.test test run
+""" Skip the origin Gohlke transforms for doctests.
+
+That file needs some specific doctest setup.
 """
 
-def pytest_ignore_collect(path, config):
-    """ Skip the origin Gohlke transforms for doctests.
+from os.path import join as pjoin
 
-    That file needs some specific doctest setup.
-    """
-    return path.basename in ('conf.py', 'rst_md_files')
+collect_ignore = [pjoin('proj1', "conf.py"), 'rst_md_files']
