@@ -230,6 +230,8 @@ A section
 .. code-links::
 """}
 
+    toctree_pages = list(rst_sources)
+
     def test_output(self):
         for suffix in ('.py', '.ipynb', '_full.ipynb'):
             assert isfile(pjoin(self.out_dir, 'foo', 'a_page' + suffix))

@@ -2,7 +2,7 @@
 
 from os.path import (join as pjoin, dirname, isdir, exists)
 
-from sphinxtesters import ModifiedPageBuilder
+from sphinxtesters import PageBuilder
 
 HERE = dirname(__file__)
 
@@ -12,14 +12,11 @@ A title
 
 """
 
-class Proj1Builder(ModifiedPageBuilder):
+class Proj1Builder(PageBuilder):
     """ Build using 'proj1' directory as template to modify
     """
 
     page_source_template = pjoin(HERE, 'proj1')
-
-    # default_page used in 'replace_page' class method
-    default_page = 'a_page.rst'
 
 
 class TestProj1(Proj1Builder):
