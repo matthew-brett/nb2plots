@@ -7,6 +7,10 @@ import os
 
 from docutils.nodes import paragraph, title
 
+import sphinx
+
+SPHINX_ge_1p8 = sphinx.version_info[:2] >= (1, 8)
+
 from nb2plots.nbplots import (run_code, parse_parts, nbplot_container,
                               nbplot_epilogue)
 from sphinxtesters import SourcesBuilder
@@ -470,6 +474,12 @@ class TestFlags(PlotsBuilder):
 
     builder = 'pseudoxml'
 
+    literal_header = (
+        '<literal_block ' +
+        ('force_highlighting="False" language="default" linenos="False" '
+        if SPHINX_ge_1p8 else '') +
+        'xml:space="preserve">')
+
     rst_sources=dict(a_page="""\
 A title
 -------
@@ -493,15 +503,17 @@ Some text
     def test_flags(self):
         # Check that flags correctly set from flag directives
         built = self.get_built_file('a_page.pseudoxml')
-        assert """
+        expected = """
         <title>
             A title
-        <literal_block xml:space="preserve">
-            {'a': 1, 'b': 2}
+        {literal_header}
+            {{'a': 1, 'b': 2}}
         <paragraph>
             Some text
-        <literal_block xml:space="preserve">
-            {'a': 1, 'b': 2, 'c': 3}""" in built
+        {literal_header}
+            {{'a': 1, 'b': 2, 'c': 3}}""".format(
+                literal_header=self.literal_header)
+        assert expected in built
 
 
 class TestFlagsConfig(TestFlags):
@@ -515,16 +527,17 @@ nbplot_flags = {'flag1': 5, 'flag2': 6}
     def test_flags(self):
         # Check that global flags merged with local
         built = self.get_built_file('a_page.pseudoxml')
-        assert ("""
+        expected = """
         <title>
             A title
-        <literal_block xml:space="preserve">
-            {'a': 1, 'b': 2, 'flag1': 5, 'flag2': 6}
+        {literal_header}
+            {{'a': 1, 'b': 2, 'flag1': 5, 'flag2': 6}}
         <paragraph>
             Some text
-        <literal_block xml:space="preserve">
-            {'a': 1, 'b': 2, 'c': 3, 'flag1': 5, 'flag2': 6}"""
-                    in built)
+        {literal_header}
+            {{'a': 1, 'b': 2, 'c': 3, 'flag1': 5, 'flag2': 6}}""".format(
+                literal_header=self.literal_header)
+        assert expected in built
 
 
 class TestWithoutSkip(PlotsBuilder):
