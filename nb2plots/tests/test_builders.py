@@ -3,6 +3,7 @@
 from __future__ import unicode_literals
 
 from os.path import join as pjoin, isfile
+import re
 
 from nb2plots.testing import PlotsBuilder
 
@@ -118,30 +119,32 @@ class TestBasedMarkdownBuild(TestMarkdownBuild):
 
     def test_output(self):
         assert self.get_built_file('contents.md').strip() == ''
-        assert self.get_built_file('a_page.md') == """\
+        expected_re = """\
 ## Refereed section
 
-This section refers to [itself](https://dynevor.org/a_page.html#a-ref).
+This section refers to \[itself\]\(https://dynevor.org/a_page.html#a-ref\)\.
 
-It also refers forward to the [next section](https://dynevor.org/a_page.html#b-ref).
+It also refers forward to the \[next section\]\(https://dynevor.org/a_page.html#b-ref\)\.
 
-Then, and finally, it refers to itself with its own name: [Refereed section](https://dynevor.org/a_page.html#a-ref).
+Then, and finally, it refers to itself with its own name: \[Refereed section\]\(https://dynevor.org/a_page\.html#a-ref\)\.
 
 ## Rerefereed
 
-This section refers to this document at [Refereed section](https://dynevor.org/a_page.html), and with an
-explicit title, to [this document](https://dynevor.org/a_page.html).
+This section refers to this document at \[Refereed section\]\(https://dynevor\.org/a_page\.html\), and with an
+explicit title, to \[this document\]\(https://dynevor\.org/a_page.html\)\.
 
-Then to [Refereed section](https://dynevor.org/a_page.html).  Again to [another doc](https://dynevor.org/a_page.html).
+Then to \[Refereed section\]\(https://dynevor\.org/a_page.html\)\.  Again to \[another doc\]\(https://dynevor\.org/a_page.html\)\.
 
-Now [a_page.rst](https://dynevor.org/_downloads/a_page.rst).
+Now \[a_page\.rst\]\(https://dynevor.org/_downloads/([a-f0-9]+/)?a_page.rst\)\.
 
-Then [another page](https://dynevor.org/_downloads/a_page.rst).
+Then \[another page\]\(https://dynevor\.org/_downloads/([a-f0-9]+/)?a_page.rst\)\.
 
-Then [a link](https://another-place.com/page.html).
+Then \[a link\]\(https://another-place.com/page.html\)\.
 
-Again, we [link to another doc](https://dynevor.org/subdir1/b_page.html).
+Again, we \[link to another doc\]\(https://dynevor.org/subdir1/b_page\.html\)\.
 """
+        actual = self.get_built_file('a_page.md')
+        assert re.match(expected_re, actual)
         assert self.get_built_file(pjoin('subdir1', 'b_page.md')) == """\
 ## Another page
 

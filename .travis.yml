@@ -69,6 +69,9 @@ matrix:
     - python: 3.5
       env:
         - EXTRA_PIP_FLAGS="--pre"
+    - python: 3.5
+      env:
+          - DEPENDS="ipython[notebook] sphinx==1.7.6 matplotlib"
 
 before_install:
     - source tools/travis_tools.sh
