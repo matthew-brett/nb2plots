@@ -7,6 +7,8 @@ from importlib import import_module
 
 from docutils.io import Output
 
+import sphinx
+
 from sphinxtesters import TempApp
 
 
@@ -27,6 +29,7 @@ class Converter(object):
     """
 
     default_conf = ''
+    default_index_root = 'contents' if sphinx.version_info[0] < 2 else 'index'
 
     def __init__(self, buildername='text', conf_txt=None,
                  status=sys.stdout, warningiserror=True):
@@ -76,15 +79,15 @@ class Converter(object):
             (``app.cleanup()``) after use.
         """
         app = self._make_app(rst_text)
-        out_fname = pjoin(app.tmp_dir, 'contents.rst')
+        out_fname = pjoin(app.tmp_dir, self.default_index_root + '.rst')
         with open(out_fname, 'wt') as fobj:
             fobj.write(rst_text)
         # Force build of everything
         app.build(True, [])
         if resolve:
-            dt = app.env.get_and_resolve_doctree('contents', app.builder)
+            dt = app.env.get_and_resolve_doctree(self.default_index_root, app.builder)
         else:
-            dt = app.env.get_doctree('contents')
+            dt = app.env.get_doctree(self.default_index_root)
         return dt, app
 
     def from_doctree(self, doctree, builder):
@@ -102,7 +105,7 @@ class Converter(object):
         output : str
             Representation in output format
         """
-        builder.prepare_writing(['contents'])
+        builder.prepare_writing([self.default_index_root])
         return builder.writer.write(doctree, UnicodeOutput())
 
     def from_rst(self, rst_text, resolve=True):

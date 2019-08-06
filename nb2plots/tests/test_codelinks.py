@@ -6,7 +6,7 @@ import re
 
 from nb2plots.converters import to_pxml
 
-from nb2plots.testing import PlotsBuilder
+from nb2plots.testing import PlotsBuilder, DEFAULT_INDEX_ROOT
 
 
 def test_codelinks():
@@ -28,21 +28,21 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference refdoc="contents" reftarget="/contents.py" reftype="pyfile">
+                    <runrole_reference refdoc="{contents}" reftarget="/{contents}.py" reftype="pyfile">
                         Download this page as a Python code file
                     ;
             <list_item>
                 <paragraph>
-                    <runrole_reference refdoc="contents" reftarget="/contents.ipynb" reftype="clearnotebook">
+                    <runrole_reference refdoc="{contents}" reftarget="/{contents}.ipynb" reftype="clearnotebook">
                         Download this page as a Jupyter notebook \(no outputs\)
                     ;
             <list_item>
                 <paragraph>
-                    <runrole_reference refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
+                    <runrole_reference refdoc="{contents}" reftarget="/{contents}_full.ipynb" reftype="fullnotebook">
                         Download this page as a Jupyter notebook \(with outputs\)
                     .
     <paragraph>
-        More text here.""")
+        More text here.""".format(contents=DEFAULT_INDEX_ROOT))
     pxml = as_pxml(page)
     assert both_re.match(pxml)
     # Default is 'both'
@@ -69,11 +69,11 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference refdoc="contents" reftarget="/contents.ipynb" reftype="clearnotebook">
+                    <runrole_reference refdoc="{contents}" reftarget="/{contents}.ipynb" reftype="clearnotebook">
                         Download this page as a Jupyter notebook \(no outputs\)
                     .
     <paragraph>
-        More text here.""" , pxml)
+        More text here.""".format(contents=DEFAULT_INDEX_ROOT), pxml)
     page = """\
 Text here
 
@@ -89,11 +89,11 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
+                    <runrole_reference refdoc="{contents}" reftarget="/{contents}_full.ipynb" reftype="fullnotebook">
                         Download this page as a Jupyter notebook \(with outputs\)
                     .
     <paragraph>
-        More text here.""", pxml)
+        More text here.""".format(contents=DEFAULT_INDEX_ROOT), pxml)
     page = """\
 Text here
 
@@ -109,16 +109,16 @@ More text here."""
         <bullet_list bullet="\*">
             <list_item>
                 <paragraph>
-                    <runrole_reference refdoc="contents" reftarget="/contents_full.ipynb" reftype="fullnotebook">
+                    <runrole_reference refdoc="{contents}" reftarget="/{contents}_full.ipynb" reftype="fullnotebook">
                         Download this page as a Jupyter notebook \(with outputs\)
                     ;
             <list_item>
                 <paragraph>
-                    <runrole_reference refdoc="contents" reftarget="/contents.py" reftype="pyfile">
+                    <runrole_reference refdoc="{contents}" reftarget="/{contents}.py" reftype="pyfile">
                         Download this page as a Python code file
                     .
     <paragraph>
-        More text here.""", pxml)
+        More text here.""".format(contents=DEFAULT_INDEX_ROOT), pxml)
 
 
 class TestSubdirCodeLinks(PlotsBuilder):

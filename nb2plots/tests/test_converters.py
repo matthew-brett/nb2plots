@@ -4,6 +4,7 @@
 import re
 
 from nb2plots.converters import Converter
+from nb2plots.testing import DEFAULT_INDEX_ROOT
 
 
 NEW_PAGE = u"""
@@ -25,10 +26,10 @@ More compelling text"""
     # pseudoxml converter
     conv = Converter('pseudoxml')
     pxml = conv.from_rst(NEW_PAGE)
-    assert re.search(r"""<document source=".*/contents.rst">
+    assert re.search(r"""<document source=".*/{contents}.rst">
     <section ids="more-fancy-title" names="more\\ fancy\\ title">
         <title>
             More fancy title
         <paragraph>
             More compelling text
-""", pxml) is not None
+""".format(contents=DEFAULT_INDEX_ROOT), pxml) is not None

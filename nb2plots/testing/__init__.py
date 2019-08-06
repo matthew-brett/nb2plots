@@ -5,8 +5,11 @@ from os.path import abspath, dirname, join as pjoin
 
 import numpy as np
 
+import sphinx
+
 from sphinxtesters import SourcesBuilder
 
+DEFAULT_INDEX_ROOT = 'contents' if sphinx.version_info[0] < 2 else 'index'
 
 DATA_PATH = abspath(pjoin(
     dirname(__file__),

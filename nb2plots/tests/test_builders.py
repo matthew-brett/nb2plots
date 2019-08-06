@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from os.path import join as pjoin, isfile
 import re
 
-from nb2plots.testing import PlotsBuilder
+from nb2plots.testing import PlotsBuilder, DEFAULT_INDEX_ROOT
 
 
 class TestMarkdownBuild(PlotsBuilder):
@@ -67,7 +67,7 @@ It refers to :doc:`../a_page`.
 It also refers to :doc:`/subdir1/b_page`."""}
 
     def test_output(self):
-        assert self.get_built_file('contents.md').strip() == ''
+        assert self.get_built_file(DEFAULT_INDEX_ROOT + '.md').strip() == ''
         assert self.get_built_file('a_page.md') == """\
 ## Refereed section
 
@@ -118,7 +118,7 @@ class TestBasedMarkdownBuild(TestMarkdownBuild):
                    'markdown_http_base = "https://dynevor.org"')
 
     def test_output(self):
-        assert self.get_built_file('contents.md').strip() == ''
+        assert self.get_built_file(DEFAULT_INDEX_ROOT + '.md').strip() == ''
         expected_re = """\
 ## Refereed section
 
@@ -185,7 +185,7 @@ This section refers to :ref:`itself <a-ref>`.
 """}
 
     def test_output(self):
-        assert self.get_built_file('contents.py').strip() == ''
+        assert self.get_built_file(DEFAULT_INDEX_ROOT + '.py').strip() == ''
         assert self.get_built_file('a_page.py') == """\
 # ## A section
 #
@@ -205,7 +205,7 @@ class TestBasedPythonBuild(TestPythonBuild):
                    'markdown_http_base = "https://dynevor.org"')
 
     def test_output(self):
-        assert self.get_built_file('contents.py').strip() == ''
+        assert self.get_built_file(DEFAULT_INDEX_ROOT + '.py').strip() == ''
         assert self.get_built_file('a_page.py') == """\
 # ## A section
 #
