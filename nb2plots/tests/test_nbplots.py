@@ -475,8 +475,8 @@ class TestFlags(PlotsBuilder):
     builder = 'pseudoxml'
 
     literal_header = (
-        '<literal_block ' +
-        ('force_highlighting="False" language="default" linenos="False" '
+        r'<literal_block ' +
+        (r'force(_highlighting)?="False" language="default" linenos="False" '
         if SPHINX_ge_1p8 else '') +
         'xml:space="preserve">')
 
@@ -503,7 +503,7 @@ Some text
     def test_flags(self):
         # Check that flags correctly set from flag directives
         built = self.get_built_file('a_page.pseudoxml')
-        expected = """
+        expected = r"""
         <title>
             A title
         {literal_header}
@@ -513,7 +513,7 @@ Some text
         {literal_header}
             {{'a': 1, 'b': 2, 'c': 3}}""".format(
                 literal_header=self.literal_header)
-        assert expected in built
+        assert re.search(expected, built)
 
 
 class TestFlagsConfig(TestFlags):
@@ -527,7 +527,7 @@ nbplot_flags = {'flag1': 5, 'flag2': 6}
     def test_flags(self):
         # Check that global flags merged with local
         built = self.get_built_file('a_page.pseudoxml')
-        expected = """
+        expected = r"""
         <title>
             A title
         {literal_header}
@@ -537,7 +537,7 @@ nbplot_flags = {'flag1': 5, 'flag2': 6}
         {literal_header}
             {{'a': 1, 'b': 2, 'c': 3, 'flag1': 5, 'flag2': 6}}""".format(
                 literal_header=self.literal_header)
-        assert expected in built
+        assert re.search(expected, built)
 
 
 class TestWithoutSkip(PlotsBuilder):
