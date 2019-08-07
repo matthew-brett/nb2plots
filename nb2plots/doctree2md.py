@@ -344,7 +344,11 @@ class Translator(nodes.NodeVisitor):
 
     def visit_literal_block(self, node):
         self._escape_text = False
-        code_type = node['classes'][1] if 'code' in node['classes'] else ''
+        if 'code' in node['classes']:  # Sphinx < 2
+            code_type = node['classes'][1]
+        else:  # Sphinx >= 2
+            language = node.get('language', '')
+            code_type = '' if language == 'default' else language
         self.add('```' + code_type + '\n')
 
     def depart_literal_block(self, node):
