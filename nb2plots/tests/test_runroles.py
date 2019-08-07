@@ -10,7 +10,7 @@ from nb2plots import doctree2py
 from nb2plots.converters import to_pxml
 
 from nb2plots.testing import mockapp
-from nb2plots.testing import PlotsBuilder, DEFAULT_INDEX_ROOT
+from nb2plots.testing import PlotsBuilder
 
 import pytest
 
@@ -54,7 +54,7 @@ def test_runrole_doctrees():
 <document source=".*?">
     <paragraph>
         Text then 
-        <runrole_reference filename="{filebase}.{ext}" refdoc="{contents}" reftarget="{base}.{ext}" reftype="{role_type}">
+        <runrole_reference filename="{filebase}.{ext}" refdoc="contents" reftarget="{base}.{ext}" reftype="{role_type}">
             {descr}
          then text."""
 
@@ -64,37 +64,34 @@ def test_runrole_doctrees():
         if not 'ext' in pxml_params:
             pxml_params['ext'] = 'py' if code_type == 'pyfile' else 'ipynb'
         pxml_regex = expected_re_fmt.format(
-            contents=DEFAULT_INDEX_ROOT,
             role_type=code_type,
             **pxml_params)
         assert re.match(pxml_regex, pxml)
 
-    fb = DEFAULT_INDEX_ROOT
-    b = '/' + fb
     assert_rst_pxml(
         dict(code_type='clearnotebook',
-             filebase=fb,
-             base=b,
+             filebase='contents',
+             base='/contents',
              descr='Download this page as a Jupyter notebook \(no outputs\)'),
         "Text then :clearnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='fullnotebook',
-             filebase=fb,
-             base=b,
+             filebase='contents',
+             base='/contents',
              descr=('Download this page as a Jupyter notebook '
                     '\(with outputs\)')),
         "Text then :fullnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='pyfile',
-             filebase=fb,
-             base=b,
+             filebase='contents',
+             base='/contents',
              descr='Download this page as a Python code file'),
         "Text then :pyfile:`.` then text.")
     for code_type in ('clearnotebook', 'fullnotebook', 'pyfile'):
         assert_rst_pxml(
             dict(code_type=code_type,
-                 filebase=fb,
-                 base=b,
+                 filebase='contents',
+                 base='/contents',
                  descr='message to taste'),
             "Text then :{}:`message to taste` then text.".format(code_type))
         assert_rst_pxml(
@@ -110,8 +107,8 @@ def test_runrole_doctrees():
         # ReST role processing usually works.
         assert_rst_pxml(
             dict(code_type=code_type,
-                 filebase=fb,
-                 base=b,
+                 filebase='contents',
+                 base='/contents',
                  descr='<foo.ipynb>'),
             "Text then :{}:`<foo.ipynb>` then text.".format(code_type))
 
