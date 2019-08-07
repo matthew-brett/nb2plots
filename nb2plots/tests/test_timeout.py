@@ -19,7 +19,7 @@ Title
 .. nbplot::
 
     >>> from time import sleep
-    >>> sleep(2)
+    >>> sleep(5)
 """}
 
 
@@ -48,7 +48,7 @@ Title
 .. nbplot::
 
     >>> from time import sleep
-    >>> sleep(2)
+    >>> sleep(5)
 """}
 
     should_error = True
@@ -70,7 +70,7 @@ Add :longerfullnotebook:`.`
 .. nbplot::
 
     >>> from time import sleep
-    >>> sleep(2)
+    >>> sleep(5)
 """}
 
     should_error = True
@@ -103,7 +103,7 @@ Title
 .. nbplot::
 
     >>> from time import sleep
-    >>> sleep(2)
+    >>> sleep(5)
 """}
 
 
@@ -131,5 +131,5 @@ Add :longerfullnotebook:`long <long.ipynb>`
 .. nbplot::
 
     >>> from time import sleep
-    >>> sleep(3)
+    >>> sleep(5)
 """}
