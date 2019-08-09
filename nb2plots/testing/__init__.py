@@ -33,3 +33,8 @@ class PlotsBuilder(SourcesBuilder):
 master_doc = "contents"  # Compatibility with Sphinx 2
 extensions = ["nb2plots", "sphinx.ext.doctest"]
 """
+
+def stripeq(actual, expected):
+    """ True if LR stripped `actual` equal to LR stripped `expected`
+    """
+    return actual.strip() == expected.strip()

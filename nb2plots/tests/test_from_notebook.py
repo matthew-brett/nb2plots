@@ -6,6 +6,7 @@ from os.path import dirname, join as pjoin
 from ..ipython_shim import nbformat
 from ..from_notebook import (convert_nb, convert_nb_fname, to_doctests,
                              has_mpl_inline, CODE_WITH_OUTPUT)
+from ..testing import stripeq
 
 
 DATA_PATH = pjoin(dirname(__file__), 'data')
@@ -20,12 +21,12 @@ def test_simple_cells():
     md_cell = v4.new_markdown_cell('# Some text')
     nb['cells'] = [md_cell]
     exp_text = "\nSome text\n=========\n"
-    assert convert_nb(nb) == exp_text
+    assert stripeq(convert_nb(nb), exp_text)
     # Code -> replaced with plot directive / doctest markers
     code_cell = v4.new_code_cell('a = 10')
     nb['cells'] = [code_cell]
     exp_code = PLT_HDR + "    >>> a = 10\n"
-    assert convert_nb(nb) == exp_code
+    assert stripeq(convert_nb(nb), exp_code)
     # Empty code -> no output
     empty_code_cell = v4.new_code_cell('')
     nb['cells'] = [empty_code_cell]
@@ -35,12 +36,12 @@ def test_simple_cells():
     # magic lines get stripped
     magic_code_cell = v4.new_code_cell('%timeit a = 1')
     nb['cells'] = [magic_code_cell]
-    assert convert_nb(nb) == exp_empty_code
+    assert stripeq(convert_nb(nb), exp_empty_code)
     # Magic lines stripped from within other code lines
     mixed_magic_code_cell = v4.new_code_cell('%timeit a = 1\nb = 2')
     exp_mixed_magic = PLT_HDR + "    >>> b = 2\n"
     nb['cells'] = [mixed_magic_code_cell]
-    assert convert_nb(nb) == exp_mixed_magic
+    assert stripeq(convert_nb(nb), exp_mixed_magic)
 
 
 def test_mpl_inline_works():
@@ -50,7 +51,7 @@ def test_mpl_inline_works():
     code_cell = v4.new_code_cell('%matplotlib inline\na = 10')
     nb['cells'] = [code_cell]
     exp_code = "\n.. mpl-interactive::\n{}    >>> a = 10\n".format(PLT_HDR)
-    assert convert_nb(nb) == exp_code
+    assert stripeq(convert_nb(nb), exp_code)
 
 
 def test_mpl_inline():
@@ -126,7 +127,7 @@ def test_small():
     rst_fname = pjoin(DATA_PATH, 'small.rst')
     out = convert_nb_fname(nb_fname)
     with open(rst_fname, 'rt') as fobj:
-        assert out + '\n' == fobj.read()
+        assert stripeq(out, fobj.read())
 
 
 code = \

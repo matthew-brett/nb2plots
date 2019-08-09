@@ -6,6 +6,7 @@ from os.path import join as pjoin, dirname
 from nb2plots.from_notebook import convert_nb_fname
 from nb2plots.converters import to_py, to_notebook
 
+from nb2plots.testing import stripeq
 from nb2plots.testing.convutils import fcontents
 from nb2plots.testing.nbtesters import assert_nb_equiv
 
@@ -19,7 +20,7 @@ def test_regression():
     output_rst_fname = pjoin(DATA, 'converted_example.rst')
     # Convert to ReST, add trailing CR from output script
     rst = convert_nb_fname(input_nb_fname) + '\n'
-    assert rst.encode('utf8') == fcontents(output_rst_fname)
+    assert stripeq(rst.encode('utf8'), fcontents(output_rst_fname))
     # Convert ReST to output formats
     py_file = to_py.from_rst(rst)
     assert (py_file.encode('utf8') ==
