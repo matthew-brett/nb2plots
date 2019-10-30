@@ -177,7 +177,11 @@ from __future__ import (absolute_import, division, print_function,
 
 import six
 
-from collections import defaultdict, Sequence
+try:
+    from collections.abc import Sequence
+except ImportError:
+    from collections import Sequence
+from collections import defaultdict
 import sys, os, shutil, io, re, textwrap
 from os.path import (relpath, abspath, join as pjoin, dirname, exists,
                      basename, splitext, isdir)
