@@ -20,8 +20,7 @@ Text here
 .. code-links::
 
 More text here."""
-    both_re = re.compile("""\
-<document source=".*?">
+    both_re = re.compile(r"""<document source=".*?">
     <paragraph>
         Text here
     <code_links>
@@ -61,8 +60,7 @@ Text here
 
 More text here."""
     pxml = as_pxml(page)
-    assert re.match("""\
-<document source=".*?">
+    assert re.match(r"""<document source=".*?">
     <paragraph>
         Text here
     <code_links>
@@ -81,8 +79,7 @@ Text here
 
 More text here."""
     pxml = as_pxml(page)
-    assert re.match("""\
-<document source=".*?">
+    assert re.match(r"""<document source=".*?">
     <paragraph>
         Text here
     <code_links>
@@ -101,8 +98,7 @@ Text here
 
 More text here."""
     pxml = as_pxml(page)
-    assert re.match("""\
-<document source=".*?">
+    assert re.match(r"""<document source=".*?">
     <paragraph>
         Text here
     <code_links>

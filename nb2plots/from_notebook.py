@@ -88,8 +88,8 @@ def to_doctests(code, first='>>> ', cont='... '):
     return '\n'.join(new_code)
 
 
-MPL_LIST_OUT = re.compile('\[<matplotlib\..*?>\]')
-MPL_OBJ_OUT = re.compile('<matplotlib\..*?>')
+MPL_LIST_OUT = re.compile(r'\[<matplotlib\..*?>\]')
+MPL_OBJ_OUT = re.compile(r'<matplotlib\..*?>')
 
 def ellipse_mpl(text):
     """ Replace outputs of matplotlib objects with ellipses
@@ -113,11 +113,11 @@ CODE_WITH_OUTPUT = re.compile(
     '^##CODE_START##\n'
     '(?P<code>.*?)'
     '^##CODE_END##(\n|$)'
-    '([\s\\n]*?'
+    '([\\s\\n]*?'
     '^##STDOUT_START##\n'
     '(?P<stdout>.*?)'
     '^##STDOUT_END##(\n|$))?'
-    '([\s\\n]*?'
+    '([\\s\\n]*?'
     '^##END_OUT_START##\n'
     '(?P<end_out>.*?)'
     '^##END_OUT_END##(\n|$))?', re.S | re.M)

@@ -120,8 +120,7 @@ class TestBasedMarkdownBuild(TestMarkdownBuild):
 
     def test_output(self):
         assert self.get_built_file('contents.md').strip() == ''
-        expected_re = """\
-## Refereed section
+        expected_re = r"""## Refereed section
 
 This section refers to \[itself\]\(https://dynevor.org/a_page.html#a-ref\)\.
 

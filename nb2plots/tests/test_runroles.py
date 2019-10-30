@@ -72,14 +72,14 @@ def test_runrole_doctrees():
         dict(code_type='clearnotebook',
              filebase='contents',
              base='/contents',
-             descr='Download this page as a Jupyter notebook \(no outputs\)'),
+             descr=r'Download this page as a Jupyter notebook \(no outputs\)'),
         "Text then :clearnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='fullnotebook',
              filebase='contents',
              base='/contents',
              descr=('Download this page as a Jupyter notebook '
-                    '\(with outputs\)')),
+                    r'\(with outputs\)')),
         "Text then :fullnotebook:`.` then text.")
     assert_rst_pxml(
         dict(code_type='pyfile',
