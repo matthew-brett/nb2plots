@@ -40,15 +40,15 @@ def file_same(file1, file2):
 
 def test_run_code():
     # Test run_code function
-    ns1 = run_code('a = 10')
+    ns1, _, _ = run_code('a = 10')
     assert ns1['a'] == 10
     assert not 'b' in ns1
     # New namespace by default
-    ns2 = run_code('b = 20')
+    ns2, _, _ = run_code('b = 20')
     assert ns2['b'] == 20
     assert not 'a' in ns2
     # Adding to a namespace
-    ns3 = run_code('c = 30', ns=ns1)
+    ns3, _, _ = run_code('c = 30', ns=ns1)
     assert ns3 is ns1
     assert ns1['c'] == 30
     # Checking raises
