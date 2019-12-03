@@ -170,11 +170,15 @@ The nbplot directive has the following configuration options:
 
     nbplot_template
         Provide a customized template for preparing restructured text.
+
+    nbplot_render_output
+        Include stdout of the executed nbplot directives in their Rest rendering.
 """
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
+import itertools
 import six
 
 try:
@@ -564,7 +568,7 @@ class NBPlotDirective(Directive):
 
         # make figures
         try:
-            images = render_figures(to_run,
+            images, output, err = render_figures(to_run,
                                     source_file_name,
                                     build_dir,
                                     output_base,
@@ -574,21 +578,26 @@ class NBPlotDirective(Directive):
                                     context_reset=context_reset,
                                     close_figs=close_figs,
                                     raises=raises)
-            errors = []
-        except PlotError as err:
+            errors = [err] if err else []
+        except PlotError as excp:
             reporter = self.state.memo.reporter
             sm = reporter.system_message(
                 2,
                 'Exception plotting {output_base}\n'
                 'from: {source_file_name}\n'
                 'with code:\n\n{to_run}\n\n'
-                'Exception:\n{err}'.format(**locals()),
+                'Exception:\n{excp}'.format(**locals()),
                 line=self.lineno)
             images = []
             errors = [sm]
+            output = ''
 
         # generate output restructuredtext
-        lines = [''] + [row.rstrip() for row in to_render.split('\n')]
+        render_rows = to_render.split('\n')
+        if config.nbplot_render_output:
+            render_rows = itertools.chain(render_rows, output.split('\n'))
+
+        lines = [''] + [row.rstrip() for row in render_rows]
         # If the code is not in doctest format, make it into code blocks.
         if not self._contains_doctest(to_render):
             lines = (['.. code-block:: python'] +
@@ -883,13 +892,11 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
 
     # Redirect stdout
     stdout = sys.stdout
-    sys.stdout = io.StringIO() if six.PY3 else io.BytesIO()
-
-    # Assign a do-nothing print function to the namespace.  There
-    # doesn't seem to be any other way to provide a way to (not) print
-    # that works correctly across Python 2 and 3.
-    def _dummy_print(*arg, **kwarg):
-        pass
+    stderr = sys.stderr
+    captured_out = io.StringIO() if six.PY3 else io.BytesIO()
+    captured_err = io.StringIO() if six.PY3 else io.BytesIO()
+    sys.stdout = captured_out
+    sys.stderr = captured_err
 
     ns = {} if ns is None else ns
     try:
@@ -897,7 +904,6 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
             code = unescape_doctest(code)
             if pre_code and not ns:
                 six.exec_(six.text_type(pre_code), ns)
-            ns['print'] = _dummy_print
             if "__main__" in code:
                 six.exec_("__name__ = '__main__'", ns)
             code = remove_coding(code)
@@ -917,7 +923,8 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
         sys.argv = old_sys_argv
         sys.path[:] = old_sys_path
         sys.stdout = stdout
-    return ns
+        sys.stderr = stderr
+    return ns, captured_out.getvalue().strip(), captured_err.getvalue().strip()
 
 
 def render_figures(code, code_path, output_dir, output_base, config,
@@ -996,7 +1003,7 @@ def render_figures(code, code_path, output_dir, output_base, config,
     if close_figs:
         plt.close('all')
 
-    run_code(code, code_path, ns, function_name, workdir=workdir,
+    _, out, err = run_code(code, code_path, ns, function_name, workdir=workdir,
              pre_code=setup.config.nbplot_pre_code, raises=raises)
 
     images = []
@@ -1014,7 +1021,7 @@ def render_figures(code, code_path, output_dir, output_base, config,
                 raise PlotError(traceback.format_exc())
             img.formats.append(format)
 
-    return images
+    return images, out, err
 
 
 # Sphinx event handlers
@@ -1093,6 +1100,7 @@ def setup(app):
     app.add_config_value('nbplot_rcparams', {}, True)
     app.add_config_value('nbplot_working_directory', None, True)
     app.add_config_value('nbplot_template', None, True)
+    app.add_config_value('nbplot_render_output', False, True)
     app.add_config_value('nbplot_flags', {}, True)
 
     # Create dictionaries in builder environment
