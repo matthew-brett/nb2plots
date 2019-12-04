@@ -932,7 +932,7 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
                 mod = Module([node], [])
             elif mode == 'single':
                 mod = ast.Interactive([node])
-            exec(compile(mod, code_path, mode), ns)
+            six.exec_(compile(mod, '<dummyfile>', mode), ns)
 
     try:
         try:
