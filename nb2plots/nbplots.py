@@ -899,6 +899,39 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
     sys.stderr = captured_err
 
     ns = {} if ns is None else ns
+
+    def _exec(excode):
+        """this code is boiled down from
+        https://github.com/ipython/ipython/blob/master/IPython/core/interactiveshell.py
+        it makes sure that expressions on the
+        last line of a nbplots directive are evaluated and printed
+        """
+        import ast
+        if sys.version_info > (3, 8):
+            from ast import Module
+        else:
+            # mock the new API, ignore second argument
+            # see https://github.com/ipython/ipython/issues/11590
+            from ast import Module as OriginalModule
+            Module = lambda nodelist, type_ignores: OriginalModule(nodelist)
+        nodelist = ast.parse(excode).body
+
+        if isinstance(nodelist[-1], ast.Expr):
+            to_run_exec, to_run_interactive = nodelist[:-1], nodelist[-1:]
+        else:
+            to_run_exec, to_run_interactive = nodelist, []
+
+        to_run = [(node, 'exec') for node in to_run_exec]
+        for node in to_run_interactive:
+            to_run.append((node, 'single'))
+
+        for node, mode in to_run:
+            if mode == 'exec':
+                mod = Module([node], [])
+            elif mode == 'single':
+                mod = ast.Interactive([node])
+            exec(compile(mod, code_path, mode), ns)
+
     try:
         try:
             code = unescape_doctest(code)
@@ -908,10 +941,10 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
                 six.exec_("__name__ = '__main__'", ns)
             code = remove_coding(code)
             if raises is None:
-                six.exec_(code, ns)
+                _exec(code)
             else:  # Code should raise exception
                 try:
-                    six.exec_(code, ns)
+                    _exec(code)
                 except raises:
                     pass
             if function_name:
