@@ -915,6 +915,8 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
             from ast import Module as OriginalModule
             Module = lambda nodelist, type_ignores: OriginalModule(nodelist)
         nodelist = ast.parse(excode).body
+        if not nodelist:
+            return
 
         if isinstance(nodelist[-1], ast.Expr):
             to_run_exec, to_run_interactive = nodelist[:-1], nodelist[-1:]
