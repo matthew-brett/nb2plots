@@ -415,7 +415,7 @@ class NBPlotDirective(Directive):
             return False if self.options['format'] == 'python' else True
         return contains_doctest(multi_str)
 
-    def _build_epilogue(self, images, source_rel_dir, build_dir):
+    def _build_epilogue(self, output, images, source_rel_dir, build_dir):
         """ Build the epilogue housing the image links
         """
         document = self.state.document
@@ -454,6 +454,7 @@ class NBPlotDirective(Directive):
             only_latex=only_latex,
             only_texinfo=only_texinfo,
             options=opts,
+            output=output,
             images=images_to_show,
             html_show_formats=config.nbplot_html_show_formats and n_to_show)
 
@@ -590,12 +591,12 @@ class NBPlotDirective(Directive):
                 line=self.lineno)
             images = []
             errors = [sm]
-            output = ''
+            output = []
 
         # generate output restructuredtext
         render_rows = to_render.split('\n')
-        if config.nbplot_render_output:
-            render_rows = itertools.chain(render_rows, output.split('\n'))
+        if not config.nbplot_render_output:
+            output = None
 
         lines = [''] + [row.rstrip() for row in render_rows]
         # If the code is not in doctest format, make it into code blocks.
@@ -612,7 +613,7 @@ class NBPlotDirective(Directive):
                                         self.nbplot_node,
                                         node_attrs)
         # Epilogue node contains the built figures and supporting stuff.
-        epilogue = self._build_epilogue(images, source_rel_dir, build_dir)
+        epilogue = self._build_epilogue(output, images, source_rel_dir, build_dir)
         ret = rendered_nodes + epilogue + errors
         self._copy_image_files(images, dest_dir)
         # Now, we need to put in nodes for the code that ran, so the doctest
@@ -697,6 +698,15 @@ def remove_coding(text):
 EPILOGUE_TEMPLATE = """
 {{ only_html }}
 
+   {%- if output is not none %}
+   
+   .. code-block:: ipythonconsole
+   
+        {% for line in output -%}
+        {{ line }}
+        {% endfor %}
+
+   {% endif -%}
    {% if html_show_formats and not multi_image %}
    (
    {%- for img in images -%}
@@ -1056,6 +1066,9 @@ def render_figures(code, code_path, output_dir, output_base, config,
                 raise PlotError(traceback.format_exc())
             img.formats.append(format)
 
+    out = out.strip().split('\n')
+    if out == ['']:
+        out = None
     return images, out, err
 
 
