@@ -24,6 +24,9 @@ import pytest
 
 HERE = dirname(__file__)
 
+# Variation in doctest block.
+DOCTEST_BLOCK_RE = r'<doctest_block (classes="doctest" )?xml:space="preserve">'
+
 
 def get_otherpage(fname):
     with open(pjoin(HERE, 'otherpages', fname), 'rt') as fobj:
@@ -639,7 +642,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
         <title>
             A title
         <nbplot_container>
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> # always
                 >>> a = 'default'
         <nbplot_epilogue>
@@ -649,7 +652,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
         <paragraph>
             Some text
         <nbplot_container>
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> a = 'skip is False'
         <nbplot_epilogue>
             <comment xml:space="preserve">
@@ -658,7 +661,7 @@ class TestWithoutSkipStructure(TestWithoutSkip):
         <paragraph>
             Keep text coming
         <nbplot_container>
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> b = 'skip appears to be False'
                 >>> a == 'skip is False'
                 True
@@ -669,10 +672,10 @@ class TestWithoutSkipStructure(TestWithoutSkip):
         <paragraph>
             Text continues
         <nbplot_container>
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> # doctest only run when skip flag False, always rendered
                 >>> b == 'skip appears to be False'
-                True""")
+                True""".format(**globals()))
         assert(regex.match(p_xml) is not None)
 
 
@@ -708,7 +711,7 @@ class TestWithSkipStructure(TestWithSkip):
         <title>
             A title
         <nbplot_container>
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> # always
                 >>> a = 'default'
         <nbplot_epilogue>
@@ -718,7 +721,7 @@ class TestWithSkipStructure(TestWithSkip):
         <paragraph>
             Some text
         <nbplot_container>
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> a = 'skip is True'
         <nbplot_epilogue>
             <comment xml:space="preserve">
@@ -727,7 +730,7 @@ class TestWithSkipStructure(TestWithSkip):
         <paragraph>
             Keep text coming
         <nbplot_container>
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> b = 'skip appears to be True'
                 >>> a == 'skip is True'
                 True
@@ -747,10 +750,10 @@ class TestWithSkipStructure(TestWithSkip):
             <comment xml:space="preserve">
             <comment xml:space="preserve">
         <nbplot_container hide-from="all" show-to="doctest">
-            <doctest_block xml:space="preserve">
+            {DOCTEST_BLOCK_RE}
                 >>> # only when skip flag True
                 >>> b == 'skip appears to be True'
-                True""")
+                True""".format(**globals()))
         assert(regex.match(p_xml) is not None)
 
 
