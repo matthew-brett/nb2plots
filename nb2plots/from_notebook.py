@@ -14,7 +14,7 @@ MPL_INLINE = re.compile(r"^\s*%\s*matplotlib\s+(inline|nbagg)\s*$",
 
 # Template to label code and output and plot blocks
 dl = DictLoader({'rst_plots.tpl': """\
-{%- extends 'rst.tpl' -%}
+{%- extends '__RST_DEFAULT_TEMPLATE__' -%}
 
 {% block input %}
 {%- if cell.source.strip() | has_mpl_inline -%}
@@ -50,7 +50,8 @@ dl = DictLoader({'rst_plots.tpl': """\
 {{ output.data['text/plain'] | ellipse_mpl | indent }}
 ##END_OUT_END##
 {%- endblock data_text -%}
-"""})
+""".replace('__RST_DEFAULT_TEMPLATE__',
+            nbconvert.RSTExporter().template_file)})
 
 
 def has_mpl_inline(code):
