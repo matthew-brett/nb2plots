@@ -17,8 +17,6 @@ env:
         - DEPENDS="ipython[notebook] sphinx matplotlib six"
         - PKG_NAME=nb2plots
         - INSTALL_TYPE="pip"
-        # URL for extra wheel repo
-        - EXTRA_WHEELS="https://5cf40426d9f06eb7461d-6fe47d9331aba7cd62fc36c7196769e4.ssl.cf2.rackcdn.com"
 
 python:
     - 3.4
@@ -45,7 +43,7 @@ matrix:
     # Check also requirements.txt
     - python: 2.7
       env:
-          - DEPENDS="ipython[notebook]==4.0.0 sphinx==1.4 matplotlib==1.1.0 six==1.7 numpy==1.6.1"
+          - DEPENDS="ipython[notebook]==4.0.0 sphinx==1.4 matplotlib==2.0 six==1.10 numpy==1.7.1"
     - python: 2.7
       env:
           - DEPENDS="ipython[notebook] sphinx==1.4.3 matplotlib"
@@ -82,7 +80,7 @@ before_install:
     - python --version  # just to check
     - pip install pytest mock scripttester # always
     - if [ -n "$DEPENDS" ]; then
-      pip install $EXTRA_PIP_FLAGS -f $EXTRA_WHEELS $DEPENDS;
+      pip install $EXTRA_PIP_FLAGS $DEPENDS;
       fi
 
 install:
@@ -94,13 +92,13 @@ install:
       elif [ "$INSTALL_TYPE" == "sdist" ]; then
         python setup.py egg_info  # check egg_info while we're here
         python setup.py sdist
-        pip install -f $EXTRA_WHEELS dist/*.tar.gz
+        pip install dist/*.tar.gz
       elif [ "$INSTALL_TYPE" == "wheel" ]; then
         pip install wheel
         python setup.py bdist_wheel
-        pip install -f $EXTRA_WHEELS dist/*.whl
+        pip install dist/*.whl
       elif [ "$INSTALL_TYPE" == "requirements" ]; then
-        pip install -f $EXTRA_WHEELS -r requirements.txt
+        pip install -r requirements.txt
         python setup.py install
       fi
 
