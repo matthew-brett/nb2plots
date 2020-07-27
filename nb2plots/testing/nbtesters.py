@@ -15,4 +15,8 @@ def assert_nb_equiv(ipynb, expected):
     # nbconvert 5.3.1 -> 5.4.0 (5.4.0 released September 7 2018).  Previously
     # it was empty.
     actual_nb['metadata'].pop('language_info', None)
+    # 'execution' in cell metadata from nbconvert 6.0
+    for cell in actual_nb['cells']:
+        if 'execution' in cell['metadata']:
+            cell['metadata'].pop('execution')
     assert actual_nb == expected_nb
