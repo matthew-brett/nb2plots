@@ -132,7 +132,7 @@ Released under the BSD two-clause license - see the file ``LICENSE`` in the
 source distribution.
 
 `travis-ci <https://travis-ci.org/matthew-brett/nb2plots>`_ kindly tests the
-code automatically under Python versions 2.7, and 3.3 through 3.5.
+code automatically under Python versions 2.7, and 3.5 through 3.8.
 
 The latest released version is at https://pypi.python.org/pypi/nb2plots
 
