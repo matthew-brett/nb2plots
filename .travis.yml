@@ -70,6 +70,27 @@ matrix:
     - python: 3.5
       env:
           - DEPENDS="ipython[notebook] sphinx==1.7.6 matplotlib"
+# Adding ppc64le jobs
+    - python: 3.6
+      arch: ppc64le
+      env:
+        - DEPENDS=
+    - python: 3.5
+      arch: ppc64le
+      env:
+        - DOCTEST_ARGS="--doctest-modules"
+    - python: 3.5
+      arch: ppc64le
+      env:
+        - BUILD_DOC=1
+    # Test pre-release versions of everything
+    - python: 3.8
+      arch: ppc64le
+      env:
+        - EXTRA_PIP_FLAGS="--pre"
+    - python: 3.5
+      arch: ppc64le
+      env:
 
 before_install:
     - source tools/travis_tools.sh
