@@ -2,6 +2,7 @@
 """
 from os.path import join as pjoin
 from glob import glob
+import re
 
 from nb2plots.converters import to_notebook
 from nb2plots.ipython_shim import nbf
@@ -16,6 +17,9 @@ from nb2plots.testing.convutils import fcontents, unsmart_nb
 from nb2plots.testing.nbtesters import assert_nb_equiv
 
 
+ID_RE = re.compile(r'"id":\s+".*?",\s*\n?')
+
+
 def to_nb_safe(rst_str):
     out = to_notebook.from_rst(rst_str)
     return unsmart_nb(out)
@@ -27,10 +31,14 @@ def cells2json(cells):
     return nbf.writes(nb)
 
 
+def rm_json_id(s):
+    return ID_RE.sub(s, '')
+
+
 def assert_rst_cells_equal(rst_text, cells):
     actual = to_notebook.from_rst(rst_text)
     expected = cells2json(cells)
-    assert actual == expected
+    assert rm_json_id(actual) == rm_json_id(expected)
 
 
 def test_basic():

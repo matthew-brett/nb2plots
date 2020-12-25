@@ -1,7 +1,17 @@
 """ Utils for testing notebooks
 """
 
+from copy import deepcopy
+
 from nb2plots.ipython_shim import nbf
+
+
+def rm_ids(nb):
+    nb2 = deepcopy(nb)
+    for cell in nb2['cells']:
+        if 'id' in cell:
+            del cell['id']
+    return nb2
 
 
 def assert_nb_equiv(ipynb, expected):
@@ -19,4 +29,4 @@ def assert_nb_equiv(ipynb, expected):
     for cell in actual_nb['cells']:
         if 'execution' in cell['metadata']:
             cell['metadata'].pop('execution')
-    assert actual_nb == expected_nb
+    assert rm_ids(actual_nb) == rm_ids(expected_nb)
