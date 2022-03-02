@@ -452,7 +452,7 @@ See :ref:`the ref <a-ref>`.
         # Check that reference correctly included
         built = self.get_built_file('a_page.pseudoxml')
         expected_regexp = re.compile(
-r"""<document _plot_counter="1" source=".*?a_page.rst">
+r"""<document _plot_counter="1" source=".*?a_page.rst"( xmlns.*)?>
     <section ids="a-title" names="a\\ title">
         <title>
             A title

@@ -10,3 +10,4 @@ MANIFEST
 htmlcov/
 .cache/
 .pytest_cache/
+.tox/
