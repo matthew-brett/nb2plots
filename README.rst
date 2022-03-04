@@ -96,7 +96,7 @@ Show me what it looks like
 For a very simple example, see |worked-example|.
 
 For a moderate-sized teaching site that makes extensive use of Nb2plots, see
-https://matthew-brett.github.com/teaching.
+https://matthew-brett.github.io/teaching.
 
 ************
 Installation
@@ -162,12 +162,12 @@ Please put up issues on the `nb2plots issue tracker`_.
 .. |worked-example| replace:: `worked example`_
 .. |code-links-documentation| replace:: `code-links documentation`_
 .. _nbplots documentation:
-    https://matthew-brett.github.com/nb2plots/nbplots.html
+    https://matthew-brett.github.io/nb2plots/nbplots.html
 .. _code-links documentation:
-    https://matthew-brett.github.com/nb2plots/code_links.html
+    https://matthew-brett.github.io/nb2plots/code_links.html
 .. _worked example:
-    https://matthew-brett.github.com/nb2plots/worked_example.html
-.. _documentation: https://matthew-brett.github.com/nb2plots
+    https://matthew-brett.github.io/nb2plots/worked_example.html
+.. _documentation: https://matthew-brett.github.io/nb2plots
 .. _pandoc: http://pandoc.org
 .. _jupyter: jupyter.org
 .. _homebrew: brew.sh
