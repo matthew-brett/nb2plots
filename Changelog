@@ -3,6 +3,18 @@ nb2plots Changelog
 ##################
 
 *****
+0.6.1
+*****
+
+Bugfix release.
+
+* Tox / Github actions for testing (Lumir Balhar)
+* Test fixes for newer Sphinx, Notebook, nbconvert (Lumir Balhar, MB).
+* Fix escapes in not-raw strings (Jerry James).
+* Fix import of Sequence for newer Python (Jerry James).
+* Update versioneer.
+
+*****
 0.6.0
 *****
 
