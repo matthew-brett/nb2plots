@@ -208,6 +208,13 @@ from matplotlib._pylab_helpers import Gcf
 __version__ = 2
 
 
+def _get_rawsource(node):
+    # Docutils < 0.18 has rawsource attribute, otherwise, build it.
+    if hasattr(node, 'rawsource'):
+        return node.rawsource
+    return nodes.unescape(node, restore_backslashes=True)
+
+
 class NBPlotFlags(Directive):
     """ Set flag namespace for nbplot
     """
@@ -345,7 +352,8 @@ class NBPlotDirective(Directive):
         """ Replace ``doctest_block`` nodes with ``dont_doctest_block`` nodes
         """
         for node in tree.traverse(doctest_filter):
-            new_node = self.dont_doctest_block(node.rawsource, node.rawsource)
+            raw_source = _get_rawsource(node)
+            new_node = self.dont_doctest_block(raw_source, raw_source)
             node.replace_self(new_node)
 
     def rst2nodes(self, lines, node_class, node_attrs=None):
