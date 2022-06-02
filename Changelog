@@ -2,17 +2,20 @@
 nb2plots Changelog
 ##################
 
+MB below is short for Matthew Brett.
+
 *****
 0.6.1
 *****
 
 Bugfix release.
 
-* Tox / Github actions for testing (Lumir Balhar)
+* Fix for newer Docutils change in node attributes (MB).
 * Test fixes for newer Sphinx, Notebook, nbconvert (Lumir Balhar, MB).
 * Fix escapes in not-raw strings (Jerry James).
 * Fix import of Sequence for newer Python (Jerry James).
-* Update versioneer.
+* Update versioneer (MB).
+* Tox / Github actions for testing (Lumir Balhar)
 
 *****
 0.6.0
