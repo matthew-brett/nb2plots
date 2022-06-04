@@ -172,11 +172,6 @@ The nbplot directive has the following configuration options:
         Provide a customized template for preparing restructured text.
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
-import six
-
 try:
     from collections.abc import Sequence
 except ImportError:
@@ -227,7 +222,7 @@ class NBPlotFlags(Directive):
         env = document.settings.env
         docname = env.docname
         local_ns = env.nbplot_flag_namespaces[docname]
-        six.exec_('\n'.join(self.content), None, local_ns)
+        exec('\n'.join(self.content), None, local_ns)
         return []
 
 
@@ -681,13 +676,6 @@ def unescape_doctest(text):
     return code
 
 
-def remove_coding(text):
-    """
-    Remove the coding comment, which six.exec_ doesn't like.
-    """
-    sub_re = re.compile(r"^#\s*-\*-\s*coding:\s*.*-\*-$", flags=re.MULTILINE)
-    return sub_re.sub("", text)
-
 #------------------------------------------------------------------------------
 # Template
 #------------------------------------------------------------------------------
@@ -876,10 +864,7 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
     # Change the working directory to the directory of the example, so
     # it can get at its data files, if any.  Add its path to sys.path
     # so it can import any helper modules sitting beside it.
-    if six.PY2:
-        pwd = os.getcwdu()
-    else:
-        pwd = os.getcwd()
+    pwd = os.getcwd()
     old_sys_path = list(sys.path)
     workdir = os.getcwd() if workdir is None else workdir
     os.chdir(workdir)
@@ -891,7 +876,7 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
 
     # Redirect stdout
     stdout = sys.stdout
-    sys.stdout = io.StringIO() if six.PY3 else io.BytesIO()
+    sys.stdout = io.StringIO()
 
     # Assign a do-nothing print function to the namespace.  There
     # doesn't seem to be any other way to provide a way to (not) print
@@ -904,20 +889,19 @@ def run_code(code, code_path=None, ns=None, function_name=None, workdir=None,
         try:
             code = unescape_doctest(code)
             if pre_code and not ns:
-                six.exec_(six.text_type(pre_code), ns)
+                exec(str(pre_code), ns)
             ns['print'] = _dummy_print
             if "__main__" in code:
-                six.exec_("__name__ = '__main__'", ns)
-            code = remove_coding(code)
+                exec("__name__ = '__main__'", ns)
             if raises is None:
-                six.exec_(code, ns)
+                exec(code, ns)
             else:  # Code should raise exception
                 try:
-                    six.exec_(code, ns)
+                    exec(code, ns)
                 except raises:
                     pass
             if function_name:
-                six.exec_(function_name + "()", ns)
+                exec(function_name + "()", ns)
         except (Exception, SystemExit):
             raise PlotError(traceback.format_exc())
     finally:
@@ -965,13 +949,13 @@ def render_figures(code, code_path, output_dir, output_base, config,
     default_dpi = {'png': 80, 'hires.png': 200, 'pdf': 200}
     formats = []
     plot_formats = config.nbplot_formats
-    if isinstance(plot_formats, six.string_types):
+    if isinstance(plot_formats, str):
         # String Sphinx < 1.3, Split on , to mimic
         # Sphinx 1.3 and later. Sphinx 1.3 always
         # returns a list.
         plot_formats = plot_formats.split(',')
     for fmt in plot_formats:
-        if isinstance(fmt, six.string_types):
+        if isinstance(fmt, str):
             if ':' in fmt:
                 suffix,dpi = fmt.split(':')
                 formats.append((str(suffix), int(dpi)))
