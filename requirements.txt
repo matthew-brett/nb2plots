@@ -2,7 +2,7 @@
 #
 ipython[notebook]>=4.0
 sphinx>=1.4
-numpy>=1.7.1
+numpy>=1.14
 matplotlib>=2.0
 sphinxtesters>=0.2
 texext
