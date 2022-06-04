@@ -1,6 +1,5 @@
 """ Writer to convert doctree to Python .py file
 """
-from __future__ import unicode_literals
 
 import re
 from textwrap import dedent

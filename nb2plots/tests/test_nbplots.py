@@ -1,5 +1,4 @@
 """ Tests for build using nbplot extension """
-from __future__ import unicode_literals
 
 from os.path import (join as pjoin, dirname, isdir)
 import re
