@@ -7,11 +7,6 @@ from argparse import ArgumentParser
 from .converters import NbConverter
 
 
-def bin_stdout():
-    """ Bytes stream for writing to stdout """
-    return sys.stdout.buffer if sys.version_info[0] > 2 else sys.stdout
-
-
 def get_parser(description):
     """ Get parser for sphinx2something utilities
     """
@@ -33,4 +28,4 @@ def do_main(description, buildername):
                             status=sys.stderr,
                             warningiserror=args.warn_is_error)
     output = converter.from_rst(contents)
-    bin_stdout().write(output.encode('utf-8'))
+    sys.stdout.buffer().write(output.encode('utf-8'))
