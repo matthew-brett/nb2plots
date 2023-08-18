@@ -25,7 +25,10 @@ More compelling text"""
     # pseudoxml converter
     conv = Converter('pseudoxml')
     pxml = conv.from_rst(NEW_PAGE)
-    assert re.search(r"""<document source=".*/(contents|index)\.rst">
+    assert re.search(
+        r'<document source=".*/(contents|index)\.rst"'
+        r'( translation_progress=".*")?>'
+        r"""
     <section ids="more-fancy-title" names="more\\ fancy\\ title">
         <title>
             More fancy title
