@@ -12,10 +12,10 @@ class MarkdownBuilder(TextBuilder):
     out_suffix = '.md'
     writer_class = doctree2md.Writer
 
-    def __init__(self, app):
+    def __init__(self, app, env):
         """ Initialize Markdown (and friends) builder
         """
-        super(MarkdownBuilder, self).__init__(app)
+        super(MarkdownBuilder, self).__init__(app, env)
         # If None or empty string, do not resolve internal links.  Otherwise,
         # use as base for HTML-style links.  Applies to internal references and
         # download references.

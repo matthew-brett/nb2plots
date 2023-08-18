@@ -145,7 +145,7 @@ class PyRunRole(object):
     def _build(self, node, app):
         """ Return string containing built / resolved version of `doctree`
         """
-        builder = self.builder_class(app)
+        builder = self.builder_class(app, app.env)
         docname = node['refdoc']
         doctree = app.env.get_and_resolve_doctree(docname, builder)
         builder.prepare_writing([docname])
