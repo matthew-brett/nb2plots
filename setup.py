@@ -5,8 +5,7 @@ import os
 from os.path import join as pjoin, split as psplit, splitext
 import re
 
-import setuptools
-from distutils.core import setup
+from setuptools import setup
 
 import versioneer
 
@@ -116,5 +115,6 @@ setup(name='nb2plots',
                  'scripts/rst2md'],
       long_description = open('README.rst', 'rt').read(),
       install_requires = install_requires,
-      extras_require = {'test': test_requires}
+      extras_require = {'test': test_requires},
+      python_requires='>=3.7',
       )

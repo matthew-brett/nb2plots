@@ -4,8 +4,6 @@
 
 Test running writer over example files and chosen snippets
 """
-from __future__ import (division, print_function, absolute_import,
-                        unicode_literals)
 
 import sys
 from os.path import join as pjoin

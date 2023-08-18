@@ -8,8 +8,6 @@ Example:
 Prints to stdout with UTF-8 encoding.
 """
 # vim: ft=python
-from __future__ import division, print_function, absolute_import
-
 from argparse import ArgumentParser
 
 from nb2plots.commands import bin_stdout

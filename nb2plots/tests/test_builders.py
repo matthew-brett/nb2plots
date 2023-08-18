@@ -1,6 +1,5 @@
 """ Tests for Markdown and other builders
 """
-from __future__ import unicode_literals
 
 from os.path import join as pjoin, isfile
 import re

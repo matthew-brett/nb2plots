@@ -6,7 +6,6 @@ See:
 * https://daringfireball.net/projects/markdown/syntax
 * https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf
 """
-from __future__ import unicode_literals
 
 import re
 from textwrap import dedent

@@ -1,7 +1,5 @@
 """ Convert doctree to Jupyter notebook
 """
-from __future__ import unicode_literals
-
 from docutils import nodes
 
 from .ipython_shim import nbf
