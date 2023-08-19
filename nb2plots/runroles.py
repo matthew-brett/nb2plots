@@ -8,6 +8,7 @@ from collections import defaultdict
 from docutils import nodes, utils
 from docutils.parsers.rst.roles import set_classes
 
+import sphinx
 from sphinx.util.nodes import split_explicit_title, set_role_source_info
 from sphinx.errors import ExtensionError
 
@@ -17,6 +18,9 @@ from .ipython_shim import nbf, nbconvert as nbc
 from . import doctree2nb, doctree2py
 from .sphinx2foos import PythonBuilder, NotebookBuilder
 from .converters import UnicodeOutput
+
+
+SPHINX_GE_6 = sphinx.version_info[0] >= 6
 
 
 class RunRoleError(ExtensionError):
@@ -145,7 +149,8 @@ class PyRunRole(object):
     def _build(self, node, app):
         """ Return string containing built / resolved version of `doctree`
         """
-        builder = self.builder_class(app, app.env)
+        args = (app, app.env) if SPHINX_GE_6 else (app,)
+        builder = self.builder_class(*args)
         docname = node['refdoc']
         doctree = app.env.get_and_resolve_doctree(docname, builder)
         builder.prepare_writing([docname])

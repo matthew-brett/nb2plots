@@ -31,10 +31,13 @@ jobs:
         tox_env: [
           # This list has to be maintained manually :(
           # You can get it from `tox -l | sed "s/$/,/"`
+          # Update in tox.ini
+          py37-min,
           py37,
           py38,
           py39,
           py310,
+          py311,
         ]
 
     # Use GitHub's Linux Docker host
