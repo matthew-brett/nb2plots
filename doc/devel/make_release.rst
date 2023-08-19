@@ -9,11 +9,11 @@ Releasing nb2plots
 * Review and update the release notes.  Review and update the :file:`Changelog`
   file.  Get a partial list of contributors with something like::
 
-      git log 0.7.0.. | grep '^Author' | cut -d' ' -f 2- | sort | uniq
+      git log 0.7.. | grep '^Author' | cut -d' ' -f 2- | sort | uniq
 
-  where ``0.7.0`` was the last release tag name.
+  where ``0.7`` was the last release tag name.
 
-  Then manually go over ``git shortlog 0.7.0..`` to make sure the release notes
+  Then manually go over ``git shortlog 0.7..`` to make sure the release notes
   are as complete as possible and that every contributor was recognized.
 
 * Use the opportunity to update the ``.mailmap`` file if there are any
@@ -46,7 +46,6 @@ Releasing nb2plots
 
 * Clean::
 
-    make distclean
     # Check no files outside version control that you want to keep
     git status
     # Nuke
@@ -54,18 +53,12 @@ Releasing nb2plots
 
 * When ready::
 
-    python setup.py sdist --formats=zip
-    # -s flag to sign the release
-    twine upload -s dist/nb2plots*zip
+    python -m build . --sdist
+    twine upload dist/nb2plots*zip
 
 * Upload the release commit and tag to github::
 
     git push
     git push --tags
-
-* Push the docs to github pages with::
-
-    cd doc
-    make github
 
 .. include:: ../links_names.inc
