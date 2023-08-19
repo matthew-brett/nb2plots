@@ -131,8 +131,8 @@ See https://github.com/matthew-brett/nb2plots
 Released under the BSD two-clause license - see the file ``LICENSE`` in the
 source distribution.
 
-`travis-ci <https://travis-ci.org/matthew-brett/nb2plots>`_ kindly tests the
-code automatically under Python versions 2.7, and 3.5 through 3.8.
+Github Actions kindly tests the code automatically under Python versions 3.8
+through 3.11.
 
 The latest released version is at https://pypi.python.org/pypi/nb2plots
 
@@ -142,7 +142,7 @@ Tests
 
 * Install ``nb2plots``
 * Install the pytest_ testing framework, the ``mock`` package, and the
-  ``scripttester`` package.
+  ``scripttester`` package::
 
     pip install pytest mock scripttester
 

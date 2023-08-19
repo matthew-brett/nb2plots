@@ -1,9 +1,13 @@
 """ Sphinx builders for output formats
 """
 
+import sphinx
 from sphinx.builders.text import TextBuilder
 
 from . import doctree2md, doctree2py, doctree2nb
+
+
+SPHINX_GE_6 = sphinx.version_info[0] >= 6
 
 
 class MarkdownBuilder(TextBuilder):
@@ -12,10 +16,11 @@ class MarkdownBuilder(TextBuilder):
     out_suffix = '.md'
     writer_class = doctree2md.Writer
 
-    def __init__(self, app):
+    def __init__(self, app, env=None):
         """ Initialize Markdown (and friends) builder
         """
-        super(MarkdownBuilder, self).__init__(app)
+        args = (app, env) if SPHINX_GE_6 else (app,)
+        super(MarkdownBuilder, self).__init__(*args)
         # If None or empty string, do not resolve internal links.  Otherwise,
         # use as base for HTML-style links.  Applies to internal references and
         # download references.

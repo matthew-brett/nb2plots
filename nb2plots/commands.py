@@ -28,4 +28,4 @@ def do_main(description, buildername):
                             status=sys.stderr,
                             warningiserror=args.warn_is_error)
     output = converter.from_rst(contents)
-    sys.stdout.buffer().write(output.encode('utf-8'))
+    sys.stdout.buffer.write(output.encode('utf-8'))

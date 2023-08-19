@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-    - master
+    - main
   pull_request:
     branches:
-    - master
+    - main
 
 name: Run tox tests
 
@@ -31,10 +31,12 @@ jobs:
         tox_env: [
           # This list has to be maintained manually :(
           # You can get it from `tox -l | sed "s/$/,/"`
-          py37,
+          # Update in tox.ini
+          py38-min,
           py38,
           py39,
           py310,
+          py311,
         ]
 
     # Use GitHub's Linux Docker host

@@ -1,0 +1,8 @@
+# Minimum requirements
+# When updating here, update version in requirements.
+ipython[notebook]==7.16
+sphinx==4
+numpy==1.20
+matplotlib==3.2
+sphinxtesters==0.2.2
+texext==0.6.6
