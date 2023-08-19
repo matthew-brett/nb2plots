@@ -14,7 +14,7 @@ from nb2plots.nbplots import (run_code, parse_parts, nbplot_container,
                               nbplot_epilogue)
 from sphinxtesters import SourcesBuilder
 
-from nb2plots.testing import PlotsBuilder
+from nb2plots.testing import PlotsBuilder, OPT_TRANS
 
 from nb2plots.testing.nbtesters import assert_nb_equiv
 
@@ -451,21 +451,24 @@ See :ref:`the ref <a-ref>`.
         # Check that reference correctly included
         built = self.get_built_file('a_page.pseudoxml')
         expected_regexp = re.compile(
-r"""<document _plot_counter="1" source=".*?a_page.rst"( xmlns.*)?>
-    <section ids="a-title" names="a\\ title">
-        <title>
-            A title
-        <target ids="a-ref" names="a-ref">
-        <nbplot_container>
-            <doctest_block.*>
-                >>> a = 1
-        <nbplot_epilogue>
-            <.*>
-        <paragraph>
-            See\s
-            <reference internal="True" refid="a-ref">
-                <inline.*?>
-                    the ref
+            r'<document _plot_counter="1" source=".*?a_page.rst"'
+            rf'{OPT_TRANS}'
+            r'( xmlns:\w+=".*")*>'
+            r"""
+\s+<section ids="a-title" names="a\\ title">
+\s+    <title>
+\s+        A title
+\s+    <target ids="a-ref" names="a-ref">
+\s+    <nbplot_container>
+\s+        <doctest_block.*>
+\s+            >>> a = 1
+\s+    <nbplot_epilogue>
+\s+        <.*>
+\s+    <paragraph>
+\s+        See\s
+\s+        <reference internal="True" refid="a-ref">
+\s+            <inline.*?>
+\s+                the ref
             \.""", re.DOTALL)
         assert expected_regexp.match(built)
 

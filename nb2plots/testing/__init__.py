@@ -13,6 +13,10 @@ DATA_PATH = abspath(pjoin(
     'tests',
     'rst_md_files'))
 
+# Regular expression snippets shared across testers.
+# Optional translation parameter in document tag.
+OPT_TRANS = r'( translation_progress=".*")?'
+
 
 def setup_test():
     np.set_printoptions(legacy="1.13")

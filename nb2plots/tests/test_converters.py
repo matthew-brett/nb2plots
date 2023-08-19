@@ -4,7 +4,7 @@
 import re
 
 from nb2plots.converters import Converter
-
+from nb2plots.testing import OPT_TRANS
 
 NEW_PAGE = u"""
 More fancy title
@@ -26,8 +26,7 @@ More compelling text"""
     conv = Converter('pseudoxml')
     pxml = conv.from_rst(NEW_PAGE)
     assert re.search(
-        r'<document source=".*/(contents|index)\.rst"'
-        r'( translation_progress=".*")?>'
+        rf'<document source=".*/(contents|index)\.rst"{OPT_TRANS}>'
         r"""
     <section ids="more-fancy-title" names="more\\ fancy\\ title">
         <title>
