@@ -32,8 +32,7 @@ jobs:
           # This list has to be maintained manually :(
           # You can get it from `tox -l | sed "s/$/,/"`
           # Update in tox.ini
-          py37-min,
-          py37,
+          py38-min,
           py38,
           py39,
           py310,
