@@ -9,11 +9,11 @@ Releasing nb2plots
 * Review and update the release notes.  Review and update the :file:`Changelog`
   file.  Get a partial list of contributors with something like::
 
-      git log 0.2.0.. | grep '^Author' | cut -d' ' -f 2- | sort | uniq
+      git log 0.7.0.. | grep '^Author' | cut -d' ' -f 2- | sort | uniq
 
-  where ``0.2.0`` was the last release tag name.
+  where ``0.7.0`` was the last release tag name.
 
-  Then manually go over ``git shortlog 0.2.0..`` to make sure the release notes
+  Then manually go over ``git shortlog 0.7.0..`` to make sure the release notes
   are as complete as possible and that every contributor was recognized.
 
 * Use the opportunity to update the ``.mailmap`` file if there are any
@@ -33,19 +33,16 @@ Releasing nb2plots
   PyPi.  See `setuptools intro`_.  Make sure you have a file
   ``\$HOME/.pypirc``, of form::
 
-    [distutils]
-    index-servers =
-        pypi
 
     [pypi]
-    repository: https://upload.pypi.io/legacy/
-    username:your.pypi.username
-    password:your-password
+    username = __token__
+
+  This will in due course ask you for your PyPI token, for upload.
 
 * Tag the release.  This will also set the version (we are using versioneer_
   to manage versions via git tags)::
 
-    git tag -s 0.3
+    git tag -s 0.7
 
 * Clean::
 
@@ -59,7 +56,7 @@ Releasing nb2plots
 
     python setup.py sdist --formats=zip
     # -s flag to sign the release
-    twine upload -r warehouse -s dist/nb2plots*zip
+    twine upload -s dist/nb2plots*zip
 
 * Upload the release commit and tag to github::
 

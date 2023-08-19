@@ -5,6 +5,16 @@ nb2plots Changelog
 MB below is short for Matthew Brett.
 
 *****
+0.7.0
+*****
+
+Maintenance release.
+
+* Updates for Tox actions for CI testing (Lumír Balhar).
+* Drop Python 2.7 and 3.7
+* Update to work with Sphinx 7
+
+*****
 0.6.1
 *****
 

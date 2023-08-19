@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'nb2plots'
-copyright = '2016-2018, Matthew Brett'
+copyright = '2016-2023, Matthew Brett'
 author = 'Matthew Brett'
 
 # The version info for the project you're documenting, acts as replacement for
