@@ -5,6 +5,15 @@ nb2plots Changelog
 MB below is short for Matthew Brett.
 
 *****
+0.7.1
+*****
+
+Bugfix release.
+
+* Fixed broken import in nb2plots, with test (thanks to Jerry James for the
+  report - issue 31).
+
+*****
 0.7.0
 *****
 
