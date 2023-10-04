@@ -3,7 +3,8 @@
 
 from os.path import dirname, join as pjoin
 
-from ..ipython_shim import nbformat
+import nbformat
+
 from ..from_notebook import (convert_nb, convert_nb_fname, to_doctests,
                              has_mpl_inline, CODE_WITH_OUTPUT)
 from ..testing import stripeq

@@ -2,7 +2,8 @@
 """
 from docutils import nodes
 
-from .ipython_shim import nbf
+from nbformat import v4 as nbf
+
 from . import doctree2py as d2py
 
 

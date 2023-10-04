@@ -4,8 +4,9 @@ from os.path import join as pjoin
 from glob import glob
 import re
 
+from nbformat import v4 as nbf
+
 from nb2plots.converters import to_notebook
-from nb2plots.ipython_shim import nbf
 
 # Shortcuts
 n_nb = nbf.new_notebook

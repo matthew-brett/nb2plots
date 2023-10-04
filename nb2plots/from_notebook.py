@@ -6,7 +6,11 @@ import re
 
 from jinja2 import DictLoader
 
-from .ipython_shim import nbformat, nbconvert, traitlets, config
+import traitlets
+import traitlets.config as config
+import nbformat
+import nbconvert
+
 
 MPL_INLINE = re.compile(r"^\s*%\s*matplotlib\s+(inline|nbagg)\s*$",
                         re.MULTILINE)

@@ -3,7 +3,7 @@
 
 from copy import deepcopy
 
-from nb2plots.ipython_shim import nbf
+from nbformat import v4 as nbf
 
 
 def rm_ids(nb):

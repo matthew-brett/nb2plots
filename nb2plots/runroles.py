@@ -13,7 +13,8 @@ from sphinx.util.nodes import split_explicit_title, set_role_source_info
 from sphinx.errors import ExtensionError
 
 # Use notebook format version 4
-from .ipython_shim import nbf, nbconvert as nbc
+from nbformat import v4 as nbf
+import nbconvert as nbc
 
 from . import doctree2nb, doctree2py
 from .sphinx2foos import PythonBuilder, NotebookBuilder
@@ -331,8 +332,9 @@ def fill_notebook(nb, timeout=30):
     preprocessor = nbc.preprocessors.execute.ExecutePreprocessor(
         timeout=timeout)
     preprocessor.enabled = True
-    res = nbc.exporter.ResourcesDict()
-    res['metadata'] = nbc.exporter.ResourcesDict()
+    RD = nbc.exporters.exporter.ResourcesDict
+    res = RD()
+    res['metadata'] = RD()
     output_nb, _ = preprocessor(deepcopy(nb), res)
     return output_nb
 
