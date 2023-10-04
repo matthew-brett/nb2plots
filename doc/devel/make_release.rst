@@ -54,7 +54,7 @@ Releasing nb2plots
 * When ready::
 
     python -m build . --sdist
-    twine upload dist/nb2plots*zip
+    twine upload dist/nb2plots*.tar.gz
 
 * Upload the release commit and tag to github::
 
