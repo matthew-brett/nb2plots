@@ -6,4 +6,4 @@ numpy==1.20
 matplotlib==3.2
 sphinxtesters==0.2.2
 texext==0.6.6
-nbconvert==4.0
+nbconvert==6.0.7
