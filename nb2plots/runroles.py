@@ -331,8 +331,8 @@ def fill_notebook(nb, timeout=30):
     preprocessor = nbc.preprocessors.execute.ExecutePreprocessor(
         timeout=timeout)
     preprocessor.enabled = True
-    res = nbc.exporter.ResourcesDict()
-    res['metadata'] = nbc.exporter.ResourcesDict()
+    res = nbc.exporters.exporter.ResourcesDict()
+    res['metadata'] = nbc.exporters.exporter.ResourcesDict()
     output_nb, _ = preprocessor(deepcopy(nb), res)
     return output_nb
 
