@@ -806,7 +806,7 @@ def parse_parts(lines):
         ``contents``, with value being a list of strings, one string per line.
         The other key, value pairs are attributes of this part.
     """
-    text = '\n'.join(lines).strip()
+    text = '\n'.join(lines).rstrip()
     part_strs = PARTER.split(text)
     if len(part_strs) == 1:
         return [{'contents': part_strs[0].splitlines()}]
