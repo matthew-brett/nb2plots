@@ -406,14 +406,14 @@ class Translator(nodes.NodeVisitor):
         raise nodes.SkipNode
 
     def visit_title(self, node):
-        self.add((self.section_level + 1) * '#' + ' ')
+        self.add((self.section_level) * '#' + ' ')
 
     def depart_title(self, node):
         self.ensure_eol()
         self.add('\n')
 
     def visit_subtitle(self, node):
-        self.add((self.section_level + 2) * '#' + ' ')
+        self.add((self.section_level + 1) * '#' + ' ')
 
     depart_subtitle = depart_title
 
