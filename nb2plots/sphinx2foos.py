@@ -18,6 +18,7 @@ class MarkdownBuilder(TextBuilder):
     format = 'markdown'
     out_suffix = '.md'
     writer_class = doctree2md.Writer
+    default_translator_class = doctree2md.Translator
 
     def __init__(self, app, env=None):
         """ Initialize Markdown (and friends) builder
@@ -57,12 +58,14 @@ class PythonBuilder(MarkdownBuilder):
     name = 'python'
     out_suffix = '.py'
     writer_class = doctree2py.Writer
+    default_translator_class = doctree2py.Translator
 
 
 class NotebookBuilder(PythonBuilder):
     name = 'jupyter'
     out_suffix = '.ipynb'
     writer_class = doctree2nb.Writer
+    default_translator_class = doctree2nb.Translator
 
 
 def setup(app):

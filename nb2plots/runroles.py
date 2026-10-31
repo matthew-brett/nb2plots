@@ -16,7 +16,6 @@ from sphinx.errors import ExtensionError
 from nbformat import v4 as nbf
 import nbconvert as nbc
 
-from . import doctree2nb, doctree2py
 from .sphinx2foos import PythonBuilder, NotebookBuilder
 from .converters import UnicodeOutput
 
@@ -359,10 +358,6 @@ def setup(app):
                  html=(visit_runrole, depart_runrole),
                  text=(drop_visit, None),
                  latex=(drop_visit, None))
-    # Register translators to allow other extensions to extend ipynb and python
-    # code visit, depart methods with app.add_node as we have just done for the
-    # html translator in the lines above.  See:
-    # http://www.sphinx-doc.org/en/1.4.8/extdev/tutorial.html#the-setup-function
-    app.set_translator('markdown', doctree2py.Translator)
-    app.set_translator('pyfile', doctree2py.Translator)
-    app.set_translator('ipynb', doctree2nb.Translator)
+    # Note: do not register translators with app.set_translator here; use the
+    # default_translator_class class attribute on the builders. See:
+    # sphinx2foos.py.

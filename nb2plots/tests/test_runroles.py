@@ -5,8 +5,6 @@ from os.path import isfile, join as pjoin
 
 from nb2plots import runroles as rr
 from nb2plots.runroles import convert_timeout
-from nb2plots import doctree2nb
-from nb2plots import doctree2py
 from nb2plots.converters import to_pxml
 
 from nb2plots.testing import mockapp
@@ -22,19 +20,21 @@ def test_runroles_setup(*args):
     connects = [('doctree-resolved', rr.collect_runfiles),
                 ('build-finished', rr.write_runfiles)]
     roles = list(rr.NAME2ROLE.items())
-    translators = [('ipynb', doctree2nb.Translator),
-                   ('pyfile', doctree2py.Translator)]
     for method_name, args, kwargs in app.method_calls:
         if (method_name == 'connect' and args[0:2] in connects):
             connects.remove(args[0:2])
         if (method_name == 'add_role' and args[0:2] in roles):
             roles.remove(args[0:2])
-        if (method_name == 'set_translator' and args[0:2] in translators):
-            translators.remove(args[0:2])
 
     assert len(connects) == 0, 'Connections failed'
     assert len(roles) == 0, 'Roles failed'
-    assert len(translators) == 0, 'Translators failed'
+    # Filling `app.registry.translators` with `set_translator` causes problems
+    # for e.g. pydata-sphinx-theme; see
+    # https://github.com/matthew-brett/nb2plots/issues/27.  So, assert that we
+    # haven't put anything into that registry.
+    set_translators = [call for call in app.method_calls
+                       if call[0] == 'set_translator']
+    assert set_translators == [], 'Unexpected translator registration'
 
 
 def test_convert_timeout():
