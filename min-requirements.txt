@@ -9,7 +9,10 @@
 # * sphinx 6.2.1 - nb2plots only passes the builder environment to Sphinx
 #   builders for Sphinx >= 6, so Sphinx 5 builds fail.
 # * texext 0.6.7 - fixes math_dollar processing of newer docutils text nodes.
-ipython[notebook]==8.7.0
+# * ipykernel 6.16.0 - earliest version verified with the full minimum
+#   dependency set.
+ipython==8.7.0
+ipykernel==6.16.0
 sphinx==6.2.1
 numpy==1.23.3
 matplotlib==3.6.0
