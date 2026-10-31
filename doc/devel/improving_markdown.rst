@@ -20,10 +20,10 @@ Workflow
 
   .. code-block:: bash
 
-      pip install -e .
+      pip install -e ".[test]"
 
   from the root ``nb2plots`` directory (the directory containing the
-  ``setup.py`` file.
+  ``pyproject.toml`` file).
 
 * Make sure the current tests pass with:
 

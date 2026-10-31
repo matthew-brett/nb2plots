@@ -7,8 +7,6 @@ Test running scripts
 
 from pathlib import Path
 import re
-import shutil
-import sys
 
 import pytest
 
@@ -18,8 +16,6 @@ from nb2plots.testing.nbtesters import assert_nb_equiv
 
 TESTS_PATH = Path(__file__).parent
 RST_MD_PATH = TESTS_PATH / 'rst_md_files'
-# Scripts live in the top-level ``scripts`` directory of the source tree.
-SCRIPTS_PATH = TESTS_PATH.parents[1] / 'scripts'
 
 # The scripts write UTF-8 bytes to ``sys.stdout.buffer``, which the in-process
 # launcher of pytest-console-scripts cannot capture.  Run them as real
@@ -28,21 +24,8 @@ pytestmark = pytest.mark.script_launch_mode('subprocess')
 
 
 def _script_command(name, *args):
-    """ Return command to run script `name` with arguments `args`.
-
-    In a development tree the scripts are not installed, so run them through
-    the current Python interpreter.  This also avoids relying on the shebang
-    line in the script.  For an installed package, fall back to the script on
-    the PATH.
-    """
-    script_path = SCRIPTS_PATH / name
-    if script_path.is_file():
-        cmd = [sys.executable, str(script_path)]
-    else:
-        if shutil.which(name) is None:
-            pytest.skip(f'Cannot find script {name!r} on the PATH')
-        cmd = [name]
-    return cmd + [str(arg) for arg in args]
+    """ Return command to run the installed console script `name`. """
+    return [name] + [str(arg) for arg in args]
 
 
 def run_script(script_runner, name, *args):

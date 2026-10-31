@@ -39,10 +39,13 @@ Releasing nb2plots
 
   This will in due course ask you for your PyPI token, for upload.
 
-* Tag the release.  This will also set the version (we are using versioneer_
-  to manage versions via git tags)::
+* Set the version in ``nb2plots/__init__.py``::
 
-    git tag -s 0.7
+    __version__ = "0.8"
+
+* Commit the version change, then tag the release::
+
+    git tag -s 0.8
 
 * Clean::
 

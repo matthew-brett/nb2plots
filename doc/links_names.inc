@@ -11,7 +11,6 @@
 .. _documentation: https://matthew-brett.github.io/nb2plots
 
 .. Code support
-.. _versioneer: https://github.com/warner/python-versioneer
 .. _setuptools intro:
    http://packages.python.org/an_example_pypi_project/setuptools.html
 

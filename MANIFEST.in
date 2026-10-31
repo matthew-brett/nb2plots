@@ -1,5 +1,3 @@
-include versioneer.py
-include nb2plots/_version.py
 include README.rst
 include LICENSE
 include *requirements.txt
@@ -7,3 +5,4 @@ recursive-include nb2plots/tests/proj1 *
 recursive-include nb2plots/tests/data *
 recursive-include nb2plots/tests/rst_md_files *
 recursive-include nb2plots/tests/otherpages *
+prune nb2plots/tests/proj1/_build

@@ -1,0 +1,109 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nb2plots"
+dynamic = ["version", "dependencies"]
+description = "Converting between ipython notebooks and sphinx docs"
+readme = "README.rst"
+requires-python = ">=3.11"
+license = "BSD-2-Clause"
+license-files = ["LICENSE"]
+authors = [
+    {name = "Matthew Brett", email = "matthew.brett@gmail.com"},
+]
+maintainers = [
+    {name = "Matthew Brett", email = "matthew.brett@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-console-scripts",
+    "mock",
+]
+
+[project.scripts]
+nb2plots = "nb2plots.commands:nb2plots_main"
+rst2md = "nb2plots.commands:rst2md_main"
+sphinx2md = "nb2plots.commands:sphinx2md_main"
+sphinx2nb = "nb2plots.commands:sphinx2nb_main"
+sphinx2py = "nb2plots.commands:sphinx2py_main"
+sphinx2pxml = "nb2plots.commands:sphinx2pxml_main"
+
+[project.urls]
+Homepage = "https://github.com/matthew-brett/nb2plots"
+
+[tool.setuptools]
+packages = ["nb2plots", "nb2plots.tests", "nb2plots.testing"]
+include-package-data = false
+
+[tool.setuptools.package-data]
+nb2plots = [
+    "tests/data/*.rst",
+    "tests/rst_md_files/*",
+    "tests/data/*",
+    "tests/proj1/*.rst",
+    "tests/proj1/*.py",
+    "tests/proj1/_static/*",
+    "tests/otherpages/*",
+]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+version = {attr = "nb2plots.__version__"}
+
+[tool.pytest.ini_options]
+testpaths = ["nb2plots/tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["nb2plots"]
+
+[tool.tox]
+min_version = "4.67"
+env_list = ["py311", "py312", "py313", "py314", "py315", "py311-min"]
+skip_missing_interpreters = true
+
+[tool.tox.env_run_base]
+extras = ["test"]
+commands = [
+    [
+        "pytest",
+        "--cov=nb2plots",
+        "--cov-report=html",
+        {replace = "posargs", default = ["nb2plots/tests"], extend = true},
+    ],
+]
+
+[tool.tox.env.py311-min]
+deps = ["-rmin-requirements.txt"]
+
+[tool.tox.gh-actions]
+python = """
+3.11: py311, py311-min
+3.12: py312
+3.13: py313
+3.14: py314
+3.15: py315
+"""

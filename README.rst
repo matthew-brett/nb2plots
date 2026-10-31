@@ -140,11 +140,9 @@ The latest released version is at https://pypi.python.org/pypi/nb2plots
 Tests
 *****
 
-* Install ``nb2plots``
-* Install the pytest_ testing framework, the ``mock`` package, and the
-  ``pytest-console-scripts`` plugin::
+* Install ``nb2plots`` with its test dependencies::
 
-    pip install pytest mock pytest-console-scripts
+    pip install -e ".[test]"
 
 * Run the tests with::
 
