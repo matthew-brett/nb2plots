@@ -92,14 +92,14 @@ Then [a link](https://another-place.com/page.html).
 Again, we link to another doc.
 """
         assert self.get_built_file(pjoin('subdir1', 'b_page.md')) == """\
-## Another page
+# Another page
 
 Here is another page.
 
 It refers to Refereed section.
 """
         assert self.get_built_file(pjoin('subdir2', 'c_page.md')) == """\
-## Further page
+# Further page
 
 Here is further page.
 
@@ -145,14 +145,14 @@ Again, we \[link to another doc\]\(https://dynevor.org/subdir1/b_page\.html\)\.
         actual = self.get_built_file('a_page.md')
         assert re.match(expected_re, actual)
         assert self.get_built_file(pjoin('subdir1', 'b_page.md')) == """\
-## Another page
+# Another page
 
 Here is another page.
 
 It refers to [Refereed section](https://dynevor.org/a_page.html).
 """
         assert self.get_built_file(pjoin('subdir2', 'c_page.md')) == """\
-## Further page
+# Further page
 
 Here is further page.
 
@@ -186,7 +186,7 @@ This section refers to :ref:`itself <a-ref>`.
     def test_output(self):
         assert self.get_built_file('contents.py').strip() == ''
         assert self.get_built_file('a_page.py') == """\
-# ## A section
+# # A section
 #
 # Some text
 #
@@ -207,7 +207,7 @@ class TestBasedPythonBuild(TestPythonBuild):
     def test_output(self):
         assert self.get_built_file('contents.py').strip() == ''
         assert self.get_built_file('a_page.py') == """\
-# ## A section
+# # A section
 #
 # Some text
 #

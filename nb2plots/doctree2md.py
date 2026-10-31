@@ -14,6 +14,7 @@ import posixpath
 __docformat__ = 'reStructuredText'
 
 from docutils import frontend, nodes, writers, languages
+from docutils.transforms.frontmatter import DocTitle
 from collections import OrderedDict
 
 from .nbplots import checked_visit
@@ -166,6 +167,22 @@ class Translator(nodes.NodeVisitor):
         # download links.
         self.markdown_http_base = (builder.markdown_http_base if builder
                                    else None)
+        # Heading level policy from Sphinx configuration or docutils
+        # settings.  One of 'infer', 'source' or 'demote'.
+        heading_levels = self._get_heading_levels(builder, settings)
+        # Docutils promotes a lone top-level section to a document title,
+        # which gives the document a `title` child.  Sphinx doctrees have no
+        # document title.
+        has_title = any(isinstance(child, nodes.title)
+                        for child in document.children)
+        # Sphinx does not run the docutils DocTitle transform.  For Sphinx
+        # doctrees, use the transform's own promotion rule to decide whether
+        # a title would have been promoted.
+        is_sphinx = (builder is not None
+                     or getattr(settings, 'env', None) is not None)
+        would_promote_title = self._would_promote_title(document)
+        self.heading_offset = self._calc_heading_offset(
+            heading_levels, has_title, is_sphinx, would_promote_title)
         # Warn only once per writer about unsupported elements
         self._warned = set()
         # Lookup table to get section list from name
@@ -202,6 +219,85 @@ class Translator(nodes.NodeVisitor):
 
         # Flag for whether to escape characters
         self._escape_text = True
+
+    @staticmethod
+    def _get_heading_levels(builder, settings):
+        """Heading level policy from Sphinx config / docutils settings
+
+        Parameters
+        ----------
+        builder : object or None
+            Sphinx builder object, if any.
+        settings : object
+            Docutils settings object.
+
+        Returns
+        -------
+        mode : str
+            One of 'infer', 'source' or 'demote'.
+        """
+        config = getattr(builder, 'config', None)
+        if config is not None:
+            mode = getattr(config, 'nbplot_heading_levels', None)
+            if mode is not None:
+                return mode
+        return getattr(settings, 'nbplot_heading_levels', 'infer')
+
+    @staticmethod
+    def _would_promote_title(document):
+        """Whether the docutils DocTitle transform would promote a title.
+
+        Uses the same candidate rule as the DocTitle transform, without
+        modifying the doctree.
+        """
+        _, index = DocTitle(document).candidate_index(document)
+        return index is not None
+
+    @staticmethod
+    def _calc_heading_offset(mode, has_title, is_sphinx, would_promote_title):
+        """Calculate extra heading levels from policy and doctree structure
+
+        Parameters
+        ----------
+        mode : str
+            One of 'infer', 'source' or 'demote'.
+        has_title : bool
+            True if the doctree has a document title.
+        is_sphinx : bool
+            True if the doctree comes from a Sphinx build.
+        would_promote_title : bool
+            True if the docutils DocTitle transform would promote a document
+            title from this doctree.
+
+        Returns
+        -------
+        offset : int
+            Number of extra levels to add to the level implied by the doctree.
+        """
+        if not isinstance(mode, str):
+            raise ValueError(
+                "nbplot_heading_levels must be one of 'infer', 'source' or "
+                "'demote'; got {!r}".format(mode))
+        name = mode.lower()
+        if name == 'demote':
+            # Add one extra level to every heading.
+            return 1
+        if name == 'infer':
+            # Only Sphinx-derived doctrees are inferred.  Docutils output
+            # has already been through the DocTitle transform, so keep the
+            # previous ('demote') behavior for it.  For Sphinx output, use the
+            # same title-promotion rule to decide whether the top-level
+            # section is acting as a title.
+            if not is_sphinx or has_title:
+                return 1
+            return 0 if would_promote_title else 1
+        if name == 'source':
+            # Use the levels implied by the doctree.  A document title is
+            # level 1, and sections below it follow.
+            return int(bool(has_title))
+        raise ValueError(
+            "nbplot_heading_levels must be one of 'infer', 'source' or "
+            "'demote'; got {!r}".format(mode))
 
     def astext(self):
         """Return the final formatted document as a string."""
@@ -406,14 +502,14 @@ class Translator(nodes.NodeVisitor):
         raise nodes.SkipNode
 
     def visit_title(self, node):
-        self.add((self.section_level + 1) * '#' + ' ')
+        self.add((self.heading_offset + self.section_level) * '#' + ' ')
 
     def depart_title(self, node):
         self.ensure_eol()
         self.add('\n')
 
     def visit_subtitle(self, node):
-        self.add((self.section_level + 2) * '#' + ' ')
+        self.add((self.heading_offset + self.section_level + 1) * '#' + ' ')
 
     depart_subtitle = depart_title
 
@@ -522,6 +618,21 @@ class Translator(nodes.NodeVisitor):
         raise nodes.SkipNode
 
 
+def validate_heading_levels(setting, value, option_parser,
+                            config_parser=None, config_section=None):
+    """Validate value for the ``nbplot_heading_levels`` setting.
+
+    The value must be one of 'infer', 'source' or 'demote'.
+    """
+    if isinstance(value, str):
+        mode = value.lower()
+        if mode in ('infer', 'source', 'demote'):
+            return mode
+    raise ValueError(
+        "must be one of 'infer', 'source' or 'demote'; got {!r}"
+        .format(value))
+
+
 class Writer(writers.Writer):
 
     supported = ('markdown',)
@@ -541,7 +652,12 @@ class Writer(writers.Writer):
          ('Strict Markdown syntax. Default: true',
           ['--strict-markdown'],
           {'default': 1, 'action': 'store_true',
-           'validator': frontend.validate_boolean}),))
+           'validator': frontend.validate_boolean}),
+         ("Heading level policy: one of 'infer', 'source' or 'demote'.  "
+          "Default: 'infer'",
+          ['--nbplot-heading-levels'],
+          {'default': 'infer',
+           'validator': validate_heading_levels}),))
 
     translator_class = Translator
 

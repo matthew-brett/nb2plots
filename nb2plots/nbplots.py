@@ -133,7 +133,7 @@ target).  These include `alt`, `height`, `width`, `scale`, `align` and
 Configuration options
 ---------------------
 
-The nbplot directive has the following configuration options:
+The nbplot extension has the following configuration options:
 
     nbplot_include_source
         Default value for the include-source option
@@ -170,6 +170,14 @@ The nbplot directive has the following configuration options:
 
     nbplot_template
         Provide a customized template for preparing restructured text.
+
+    nbplot_heading_levels
+        Controls the heading levels in the generated Markdown, and in the
+        Markdown embedded in generated notebooks and Python files.  One of
+        ``infer`` (default), ``source``, and ``demote`` (the behavior before
+        version 0.8).
+
+        See :ref:`nbplot-heading-levels` for details.
 """
 
 try:

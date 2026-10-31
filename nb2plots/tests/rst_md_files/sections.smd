@@ -1,4 +1,4 @@
-## Top section
+# Top section
 
 First paragraph.
 
@@ -6,26 +6,26 @@ Second paragraph.
 
 Third paragraph.
 
-### H2 section
+## H2 section
 
 More text.
 
-### H2 section again
+## H2 section again
 
 Continued text.
 
-#### H3 section
+### H3 section
 
 Drones on.
 
-##### H4 section
+#### H4 section
 
 Sink-hole boring.
 
-#### H3 section again
+### H3 section again
 
 Still boring.
 
-### H2 section again
+## H2 section again
 
 As if from the start.

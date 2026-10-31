@@ -176,7 +176,7 @@ More text.
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## Title\n",
+    "# Title\n",
     "\n",
     "Some text with $a = 1$ math.\n",
     "\n",

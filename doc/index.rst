@@ -24,6 +24,7 @@ In more depth:
     mpl_interactive
     code_links
     markdown_base
+    on_headings
 
 Developer docs:
 

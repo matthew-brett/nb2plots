@@ -868,7 +868,7 @@ Some text.
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## A title\n",
+    "# A title\n",
     "\n",
     "\n",
     "\n",
@@ -900,7 +900,7 @@ Some text.
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "## A title\n",
+    "# A title\n",
     "\n",
     "\n",
     "\n",

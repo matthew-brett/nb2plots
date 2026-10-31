@@ -74,3 +74,7 @@ def setup(app):
     app.add_builder(NotebookBuilder)
     # Base URL for Markdown link conversion
     app.add_config_value('markdown_http_base', None, True)
+    # Heading level policy for generated Markdown: one of 'infer', 'source'
+    # or 'demote'.
+    app.add_config_value('nbplot_heading_levels', 'infer', True,
+                         types=(str,))

@@ -11,11 +11,13 @@ from glob import glob
 from functools import partial
 from io import TextIOWrapper, BytesIO
 
+import pytest
+
 from docutils import nodes
 from docutils.utils import new_document
 from docutils.core import publish_string
 
-from nb2plots.doctree2md import Writer, IndentLevel
+from nb2plots.doctree2md import (Writer, IndentLevel, validate_heading_levels)
 
 from nb2plots.testing import DATA_PATH
 from nb2plots.testing.convutils import (convert_assert, doctree_assert,
@@ -59,6 +61,197 @@ def test_container():
     doc.append(container)
     container.append(nodes.Text('Boo!'))
     assert_dt_equal(doc, b'Boo!\n')
+
+
+def test_title_and_section_levels():
+    # Docutils promotes the top-level section to a document title, so sections
+    # below the title start at level 2.
+    assert_conv_equal("""\
+Doc Title
+=========
+
+Doc Subtitle
+------------
+
+Section One
+-----------
+
+Subsection
+~~~~~~~~~~
+
+Text.
+""", b"""\
+# Doc Title
+
+## Doc Subtitle
+
+## Section One
+
+### Subsection
+
+Text.
+""")
+
+
+def make_nested_sections(n_levels=6):
+    # Make document with nested sections, as Sphinx does (no document title)
+    doc = new_document('md-test')
+    parent = doc
+    for level in range(1, n_levels + 1):
+        section = nodes.section()
+        section += nodes.title(text='Header {}'.format(level))
+        parent += section
+        parent = section
+    return doc
+
+
+def test_default_heading_levels():
+    # Default 'infer' behaves as 'demote' for doctrees without a document
+    # title (and without a Sphinx builder or environment).
+    doc = make_nested_sections()
+    assert_dt_equal(doc, b"""\
+## Header 1
+
+### Header 2
+
+#### Header 3
+
+##### Header 4
+
+###### Header 5
+
+####### Header 6
+""")
+
+
+def test_infer_leaves_non_sphinx_output_unchanged():
+    # 'infer' only applies to Sphinx doctrees.  A docutils-style doctree (no
+    # Sphinx builder or environment) keeps the 'demote' behavior.
+    doc = make_nested_sections()
+    doc.settings.nbplot_heading_levels = 'infer'
+    assert_dt_equal(doc, b"""\
+## Header 1
+
+### Header 2
+
+#### Header 3
+
+##### Header 4
+
+###### Header 5
+
+####### Header 6
+""")
+
+
+def test_infer_multiple_top_sections():
+    # 'infer' only applies to Sphinx doctrees.  For docutils output, the
+    # DocTitle transform has already run, and headings are unchanged from
+    # 'demote'.
+    converter = partial(publish_string, writer=Writer(),
+                        settings_overrides={
+                            'nbplot_heading_levels': 'infer'})
+    convert_assert("""\
+First
+=====
+
+Text.
+
+Second
+======
+
+More.
+""", converter, b"""\
+## First
+
+Text.
+
+## Second
+
+More.
+""")
+
+
+def test_source_heading_levels():
+    # 'source' uses the levels implied by the doctree, with a document title
+    # at level 1.
+    converter = partial(publish_string, writer=Writer(),
+                        settings_overrides={'nbplot_heading_levels': 'source'})
+    convert_assert("""\
+Doc Title
+=========
+
+Section One
+-----------
+
+Text.
+""", converter, b"""\
+# Doc Title
+
+## Section One
+
+Text.
+""")
+
+
+def test_source_without_document_title():
+    # Without a document title, top-level sections are level 1.
+    converter = partial(publish_string, writer=Writer(),
+                        settings_overrides={'nbplot_heading_levels': 'source'})
+    convert_assert("""\
+First
+=====
+
+Text.
+
+Second
+======
+
+More.
+""", converter, b"""\
+# First
+
+Text.
+
+# Second
+
+More.
+""")
+
+
+def test_demote_heading_levels():
+    # 'demote' adds one level to every heading; this was the behavior before
+    # version 0.8.
+    converter = partial(publish_string, writer=Writer(),
+                        settings_overrides={'nbplot_heading_levels': 'demote'})
+    convert_assert("""\
+First
+=====
+
+Text.
+
+Second
+======
+
+More.
+""", converter, b"""\
+## First
+
+Text.
+
+## Second
+
+More.
+""")
+
+
+def test_validate_heading_levels():
+    # Only the three named policies are allowed; integers are rejected.
+    for value in ('demote', 'infer', 'source', 'SOURCE'):
+        assert validate_heading_levels(None, value, None) == value.lower()
+    for value in (1, 'bogus'):
+        with pytest.raises(ValueError):
+            validate_heading_levels(None, value, None)
 
 
 def test_snippets():

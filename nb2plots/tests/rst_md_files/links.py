@@ -1,4 +1,4 @@
-# ## A section
+# # A section
 #
 # A test for links.  An [inline link](http://nipy.org).
 #
@@ -6,6 +6,6 @@
 #
 # An internal reference.
 #
-# ### Another section
+# ## Another section
 #
 # A reference to an [inline link](http://nipy.org).

@@ -1,4 +1,4 @@
-# ## Title
+# # Title
 #
 # Some text with $a = 1$ where line continues.
 #
