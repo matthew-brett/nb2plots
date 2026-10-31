@@ -1,6 +1,6 @@
 # See min-requirements for minimum requirements.
 # Update there and here.
-ipython>=8.7.0
+ipython>=8.10.0
 ipykernel>=6.16.0
 sphinx>=6.2.1
 numpy>=1.23.3
