@@ -553,6 +553,35 @@ nbplot_flags = {'flag1': 5, 'flag2': 6}
         assert re.search(expected, built)
 
 
+class TestPythonFormat(PlotsBuilder):
+    """Check ``:format: python`` renders a Python literal block."""
+
+    builder = 'pseudoxml'
+
+    rst_sources = dict(a_page="""\
+A title
+-------
+
+.. nbplot::
+   :format: python
+
+   for i in range(3):
+       print(i)
+""")
+
+    def test_python_literal_block(self):
+        p_xml = self.get_built_file('a_page.pseudoxml')
+        match = re.search(
+            r'<literal_block [^>]*language="python"[^>]*>\n'
+            r'(?P<first>\s+)for i in range\(3\):\n'
+            r'(?P<nested>\s+)print\(i\)',
+            p_xml)
+        assert match is not None
+        # The nested line keeps its extra indentation.
+        assert len(match.group('nested')) > len(match.group('first'))
+        assert '<doctest_block' not in p_xml
+
+
 class TestWithoutSkip(PlotsBuilder):
     """ Check that doctest code can be bracketed into skipped, not skipped
 
