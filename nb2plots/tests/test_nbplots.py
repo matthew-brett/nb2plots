@@ -26,6 +26,11 @@ HERE = dirname(__file__)
 # Variation in doctest block.
 DOCTEST_BLOCK_RE = r'<doctest_block (classes="doctest" )?xml:space="preserve">'
 
+# Docutils >= 0.22 renders boolean attributes as 1/0 instead of True/False.
+# Accept both forms so the tests pass with either docutils series.
+FALSE_RE = r'(?:False|0)'
+TRUE_RE = r'(?:True|1)'
+
 
 def get_otherpage(fname):
     with open(pjoin(HERE, 'otherpages', fname), 'rt') as fobj:
@@ -454,7 +459,7 @@ See :ref:`the ref <a-ref>`.
             r'<document _plot_counter="1" source=".*?a_page.rst"'
             rf'{OPT_TRANS}'
             r'( xmlns:\w+=".*")*>'
-            r"""
+            rf"""
 \s+<section ids="a-title" names="a\\ title">
 \s+    <title>
 \s+        A title
@@ -466,7 +471,7 @@ See :ref:`the ref <a-ref>`.
 \s+        <.*>
 \s+    <paragraph>
 \s+        See\s
-\s+        <reference internal="True" refid="a-ref">
+\s+        <reference internal="{TRUE_RE}" refid="a-ref">
 \s+            <inline.*?>
 \s+                the ref
             \.""", re.DOTALL)
@@ -479,10 +484,13 @@ class TestFlags(PlotsBuilder):
 
     builder = 'pseudoxml'
 
+    # Docutils / Sphinx versions differ in how they render boolean
+    # attributes in pseudo-XML ("False" vs "0").
     literal_header = (
         r'<literal_block ' +
-        (r'force(_highlighting)?="False" language="default" linenos="False" '
-        if SPHINX_ge_1p8 else '') +
+        (rf'force(?:_highlighting)?="{FALSE_RE}" language="default" '
+         rf'linenos="{FALSE_RE}" '
+         if SPHINX_ge_1p8 else '') +
         'xml:space="preserve">')
 
     rst_sources=dict(a_page="""\
