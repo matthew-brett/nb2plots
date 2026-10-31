@@ -6,3 +6,8 @@ recursive-include nb2plots/tests/data *
 recursive-include nb2plots/tests/rst_md_files *
 recursive-include nb2plots/tests/otherpages *
 prune nb2plots/tests/proj1/_build
+include Changelog
+recursive-include doc *
+prune doc/_build
+exclude doc/converted_example.rst
+exclude doc/converted_plus_notebooks.rst
