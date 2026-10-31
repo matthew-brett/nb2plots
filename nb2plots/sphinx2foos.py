@@ -1,7 +1,10 @@
 """ Sphinx builders for output formats
 """
 
+from pathlib import Path
+
 import sphinx
+from docutils.io import StringOutput
 from sphinx.builders.text import TextBuilder
 
 from . import doctree2md, doctree2py, doctree2nb
@@ -30,6 +33,19 @@ class MarkdownBuilder(TextBuilder):
 
     def prepare_writing(self, docnames):
         self.writer = self.writer_class(self)
+
+    def write_doc(self, docname, doctree):
+        """ Write `doctree` as `docname` using our docutils writer.
+
+        Sphinx 9 changed ``TextBuilder.write_doc`` to use a translator rather
+        than the builder's docutils writer, which loses our custom output.
+        """
+        self.current_docname = docname
+        self.secnumbers = self.env.toc_secnumbers.get(docname, {})
+        self.writer.write(doctree, StringOutput(encoding='utf-8'))
+        out_file_name = Path(self.outdir) / (docname + self.out_suffix)
+        out_file_name.parent.mkdir(parents=True, exist_ok=True)
+        out_file_name.write_text(self.writer.output, encoding='utf-8')
 
     def get_target_uri(self, docname, typ=None):
         if self.markdown_http_base:

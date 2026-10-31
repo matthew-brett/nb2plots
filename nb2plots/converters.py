@@ -2,6 +2,7 @@
 """
 
 import sys
+from pathlib import Path
 from os.path import join as pjoin
 from importlib import import_module
 
@@ -104,7 +105,14 @@ class Converter(object):
             Representation in output format
         """
         builder.prepare_writing([builder.config.master_doc])
-        return builder.writer.write(doctree, UnicodeOutput())
+        if getattr(builder, 'writer', None) is not None:
+            return builder.writer.write(doctree, UnicodeOutput())
+        # Sphinx 9 dropped the docutils writer from some builders.  Ask the
+        # builder to write the document as usual, then read the result.
+        docname = builder.config.master_doc
+        builder.write_doc(docname, doctree)
+        out_path = Path(builder.outdir) / (docname + builder.out_suffix)
+        return out_path.read_text(encoding='utf-8')
 
     def from_rst(self, rst_text, resolve=True):
         """ Build Sphinx formatted ReST text `rst_text` into output format
