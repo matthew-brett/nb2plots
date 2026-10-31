@@ -96,7 +96,7 @@ The ``nbplot`` directive supports the following options:
         tuple is a tuple of such integers. The expression operates in a
         namespace defined by the contents of the ``nbplot_flags`` config
         variable (a dict) and any extra namespace defined above this directive
-        with :class:`NBPlotFlags` directives.
+        with ``NBPlotFlags`` directives.
 
         Any selected parts get labeled such that the doctest builder does not
         see them, and therefore they do not get picked up by the sphinx doctest
@@ -229,7 +229,7 @@ class NBPlotFlags(Directive):
 class NBPlotShowFlags(Directive):
     """ Show flag namespace for nbplot
 
-    This directive shows the result of :class:`NBPlotFlags` directives, for
+    This directive shows the result of ``NBPlotFlags`` directives, for
     debugging and testing.
     """
     has_content = True
