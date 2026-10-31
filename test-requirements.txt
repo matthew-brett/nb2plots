@@ -1,5 +1,5 @@
 # Requirements for running tests
 -r requirements.txt
 pytest
+pytest-console-scripts
 mock
-scripttester
