@@ -131,8 +131,8 @@ See https://github.com/matthew-brett/nb2plots
 Released under the BSD two-clause license - see the file ``LICENSE`` in the
 source distribution.
 
-Github Actions kindly tests the code automatically under Python versions 3.8
-through 3.11.
+Github Actions kindly tests the code automatically under Python versions 3.11
+through 3.15.
 
 The latest released version is at https://pypi.python.org/pypi/nb2plots
 

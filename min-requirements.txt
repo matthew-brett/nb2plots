@@ -1,9 +1,18 @@
 # Minimum requirements
-# When updating here, update version in requirements.
-ipython[notebook]==7.16.3
-sphinx==4
-numpy==1.20
-matplotlib==3.2
-sphinxtesters==0.2.2
-texext==0.6.6
-nbconvert==6.0.7
+# The oldest versions we support, and the versions tested by the ``py311-min``
+# tox environment.  When updating here, update the version ranges in
+# requirements.txt to match.
+#
+# These are the earliest versions verified to install and pass the tests on
+# Python 3.11.  Notes on why some pins are later than the oldest release
+# available:
+# * sphinx 6.2.1 - nb2plots only passes the builder environment to Sphinx
+#   builders for Sphinx >= 6, so Sphinx 5 builds fail.
+# * texext 0.6.7 - fixes math_dollar processing of newer docutils text nodes.
+ipython[notebook]==8.7.0
+sphinx==6.2.1
+numpy==1.23.3
+matplotlib==3.6.0
+sphinxtesters==0.2.3
+texext==0.6.7
+nbconvert==6.5.0

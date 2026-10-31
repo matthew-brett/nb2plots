@@ -1,9 +1,9 @@
 # See min-requirements for minimum requirements.
 # Update there and here.
 ipython[notebook]>=7.16.3
-sphinx>=4
+sphinx>=6
 numpy>=1.20
 matplotlib>=3.2
 sphinxtesters>=0.2.3
-texext>=0.6.6
+texext>=0.6.7
 nbconvert>=6.0.7
