@@ -1,5 +1,6 @@
 # Requirements for running tests
 -r requirements.txt
 pytest
+pytest-cov
 pytest-console-scripts
 mock
