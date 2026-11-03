@@ -27,7 +27,7 @@ Releasing nb2plots
 
   because this will be the output used by PyPi_
 
-* Check `nb2plots travis-ci`_.
+* Check `nb2plots Github-CI`_.
 
 * Once everything looks good, you are ready to upload the source release to
   PyPi.  See `setuptools intro`_.  Make sure you have a file
@@ -56,6 +56,7 @@ Releasing nb2plots
 
 * When ready::
 
+    pip install twine build
     python -m build . --sdist
     twine upload dist/nb2plots*.tar.gz
 

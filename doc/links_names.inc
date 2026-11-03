@@ -8,6 +8,7 @@
 .. _nb2plots issue tracker:
 .. _nb2plots issues: http://github.com/matthew-brett/nb2plots/issues
 .. _nb2plots travis-ci: https://travis-ci.org/matthew-brett/nb2plots
+.. _nb2plots Github-CI: https://github.com/matthew-brett/nb2plots/actions
 .. _documentation: https://matthew-brett.github.io/nb2plots
 
 .. Code support

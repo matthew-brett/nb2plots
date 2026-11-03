@@ -1,7 +1,7 @@
 # nb2plots package
 
 # Update this version when making a release.
-__version__ = "0.7.2"
+__version__ = "0.8.0"
 
 from . import nbplots
 from . import runroles
