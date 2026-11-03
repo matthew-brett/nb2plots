@@ -2,7 +2,24 @@
 nb2plots Changelog
 ##################
 
-MB below is short for Matthew Brett.
+MB below is short for Matthew Brett.  Work by MB unless otherwise stated.
+
+********
+Upcoming
+********
+
+Bugfix and refactor.
+
+* Refactor Markdown heading level calculation to fix
+  https://github.com/matthew-brett/nb2plots/issues/9 . This changes the output
+  default Markdown heading levels for documents with clear titles, such as
+  those with single top-level headings, and no prior text.  Added options to
+  control heading behavior, including one to reproduce old behavior.
+* Fixes for Sphinx 9.
+* Various updates to structure and CI, such as moving to ``pyproject.toml``,
+  removing use of ``versioneer``, using ``pytest-console-scripts`` instead of
+  home-rolled script testing.
+* Added doc build to sdist, as requested by Sandro Tosi.
 
 *****
 0.7.2
