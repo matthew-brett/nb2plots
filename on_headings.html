@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>On heading levels in Markdown &#8212; nb2plots 0.8.1a1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=43557193"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Improving the ReST to Markdown conversion" href="devel/improving_markdown.html" />
+    <link rel="prev" title="Links in Markdown" href="markdown_base.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="on-heading-levels-in-markdown">
+<span id="nbplot-heading-levels"></span><h1>On heading levels in Markdown<a class="headerlink" href="#on-heading-levels-in-markdown" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">nb2plots</span></code> writes Markdown documents from ReST documents.  In order to do
+this, it has to work out the intended heading levels of the various sections
+in the ReST.</p>
+<p>Because there are various ways of doing this, <code class="docutils literal notranslate"><span class="pre">nb2plots</span></code> has a configuration
+option <code class="docutils literal notranslate"><span class="pre">nbplot_heading_levels</span></code>, and a command line flag
+<code class="docutils literal notranslate"><span class="pre">--nbplot-heading-levels</span></code>, for you to choose your preferred solution.</p>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">¶</a></h2>
+<section id="heading-levels-in-rest-source">
+<h3>Heading levels in ReST source<a class="headerlink" href="#heading-levels-in-rest-source" title="Link to this heading">¶</a></h3>
+<p>ReST, by design, defines section headings relative to the other section
+headings in the document.  The top-level heading is, by definition, the first,
+and ReST identifies other heading levels relative to previous ones.  Below is
+a ReST document with the heading levels noted by <code class="docutils literal notranslate"><span class="pre">&lt;-</span> <span class="pre">markers</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Heading</span>  <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">1</span>
+<span class="o">+++++++</span>
+
+<span class="n">Text</span><span class="o">.</span>
+
+<span class="n">Section</span> <span class="mi">1</span> <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">2</span>
+<span class="o">=========</span>
+
+<span class="n">Text</span>
+
+<span class="n">Subsection</span> <span class="n">A</span> <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">3</span>
+<span class="o">------------</span>
+
+<span class="n">More</span> <span class="n">text</span><span class="o">.</span>
+
+<span class="n">Subsection</span> <span class="n">B</span> <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">3</span>
+<span class="o">------------</span>
+
+<span class="n">More</span> <span class="n">text</span><span class="o">.</span>
+
+<span class="n">Section</span> <span class="mi">2</span> <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">2</span> <span class="p">(</span><span class="n">same</span> <span class="n">heading</span> <span class="n">style</span> <span class="k">as</span> <span class="n">Section</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">=========</span>
+
+<span class="n">Final</span> <span class="n">text</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>In this first case, we have a single top-level heading (STLH), but we could
+also have multiple headings at the top-level:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Section</span> <span class="mi">1</span>  <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">1</span>
+<span class="o">=========</span>
+
+<span class="n">Text</span>
+
+<span class="n">Subsection</span> <span class="n">A</span>  <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">2</span>
+<span class="o">------------</span>
+
+<span class="n">More</span> <span class="n">text</span><span class="o">.</span>
+
+<span class="n">Subsection</span> <span class="n">B</span> <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">2</span>
+<span class="o">------------</span>
+
+<span class="n">More</span> <span class="n">text</span><span class="o">.</span>
+
+<span class="n">Section</span> <span class="mi">2</span> <span class="o">&lt;-</span> <span class="n">level</span> <span class="mi">1</span>
+<span class="o">=========</span>
+
+<span class="n">Final</span> <span class="n">text</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This document has multiple top-level headings (MTLH).</p>
+<p>The heading levels we’ve identified here are those according to the <em>source</em>;
+that is, in terms of the ReST standard, and before any further processing
+takes place.</p>
+<p>Call the levels marked above — <em>source-levels</em>.</p>
+</section>
+<section id="heading-levels-in-rest-and-markdown">
+<h3>Heading levels in ReST and Markdown<a class="headerlink" href="#heading-levels-in-rest-and-markdown" title="Link to this heading">¶</a></h3>
+<p>We have seen that ReST heading levels are <em>relative</em> to the other headings in
+the document.  In contrast, Markdown heading levels are absolute: <code class="docutils literal notranslate"><span class="pre">#</span>
+<span class="pre">Heading</span></code> means top-level heading, wherever it is in the document, and <code class="docutils literal notranslate"><span class="pre">##</span>
+<span class="pre">Section</span></code> is a second level heading, wherever it is in the document.</p>
+</section>
+<section id="heading-levels-in-doctrees">
+<h3>Heading levels in Doctrees<a class="headerlink" href="#heading-levels-in-doctrees" title="Link to this heading">¶</a></h3>
+<p>Docutils and Sphinx (via Docutils) parse ReST documents into <a class="reference external" href="https://docutils.sourceforge.io/docs/ref/doctree.html">Doctrees</a>, abstract
+representations of the document contents.</p>
+<p>This parsing, via Docutils internals, and via Docutils and Sphinx extensions,
+can modify heading levels.</p>
+<p>In fact, Docutils, by default, does one such modification, called the
+<a class="reference external" href="https://docutils.sourceforge.io/docs/api/transforms.html#doctitle">DocTitle transform</a>. This
+transform occurs when the Docutils setting <a class="reference external" href="https://docutils.sourceforge.io/docs/user/config.html#doctitle-xform">doctitle_xform</a> is
+True, which is the default for standard Docutils parsing.</p>
+<p>The transform uses an algorithm to determine whether a top-level heading could
+be a title.  The algorithm has various criteria for this decision, but the
+most important for our purposes is that a heading can only be a title when
+it is the only heading at the top-level. Thus Docutils does detect a title for
+the STLH document above, and does not for the MTLH document.</p>
+<p>In general, call this the Docutils Title (DT) test — we’ll say DT:True for a
+document where this algorithm would detect a title, and DT:False otherwise.</p>
+<p>In standard Docutils parsing — as used, for example, by our <code class="docutils literal notranslate"><span class="pre">rst2md</span></code>
+command — for a DT:True document, Docutils modifies the Doctree to:</p>
+<ol class="arabic simple">
+<li><p>Label the top-level heading as the Title and</p></li>
+<li><p>Promote all the other headings by one level.</p></li>
+</ol>
+<p>We’ll use DT:True to mean that the DocTitle algorithm <em>would detect a title</em>,
+if run.  Of course, by default, in Sphinx, we do not run the algorithm, but we
+could label a ReST document DT:True even if it was parsed by Sphinx, meaning
+that it would pass the DocTitle test.</p>
+<p>Thus the STLH document above is DT:True (it would pass the DocTitle test,
+meaning, there is a plausible heading for a title).  The MTLH document is
+DT:False.</p>
+<ol class="arabic simple">
+<li><p>The STLH document above gives DT:True.</p></li>
+<li><p>The MTLH document above gives DT:False.</p></li>
+</ol>
+<p>(The algorithm uses additional criteria besides single / multiple top-level
+headings.  As a first-pass summary: a single top-level heading, with no body
+text before it, gives DT:True; multiple top-level headings give DT:False).</p>
+<p>Thus, for the STLH (DT:True) document above, with standard Docutils parsing,
+<code class="docutils literal notranslate"><span class="pre">Heading</span></code> becomes a Title, not a section level, and <code class="docutils literal notranslate"><span class="pre">Section</span> <span class="pre">1</span></code> becomes a
+level 1 section rather than a level 2 section, and so on.  Call this
+Title-Section-Level-Promotion (TSLP).</p>
+<p>Note, though, that Sphinx specifically sets <code class="docutils literal notranslate"><span class="pre">doctitle_xform</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+so does not run the DocTitle transform and so (unless some other extension
+intervenes) does not detect a title, and does not apply TSLP.  So although the
+document, such as STLH, is DT:True, because the algorithm is not run, the
+title is not detected, and the resulting Doctree does not undergo TSLP.</p>
+<p>The problem for Nb2plots is that we use both standard Docutils parsing (via
+e.g. the <code class="docutils literal notranslate"><span class="pre">rst2md</span></code> command line utility), and Sphinx-configured Docutils
+parsing (via Sphinx builds).  Call these Docutils-parsed (DP) documents vs
+Sphinx-parsed (SP) documents.  The DP documents will undergo the level
+promotion above (TSLP) when the DT:True criteria are met, but TSLP cannot
+happen through Sphinx-parsing (SP) — and so the resulting doctrees will
+differ, in DT:True cases, depending whether we applied DP or SP.</p>
+<p>These considerations put Nb2plots in a bind, because it has to deal with both
+DP and SP, in the DT:True and DT:False cases, in order to generate matching
+Markdown (absolute) heading levels.  Because there are various ways of dealing
+with these differences, we give you the choice with a configuration setting
+(for Sphinx) and a matching command-line setting (for utilities such as
+<code class="docutils literal notranslate"><span class="pre">rst2md</span></code>).</p>
+</section>
+</section>
+<section id="the-options">
+<h2>The options<a class="headerlink" href="#the-options" title="Link to this heading">¶</a></h2>
+<p>The options for this setting are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">infer</span></code> (the default).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">demote</span></code></p></li>
+</ul>
+<p>In what follows — for DP / DT:True Doctrees, we <em>always</em> reverse the TSLP
+(section promotion), by <em>demoting</em> the detected title to heading level 1,
+level 1 to level 2 and so on.</p>
+<p>Call this DP / DT:True demotion.  It merely returns the parsed Doctree to the
+heading levels implied by the source, as noted above.  You can’t turn DP /
+DT:True demotion off in any option, as we could see little sense in doing so.
+The options therefore differ in their treatment of the other results, which
+are:</p>
+<ul class="simple">
+<li><p>Docutils-parsed (DP) / title not detected (DT:False) = DP / DT:False</p></li>
+<li><p>Sphinx-parsed (SP) / title detectable = SP / DT:True</p></li>
+<li><p>SP / DT:False</p></li>
+</ul>
+<section id="source">
+<h3><code class="docutils literal notranslate"><span class="pre">source</span></code><a class="headerlink" href="#source" title="Link to this heading">¶</a></h3>
+<p>This option follows the heading levels, as implied by the ReST source.  As we
+always apply DP / DT:True demotion, this means that documents with a single
+top-level heading have a single <code class="docutils literal notranslate"><span class="pre">#</span></code> heading in Markdown, and sections at the
+next level down get <code class="docutils literal notranslate"><span class="pre">##</span></code> Markdown headings.  It does mean that documents
+with multiple headings at the top level, via Docutils (DP) or Sphinx (SP),
+have multiple top-level (<code class="docutils literal notranslate"><span class="pre">#</span></code>) Markdown headings.</p>
+<p>In the table below, TLH means top-level heading(s), 2LH is second-level
+heading(s).</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parser</p></th>
+<th class="head"><p>DT:True, TLH</p></th>
+<th class="head"><p>DT:True, 2LH</p></th>
+<th class="head"><p>DT:False, TLH</p></th>
+<th class="head"><p>DT:False, 2LH</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Docutils (DP)</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Sphinx (SP)</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="infer">
+<h3><code class="docutils literal notranslate"><span class="pre">infer</span></code><a class="headerlink" href="#infer" title="Link to this heading">¶</a></h3>
+<p>The idea of this option is to work out (infer) whether this is a document with
+a title or not.  If there is no title, it demotes the top-level headings to the
+second Markdown level (<code class="docutils literal notranslate"><span class="pre">##</span></code>) in order to avoid having multiple top-level
+(<code class="docutils literal notranslate"><span class="pre">#</span></code>) headings.</p>
+<p>In order to do this, we run the title detection algorithm on the Sphinx-parsed
+(SP) documents, to detect DT:True or DT:False for the SP documents.</p>
+<p>For both DP / DT:False and SP / DT:False documents, we demote the heading
+levels by 1 level.</p>
+<p>As for all the options, we reverse the DP / DT:True heading promotion, to make
+DP documents equivalent to SP documents.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parser</p></th>
+<th class="head"><p>DT:True, TLH</p></th>
+<th class="head"><p>DT:True, 2LH</p></th>
+<th class="head"><p>DT:False, TLH</p></th>
+<th class="head"><p>DT:False, 2LH</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>DP</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">###</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>SP</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">###</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="demote">
+<h3><code class="docutils literal notranslate"><span class="pre">demote</span></code><a class="headerlink" href="#demote" title="Link to this heading">¶</a></h3>
+<p>Finally, for back-compatibility, we have an option that always demotes
+headings by one level.  This was the behavior in Nb2plots versions &lt; 0.8.</p>
+<p>The demotion undoes the DP / DT:True promotion in the usual way, and means
+that documents with multiple top-level headings (DT:False) always start at
+Markdown heading level <code class="docutils literal notranslate"><span class="pre">##</span></code>.</p>
+<p>The problem with this option is that a standard DT:True document, in Sphinx,
+has a top-level heading at <code class="docutils literal notranslate"><span class="pre">##</span></code> level instead of <code class="docutils literal notranslate"><span class="pre">#</span></code>; its second level
+headings are <code class="docutils literal notranslate"><span class="pre">###</span></code> instead of <code class="docutils literal notranslate"><span class="pre">##</span></code> and so on.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parser</p></th>
+<th class="head"><p>DT:True, TLH</p></th>
+<th class="head"><p>DT:True, 2LH</p></th>
+<th class="head"><p>DT:False, TLH</p></th>
+<th class="head"><p>DT:False, 2LH</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>DP</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">#</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">###</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>SP</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">###</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">##</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">###</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>We guess you will only want the <code class="docutils literal notranslate"><span class="pre">demote</span></code> option if you need
+back-compatibility with previous Nb2plots versions.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">nb2plots</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worked_example.html">Worked example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts in nb2plots</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="nbplots.html">Using the nbplot directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mpl_interactive.html">Using the mpl-interactive directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_links.html">Using the code-links directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="markdown_base.html">Links in Markdown</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">On heading levels in Markdown</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background">Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-options">The options</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="devel/improving_markdown.html">Improving the ReST to Markdown conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel/sphinx_example_project.html">Test Sphinx builds on an example project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel/make_release.html">Releasing nb2plots</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="converted_example.html">An interesting example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="converted_plus_notebooks.html">An interesting example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel/design.html">Design of a notebook writer</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="markdown_base.html" title="previous chapter">Links in Markdown</a></li>
+      <li>Next: <a href="devel/improving_markdown.html" title="next chapter">Improving the ReST to Markdown conversion</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2016-2023, Matthew Brett.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.2.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/on_headings.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

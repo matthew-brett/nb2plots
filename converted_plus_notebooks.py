@@ -1,4 +1,4 @@
-# ## An interesting example
+# # An interesting example
 #
 # This is an interesting example.
 

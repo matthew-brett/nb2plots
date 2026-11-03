@@ -22,4 +22,6 @@ Nbplots installs the following command-line scripts:
 
 All these scripts write their output to standard output (stdout).
 
+See :doc:`on_headings` for how the Markdown heading levels are chosen.
+
 .. include:: links_names.inc

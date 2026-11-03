@@ -1,216 +1,235 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="../">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.6+1.g27fb228 documentation</title>
-    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.6+1.g27fb228',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Improving the ReST to Markdown conversion &#8212; nb2plots 0.8.1a1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=43557193"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Test Sphinx builds on an example project" href="sphinx_example_project.html" />
-    <link rel="prev" title="Links in Markdown" href="../markdown_base.html" />
+    <link rel="prev" title="On heading levels in Markdown" href="../on_headings.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  
+  
+
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="improving-the-rest-to-markdown-conversion">
-<h1>Improving the ReST to Markdown conversion<a class="headerlink" href="#improving-the-rest-to-markdown-conversion" title="Permalink to this headline">¶</a></h1>
+  <section id="improving-the-rest-to-markdown-conversion">
+<h1>Improving the ReST to Markdown conversion<a class="headerlink" href="#improving-the-rest-to-markdown-conversion" title="Link to this heading">¶</a></h1>
 <p>Nb2plots includes a converter from ReST to Markdown.  As you will see in the
-<code class="docutils literal"><span class="pre">LICENSE</span></code> file, the basis for this converter comes from the <a class="reference external" href="https://github.com/cgwrench/rst2md">rst2md
+<code class="docutils literal notranslate"><span class="pre">LICENSE</span></code> file, the basis for this converter comes from the <a class="reference external" href="https://github.com/cgwrench/rst2md">rst2md
 project</a> by Chris Wrench, with thanks.  At the time of writing (December
 2016) the Nb2plots converter could deal with a considerably larger range of
 Markdown than the original rst2md project.  However, the converter still does
 not deal specifically with a fairly large number of Sphinx / ReST constructs,
 so we would be very grateful for your help in improving the converter.  These
 are some hints how to go about that.</p>
-<div class="section" id="workflow">
-<h2>Workflow<a class="headerlink" href="#workflow" title="Permalink to this headline">¶</a></h2>
+<section id="workflow">
+<h2>Workflow<a class="headerlink" href="#workflow" title="Link to this heading">¶</a></h2>
 <ul>
-<li><p class="first">Set yourself up with a git fork and clone of the <a class="reference external" href="http://github.com/matthew-brett/nb2plots">nb2plots code</a>.  Install
+<li><p>Set yourself up with a git fork and clone of the <a class="reference external" href="http://github.com/matthew-brett/nb2plots">nb2plots code</a>.  Install
 the development code with something like:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -e .
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[test]"</span>
 </pre></div>
 </div>
-<p>from the root <code class="docutils literal"><span class="pre">nb2plots</span></code> directory (the directory containing the
-<code class="docutils literal"><span class="pre">setup.py</span></code> file.</p>
+<p>from the root <code class="docutils literal notranslate"><span class="pre">nb2plots</span></code> directory (the directory containing the
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file).</p>
 </li>
-<li><p class="first">Make sure the current tests pass with:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>py.test nb2plots
+<li><p>Make sure the current tests pass with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>py.test<span class="w"> </span>nb2plots
 </pre></div>
 </div>
 </li>
-<li><p class="first">Identify a ReST construct you would like to handle, or handle better. Let’s
+<li><p>Identify a ReST construct you would like to handle, or handle better. Let’s
 say you you’ve decided to make the converter do something sensible with the
-<code class="docutils literal"><span class="pre">:PEP:</span></code> text role in ReST;</p>
-</li>
-<li><p class="first">Make a new ReST file that uses the construct, and put it in the
-<code class="docutils literal"><span class="pre">nb2plots/tests/rst_md_files</span></code> directory.  For example your file could be
-<code class="docutils literal"><span class="pre">nb2plots/tests/rst_md_files/pep.rst</span></code> with contents:</p>
-<div class="highlight-rest"><div class="highlight"><pre><span></span>Test converting the <span class="na">:pep:</span><span class="nv">`8`</span> text role to Markdown
+<code class="docutils literal notranslate"><span class="pre">:PEP:</span></code> text role in ReST;</p></li>
+<li><p>Make a new ReST file that uses the construct, and put it in the
+<code class="docutils literal notranslate"><span class="pre">nb2plots/tests/rst_md_files</span></code> directory.  For example your file could be
+<code class="docutils literal notranslate"><span class="pre">nb2plots/tests/rst_md_files/pep.rst</span></code> with contents:</p>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span>Test converting the <span class="na">:pep:</span><span class="nv">`8`</span> text role to Markdown
 </pre></div>
 </div>
-<p>The file have any name, as long as it has a <code class="docutils literal"><span class="pre">.rst</span></code> extension.</p>
+<p>The file have any name, as long as it has a <code class="docutils literal notranslate"><span class="pre">.rst</span></code> extension.</p>
 </li>
-<li><p class="first">You might want to check what doctree the ReST file generates.  The doctree
+<li><p>You might want to check what doctree the ReST file generates.  The doctree
 is the form that the Markdown converter will use.  See the pseudo XML
 version of the doctree with:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2pxml nb2plots/tests/rst_md_files/pep.rst
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx2pxml<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst
 </pre></div>
 </div>
 <p>This will show you the doctree node types and their attributes.</p>
 </li>
-<li><p class="first">If your construct is valid in vanilla <a class="reference external" href="http://docutils.sourceforge.net">docutils</a> ReST, then run the
-<code class="docutils literal"><span class="pre">rst2md</span></code> converter over the file and see what it looks like.  In the case
-of the <code class="docutils literal"><span class="pre">pep</span></code> text role, you might see a message that the <code class="docutils literal"><span class="pre">pep</span></code> role is
-not yet supported, and the output will omit the <code class="docutils literal"><span class="pre">pep</span></code> role contents:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>rst2md nb2plots/tests/rst_md_files/pep.rst
+<li><p>If your construct is valid in vanilla <a class="reference external" href="http://docutils.sourceforge.net">docutils</a> ReST, then run the
+<code class="docutils literal notranslate"><span class="pre">rst2md</span></code> converter over the file and see what it looks like.  In the case
+of the <code class="docutils literal notranslate"><span class="pre">pep</span></code> text role, you might see a message that the <code class="docutils literal notranslate"><span class="pre">pep</span></code> role is
+not yet supported, and the output will omit the <code class="docutils literal notranslate"><span class="pre">pep</span></code> role contents:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rst2md<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst
 </pre></div>
 </div>
 </li>
-<li><p class="first">If your construct is only valid for <a class="reference external" href="http://sphinx-doc.org">Sphinx</a> ReST, then run the <code class="docutils literal"><span class="pre">sphinx2md</span></code>
+<li><p>If your construct is only valid for <a class="reference external" href="http://sphinx-doc.org">Sphinx</a> ReST, then run the <code class="docutils literal notranslate"><span class="pre">sphinx2md</span></code>
 converter on it, and see what happens:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2md nb2plots/tests/rst_md_files/pep.rst
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx2md<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst
 </pre></div>
 </div>
 </li>
-<li><p class="first">Now have a look at the code in the <code class="docutils literal"><span class="pre">nb2plots.doctree2md</span></code> module.  Add new
-<code class="docutils literal"><span class="pre">visit_</span></code> / <code class="docutils literal"><span class="pre">depart_</span></code> methods or modify the existing methods to handle
-your construct better.  Try the <code class="docutils literal"><span class="pre">rst2md</span></code> and <code class="docutils literal"><span class="pre">sphinx2md</span></code> commands on the
-ReST file to see what the output looks like;</p>
-</li>
-<li><p class="first">If your Markdown is valid docutils ReST, write the current output of
-<code class="docutils literal"><span class="pre">rst2md</span></code> to the <code class="docutils literal"><span class="pre">rst_md_files</span></code> directory with a <code class="docutils literal"><span class="pre">.md</span></code> extension:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>rst2md nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.md
+<li><p>Now have a look at the code in the <code class="docutils literal notranslate"><span class="pre">nb2plots.doctree2md</span></code> module.  Add new
+<code class="docutils literal notranslate"><span class="pre">visit_</span></code> / <code class="docutils literal notranslate"><span class="pre">depart_</span></code> methods or modify the existing methods to handle
+your construct better.  Try the <code class="docutils literal notranslate"><span class="pre">rst2md</span></code> and <code class="docutils literal notranslate"><span class="pre">sphinx2md</span></code> commands on the
+ReST file to see what the output looks like;</p></li>
+<li><p>If your Markdown is valid docutils ReST, write the current output of
+<code class="docutils literal notranslate"><span class="pre">rst2md</span></code> to the <code class="docutils literal notranslate"><span class="pre">rst_md_files</span></code> directory with a <code class="docutils literal notranslate"><span class="pre">.md</span></code> extension:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rst2md<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst<span class="w"> </span>&gt;<span class="w"> </span>nb2plots/tests/rst_md_files/pep.md
 </pre></div>
 </div>
-<p>If your Markdown is not valid docutils ReST, you can skip the <code class="docutils literal"><span class="pre">rst2md</span></code>
+<p>If your Markdown is not valid docutils ReST, you can skip the <code class="docutils literal notranslate"><span class="pre">rst2md</span></code>
 test by writing an output file containing the work “skip”:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="nb">echo</span> <span class="s2">&quot;skip&quot;</span> &gt; nb2plots/tests/rst_md_files/pep.md
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">echo</span><span class="w"> </span><span class="s2">"skip"</span><span class="w"> </span>&gt;<span class="w"> </span>nb2plots/tests/rst_md_files/pep.md
 </pre></div>
 </div>
-<p>If the <code class="docutils literal"><span class="pre">sphinx2md</span></code> script should give a different output from the
-<code class="docutils literal"><span class="pre">rst2md</span></code> docutils converter, write that output with a <code class="docutils literal"><span class="pre">.smd</span></code> extension:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2md nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.smd
+<p>If the <code class="docutils literal notranslate"><span class="pre">sphinx2md</span></code> script should give a different output from the
+<code class="docutils literal notranslate"><span class="pre">rst2md</span></code> docutils converter, write that output with a <code class="docutils literal notranslate"><span class="pre">.smd</span></code> extension:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx2md<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst<span class="w"> </span>&gt;<span class="w"> </span>nb2plots/tests/rst_md_files/pep.smd
 </pre></div>
 </div>
-<p>These tests also test the output of the original ReST page (here <code class="docutils literal"><span class="pre">pep.rst</span></code>
-to Jupyter notebooks, and Python <code class="docutils literal"><span class="pre">.py</span></code> files.   Check these conversions
+<p>These tests also test the output of the original ReST page (here <code class="docutils literal notranslate"><span class="pre">pep.rst</span></code>
+to Jupyter notebooks, and Python <code class="docutils literal notranslate"><span class="pre">.py</span></code> files.   Check these conversions
 with the matching scripts:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2py nb2plots/tests/rst_md_files/pep.rst
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx2py<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2nb nb2plots/tests/rst_md_files/pep.rst
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx2nb<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst
 </pre></div>
 </div>
 <p>When you are satisfied, build the test files to check against:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2py nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx2py<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst<span class="w"> </span>&gt;<span class="w"> </span>nb2plots/tests/rst_md_files/pep.py
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>sphinx2nb nb2plots/tests/rst_md_files/pep.rst &gt; nb2plots/tests/rst_md_files/pep.ipynb
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sphinx2nb<span class="w"> </span>nb2plots/tests/rst_md_files/pep.rst<span class="w"> </span>&gt;<span class="w"> </span>nb2plots/tests/rst_md_files/pep.ipynb
 </pre></div>
 </div>
 </li>
-<li><p class="first">Run the relevant tests:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>py.test nb2plots/tests/test_doctree2md.py
-py.test nb2plots/tests/test_sphinx2md.py
-py.test nb2plots/tests/test_doctree2py.py
-py.test nb2plots/tests/test_doctree2nb.py
+<li><p>Run the relevant tests:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>py.test<span class="w"> </span>nb2plots/tests/test_doctree2md.py
+py.test<span class="w"> </span>nb2plots/tests/test_sphinx2md.py
+py.test<span class="w"> </span>nb2plots/tests/test_doctree2py.py
+py.test<span class="w"> </span>nb2plots/tests/test_doctree2nb.py
 </pre></div>
 </div>
 <p>These will test your new ReST file, and the various other example ReST
 files, against their expected Markdown, code and notebook outputs.</p>
 </li>
-<li><p class="first">Once the relevant tests are fixed, run all the tests to check that the rest
+<li><p>Once the relevant tests are fixed, run all the tests to check that the rest
 of the code (such as notebook conversion) is still working as expected.  If
 the tests fail, but you think your output is better than the previous output
 that the tests are using, feel free to edit.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>py.test nb2plots
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>py.test<span class="w"> </span>nb2plots
 </pre></div>
 </div>
 </li>
-<li><p class="first">Make a pull request to <a class="reference external" href="http://github.com/matthew-brett/nb2plots">nb2plots github</a>.</p>
-</li>
+<li><p>Make a pull request to <a class="reference external" href="http://github.com/matthew-brett/nb2plots">nb2plots github</a>.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
 
           </div>
+          
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="../index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Improving the ReST to Markdown conversion</a><ul>
-<li><a class="reference internal" href="#workflow">Workflow</a></li>
+<h1 class="logo"><a href="../index.html">nb2plots</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../worked_example.html">Worked example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scripts.html">Scripts in nb2plots</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../nbplots.html">Using the nbplot directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mpl_interactive.html">Using the mpl-interactive directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code_links.html">Using the code-links directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../markdown_base.html">Links in Markdown</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../on_headings.html">On heading levels in Markdown</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Improving the ReST to Markdown conversion</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#workflow">Workflow</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="sphinx_example_project.html">Test Sphinx builds on an example project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="make_release.html">Releasing nb2plots</a></li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../converted_example.html">An interesting example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../converted_plus_notebooks.html">An interesting example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="design.html">Design of a notebook writer</a></li>
+</ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../markdown_base.html" title="previous chapter">Links in Markdown</a></li>
+      <li>Previous: <a href="../on_headings.html" title="previous chapter">On heading levels in Markdown</a></li>
       <li>Next: <a href="sphinx_example_project.html" title="next chapter">Test Sphinx builds on an example project</a></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="../_sources/devel/improving_markdown.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016-2018, Matthew Brett.
+      &#169;2016-2023, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.2.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="../_sources/devel/improving_markdown.rst.txt"

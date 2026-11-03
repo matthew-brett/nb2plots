@@ -1,4 +1,4 @@
-# ## Links in Markdown
+# # Links in Markdown
 #
 # By default, if your ReST documents has internal links, then generated Markdown
 # output like the Notebook files or the Python code files drop these links,
@@ -7,7 +7,7 @@
 # Internal links can be [internal to the document](https://matthew-brett.github.io/nb2plots/markdown_base.html#links-in-markdown), via
 # the `:ref:` role, or to [other ReST pages](https://matthew-brett.github.io/nb2plots/scripts.html), using the
 # `:doc:` role.  Links can also be to files to download, such as
-# [conf.py](https://matthew-brett.github.io/nb2plots/_downloads/conf.py).
+# [conf.py](https://matthew-brett.github.io/nb2plots/_downloads/fb0d0d7ff27f33697ba3b787ec894677/conf.py).
 #
 # It’s often the case that you have built HTTP pages on the web somewhere, so it
 # would make sense for the built Markdown to point to the HTTP versions of these

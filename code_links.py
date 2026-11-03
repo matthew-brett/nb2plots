@@ -1,17 +1,17 @@
-# ## Using the code-links directive
+# # Using the code-links directive
 #
 # The `code-links` directive is a short cut for adding links to your ReST page
 # pointing to Python code files and Jupyter notebooks.  When Sphinx sees this
 # directive, it converts the ReST page to a Python code file and notebooks, and
 # add links to these files in the built HTML.  Use like this:
 #
-# ```
+# ```rest
 # .. code-links::
 # ```
 #
 # Here is an example, generating very boring code and notebooks:
 #
-# ### code-links directive
+# ## code-links directive
 #
 # Directive to insert links to current document as runnable code.
 #
@@ -37,7 +37,7 @@
 #
 # `python clear full` is the default.
 #
-# #### Kernel timeout
+# ### Kernel timeout
 #
 # When you build the full notebook, Jupyter will execute the code in each cell.
 # By default, Jupyter will time out for any cell that takes longer than 30
@@ -54,7 +54,7 @@
 # Set the `timeout` value to -1 or `none` to disable timeout entirely for
 # this directive / page.
 #
-# #### Configuration options
+# ### Configuration options
 #
 # The code-links directive has the following configuration options, that can be
 # set in the `conf.py` file.
@@ -65,6 +65,7 @@
 # >     during page build.  If not set, default is 30 seconds. Set to -1 or
 # >     None to disable timeout.
 #
+# <!-- !! processed by numpydoc !! -->
 # <!-- links, substitutions to include across pages. -->
 # <!-- vim: ft=rst -->
 # <!-- This project -->

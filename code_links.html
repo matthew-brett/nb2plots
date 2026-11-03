@@ -1,27 +1,17 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Using the code-links directive &#8212; nb2plots 0.6+1.g27fb228 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.6+1.g27fb228',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Using the code-links directive &#8212; nb2plots 0.8.1a1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=43557193"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Links in Markdown" href="markdown_base.html" />
@@ -29,101 +19,138 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body>
+  
+  
+
+  </head><body>
   
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
-  <div class="section" id="using-the-code-links-directive">
-<span id="code-links-documentation"></span><h1>Using the code-links directive<a class="headerlink" href="#using-the-code-links-directive" title="Permalink to this headline">¶</a></h1>
-<p>The <code class="docutils literal"><span class="pre">code-links</span></code> directive is a short cut for adding links to your ReST page
+  <section id="using-the-code-links-directive">
+<span id="code-links-documentation"></span><h1>Using the code-links directive<a class="headerlink" href="#using-the-code-links-directive" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">code-links</span></code> directive is a short cut for adding links to your ReST page
 pointing to Python code files and Jupyter notebooks.  When Sphinx sees this
 directive, it converts the ReST page to a Python code file and notebooks, and
 add links to these files in the built HTML.  Use like this:</p>
-<div class="highlight-rest"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">code-links</span><span class="p">::</span>
+<div class="highlight-rest notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">code-links</span><span class="p">::</span>
 </pre></div>
 </div>
 <p>Here is an example, generating very boring code and notebooks:</p>
 <ul class="simple">
-<li><a class="reference download internal" href="code_links.py">Download this page as a Python code file</a>;</li>
-<li><a class="reference download internal" href="code_links.ipynb">Download this page as a Jupyter notebook (no outputs)</a>;</li>
-<li><a class="reference download internal" href="code_links_full.ipynb">Download this page as a Jupyter notebook (with outputs)</a>.</li>
+<li><p><a class="reference download internal" href="code_links.py">Download this page as a Python code file</a>;</p></li>
+<li><p><a class="reference download internal" href="code_links.ipynb">Download this page as a Jupyter notebook (no outputs)</a>;</p></li>
+<li><p><a class="reference download internal" href="code_links_full.ipynb">Download this page as a Jupyter notebook (with outputs)</a>.</p></li>
 </ul>
-<div class="section" id="module-nb2plots.codelinks">
-<span id="id1"></span><span id="code-links-directive"></span><h2>code-links directive<a class="headerlink" href="#module-nb2plots.codelinks" title="Permalink to this headline">¶</a></h2>
+<section id="module-nb2plots.codelinks">
+<span id="id1"></span><span id="code-links-directive"></span><h2>code-links directive<a class="headerlink" href="#module-nb2plots.codelinks" title="Link to this heading">¶</a></h2>
 <p>Directive to insert links to current document as runnable code.</p>
 <p>As a bare directive, with no options, inserts links to the current document as
 a Python code file; a clear notebook (no outputs) and a full notebook (outputs
 inserted by executing the built notebook):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span>
 </pre></div>
 </div>
 <p>You can select one or more of these links with a list as an argument to the
 directive, where “python”, “clear” and “full” refer to a Python code file,
 clear notebook file and a full notebook file, respectively. For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">python</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">python</span>
 
 <span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">python</span> <span class="n">full</span>
 
 <span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span> <span class="n">clear</span> <span class="n">full</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">python</span> <span class="pre">clear</span> <span class="pre">full</span></code> is the default.</p>
-<div class="section" id="kernel-timeout">
-<h3>Kernel timeout<a class="headerlink" href="#kernel-timeout" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">clear</span> <span class="pre">full</span></code> is the default.</p>
+<section id="kernel-timeout">
+<h3>Kernel timeout<a class="headerlink" href="#kernel-timeout" title="Link to this heading">¶</a></h3>
 <p>When you build the full notebook, Jupyter will execute the code in each cell.
 By default, Jupyter will time out for any cell that takes longer than 30
 seconds to execute.  You can change this default for the whole project with the
-<code class="docutils literal"><span class="pre">fill_notebook_timeout</span></code> setting in the <code class="docutils literal"><span class="pre">conf.py</span></code> file (see below).  If you
-just want to change the setting for a single page, you can add the <code class="docutils literal"><span class="pre">timeout</span></code>
-option to the <code class="docutils literal"><span class="pre">code-links</span></code> directive.  For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span>
+<code class="docutils literal notranslate"><span class="pre">fill_notebook_timeout</span></code> setting in the <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> file (see below).  If you
+just want to change the setting for a single page, you can add the <code class="docutils literal notranslate"><span class="pre">timeout</span></code>
+option to the <code class="docutils literal notranslate"><span class="pre">code-links</span></code> directive.  For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">links</span><span class="p">:</span>
     <span class="p">:</span><span class="n">timeout</span><span class="p">:</span> <span class="mi">120</span>
 </pre></div>
 </div>
-<p>Set the <code class="docutils literal"><span class="pre">timeout</span></code> value to -1 or <code class="docutils literal"><span class="pre">none</span></code> to disable timeout entirely for
+<p>Set the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> value to -1 or <code class="docutils literal notranslate"><span class="pre">none</span></code> to disable timeout entirely for
 this directive / page.</p>
-</div>
-<div class="section" id="configuration-options">
-<h3>Configuration options<a class="headerlink" href="#configuration-options" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="configuration-options">
+<h3>Configuration options<a class="headerlink" href="#configuration-options" title="Link to this heading">¶</a></h3>
 <p>The code-links directive has the following configuration options, that can be
-set in the <code class="docutils literal"><span class="pre">conf.py</span></code> file.</p>
+set in the <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> file.</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>fill_notebook_timeout</dt>
-<dd>Default value for Jupyter kernel timeout when executing notebooks
+<div><dl class="simple">
+<dt>fill_notebook_timeout</dt><dd><p>Default value for Jupyter kernel timeout when executing notebooks
 during page build.  If not set, default is 30 seconds. Set to -1 or
-None to disable timeout.</dd>
+None to disable timeout.</p>
+</dd>
 </dl>
 </div></blockquote>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
+          
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Using the code-links directive</a><ul>
-<li><a class="reference internal" href="#module-nb2plots.codelinks">code-links directive</a><ul>
-<li><a class="reference internal" href="#kernel-timeout">Kernel timeout</a></li>
-<li><a class="reference internal" href="#configuration-options">Configuration options</a></li>
+<h1 class="logo"><a href="index.html">nb2plots</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="worked_example.html">Worked example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts in nb2plots</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="nbplots.html">Using the nbplot directive</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mpl_interactive.html">Using the mpl-interactive directive</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using the code-links directive</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-nb2plots.codelinks">code-links directive</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="markdown_base.html">Links in Markdown</a></li>
+<li class="toctree-l1"><a class="reference internal" href="on_headings.html">On heading levels in Markdown</a></li>
 </ul>
-</li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="devel/improving_markdown.html">Improving the ReST to Markdown conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel/sphinx_example_project.html">Test Sphinx builds on an example project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel/make_release.html">Releasing nb2plots</a></li>
 </ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="converted_example.html">An interesting example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="converted_plus_notebooks.html">An interesting example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devel/design.html">Design of a notebook writer</a></li>
+</ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -133,33 +160,24 @@ None to disable timeout.</dd>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/code_links.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016-2018, Matthew Brett.
+      &#169;2016-2023, Matthew Brett.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.2.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/code_links.rst.txt"

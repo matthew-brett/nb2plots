@@ -13,13 +13,10 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+# Add root directory to path to allow importing from as-yet-uninstalled tree.
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -58,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'nb2plots'
-copyright = '2016-2018, Matthew Brett'
+copyright = '2016-2023, Matthew Brett'
 author = 'Matthew Brett'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -76,7 +73,7 @@ version = '.'.join(release.split('.')[:2])
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
